@@ -1,3 +1,5 @@
+> 历史过程材料（Task A已收尾）：本页保留原设计／失败／验证事实，不再作为执行入口。现行边界见[当前技术总览](../../kokoro-handbook/technical/00-system-overview.md)，后继事项见[TODO](../../../todo.md)。
+
 # Task A C-1 清理实施证据（2026-10-31）
 
 ## 范围
@@ -846,7 +848,7 @@ Root then pinned IAM to `a1457be836c21eb558c8cbf7d9366e60f8ce59b8` and reran `gi
 
 用户要求先整理当前所有问题、技术方案、TODO与Goal，本轮转为只读并行审计，Root唯一文档writer；没有继续实现、启动业务服务、安装Schema、提交或发布。执行树仍为task-a-c1-cleanup；既有App/BFF/Root未提交代码原样保留。
 
-- 主窗口`get_goal`核验既有目标为active；G0已有reviewer通过证据。本轮没有complete、blocked或新建重叠Goal。新的阶段目标及17项TODO统一在[当前技术方案](../plans/2026-11-01-task-a-c1-c4-technical-plan.md)，原A-01～A-16责任完整保留。
+- 主窗口`get_goal`核验既有目标为active；G0已有reviewer通过证据。本轮没有complete、blocked或新建重叠Goal。新的阶段目标及17项TODO统一在[当前技术方案](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)，原A-01～A-16责任完整保留。
 - App writer停止在f5d122bb+56路径候选：报告Node22.23.4、focused23、contract452、architecture50、完整354files/6373pass/0skip、types/lint/build/diff通过；独审核56路径SHA无漂移，Public28.18原件/父逆证与旧hash保持。以上为worker冻结证据，Root完整门与Git集成尚未完成。
 - BFF writer停止在228e3d6+11路径候选：移除main raw export/两处类型倒依赖、6测试明确raw入口、默认test/architecture纳入Nest suites。worker architecture73/focused123、types/lint/build/diff通过；独审补强side-effect import漏检后未见新增确定阻断。全业务与真实I/O未在候选最终树重跑。
 - 当前raw census为56文件148直接调用、helper18文件42调用、composition3文件4调用、owner-resource9suites102调用；集合重叠，非可相加总数。生产入口隔离不等于ADR-036要求的raw server/runtime删除。

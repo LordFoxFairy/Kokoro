@@ -1,6 +1,8 @@
+> 历史过程材料（Task A已收尾）：本页保留原设计／失败／验证事实，不再作为执行入口。现行边界见[当前技术总览](../../kokoro-handbook/technical/00-system-overview.md)，后继事项见[TODO](../../../todo.md)。
+
 # Task A C-1.3 IAM native profile receipt（2026-10-31）
 
-> 当前入口：本文为所列旧SHA的真实收据；App旧RP/LegacyRoutes等剩余项是当时状态，4case smoke不证明当前四旅程或资源清理。当前进度和补验要求见 [Task A闭环方案](../plans/2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
+> 当前入口：本文为所列旧SHA的真实收据；App旧RP/LegacyRoutes等剩余项是当时状态，4case smoke不证明当前四旅程或资源清理。当前进度和补验要求见 [Task A闭环方案](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
 
 ## 修复
 

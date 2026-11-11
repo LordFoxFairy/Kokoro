@@ -1,6 +1,8 @@
+> 历史过程材料（Task A已收尾）：本页保留原设计／失败／验证事实，不再作为执行入口。现行边界见[当前技术总览](../../kokoro-handbook/technical/00-system-overview.md)，后继事项见[TODO](../../../todo.md)。
+
 # Task A 清理与重构只读盘点
 
-> 当前入口：本文保留初始逐文件disposition/风险矩阵，G0待批准等表述仅为当时快照；当前剩余消费者、问题和TODO统一维护于 [Task A闭环方案](../plans/2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
+> 当前入口：本文保留初始逐文件disposition/风险矩阵，G0待批准等表述仅为当时快照；当前剩余消费者、问题和TODO统一维护于 [Task A闭环方案](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
 
 > 状态：只读盘点；本文件不授权删除或重写。本轮未修改业务代码、测试、契约、数据库或运行配置。
 
@@ -287,7 +289,7 @@ BFF 的 `test` 文件列表在 C-4 迁移时改为按 `test/unit`, `test/contrac
 2. **已完成**：R→D 文件与 Nest feature/provider 映射，未写实现。
 3. **已完成**：Repository 调用方、事务边界、owner 和并入 Service 条件记录。
 4. **已完成**：测试生产消费者、独有行为证据和默认脚本引用记录。
-5. **已完成**：C-1/C-2/C-3/C-4 停写边界已形成，执行顺序见 [执行计划](../plans/2026-10-30-task-a-cleanup-refactor-execution.md)。
+5. **已完成**：C-1/C-2/C-3/C-4 停写边界已形成，执行顺序见 [执行计划](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-10-30-task-a-cleanup-refactor-execution.md)。
 
 当前仍停在 G0 设计门；本文件与执行计划补齐闭集后，需由审阅者确认并由用户放行，才进入后续清理实现阶段。
 
@@ -656,7 +658,7 @@ Product Session 不保留投影：native admission 直接消费 IAM native sessi
 
 ## 12. 只读盘点证据
 
-阶段执行顺序与停写边界以 [Task A 清理与重构执行计划](../plans/2026-10-30-task-a-cleanup-refactor-execution.md) 为准；本清单只记录当前事实和路径证据。
+阶段执行顺序与停写边界以 [Task A 清理与重构执行计划](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-10-30-task-a-cleanup-refactor-execution.md) 为准；本清单只记录当前事实和路径证据。
 
 2026-10-30 在 Root 工作区重新核验：
 

@@ -1,17 +1,17 @@
 # ADR-034：独立 Admin 前端工程，复用 Product 登录与会话
 
 - 初始决定：2026-10-09；认证边界纠正：2026-10-23。
-- 状态：用户已确认。本文替代旧版中独立 OAuth client、回调与 cookie/session namespace 的决定；不表示正常环境整链验收完成。
+- 状态：Accepted；Task A认证切换及共享登录范围已验（2026-11-11），不表示全部Admin业务或部署验收完成。本文替代独立 OAuth client、回调与 cookie/session namespace 决定。
 - 范围：同一 Kokoro 产品的 Admin 前端工程与公开入口，不增加身份服务或业务 owner。
 
-## 2026-11-03 原生会话重设计范围（认证D0已通过，整链待验）
+## 当前认证边界
 
-共享Product登录、Admin不另建认证的决定保持。当前Task A的[认证D0方案](../../superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md#36-认证标准重设计i-38-引用方案已否决认证-d0-已通过)将IAM Better Auth确定为原生登录Session与续期权威，App负责同源入口，BFF负责入口认证和安全状态投影。因此下方“Product是会话/续期owner”不再解释为App必须保管另一套RP Session/refresh token。D0已依据既有用户要求及ADR复核通过；IAM owner已交付，BFF/App/Admin消费与真实共享登录验收仍待完成，不把设计门当整链通过。不新增Admin独立Cookie、OAuth client或存储。
+IAM 唯一拥有原生登录 Cookie、数据库 Session与续期，BFF负责认证边缘，App负责同源薄adapter；Admin不另建认证。普通业务使用直接服务身份＋本次入口取得的可信actor，账户会话管理保留专用Cookie／Origin例外，不恢复请求内Session引用设计。详细边界见[当前技术总览](../technical/00-system-overview.md#3-原生登录与内部调用)。
 
 ## 决定
 
 1. 后台可以独立构建、启动和部署，但与 App 属于同一产品与身份体系。当前正式工程是 `apps/kokoro-admin`，不是新增 `apps/kokoro-admin-web`。工程边界不推导出第二套登录、OAuth client、用户会话或授权中心。
-2. Product 是唯一浏览器登录、会话、CSRF 与续期 owner，IAM 是身份与权限事实 owner。Admin 薄消费现有 Product 会话接口及管理员准入投影，不自行签发 cookie、保管 refresh token、实现 OAuth callback 或创建独立 session 存储。
+2. IAM 是原生登录 Cookie、Session、CSRF与续期事实 owner；BFF是认证边缘，App提供同源adapter。Admin薄消费现有Product会话接口及管理员准入投影，不自行签发 cookie、保管 refresh token、实现 OAuth callback 或创建独立 session 存储。
 3. 当前公开入口为 Product 同源 `/manage`，由 App 同源 adapter 接入独立 Admin 进程。内部监听地址不是第二个公开产品入口；地址由受信部署配置提供，不从 query/body 决定。将来使用子域名须验证 cookie、CSRF、重定向与代理边界，不将“配置子域名”当作会话自动可用的证明，也不因此另建认证体系。
 4. Admin 通过现有 same-origin adapter、App 管理 adapter 与 BFF 访问业务 owner；没有 Admin 专属 BFF 或业务数据库。不相对导入 sibling 源码，不复制可编辑 owner contract。业务请求继续消费精确固定的 owner/BFF 契约。
 5. 登录状态不等于管理权限。服务端明确取得当前管理员准入后才渲染控制台业务内容；普通用户与跨租户请求仍拒绝。可恢复会话沿 Product 既有流程处理，依赖故障与明确无权限分开，不把身份未知当成管理员、不把服务故障伪装成退出登录。
@@ -29,7 +29,7 @@
 
 验收覆盖：Product 登录后进入后台、后台深链及刷新、会话续期、多标签并发、退出后重新进入、撤权/普通用户/跨租户负控，以及后台真实操作与未知提交恢复。必须区分单元覆盖、隔离集成和正常浏览器结果。
 
-当前 Admin `e35df2178905f35d3dbced3bea1e114663e9bfc7` 已删除 `/login` 与 `/auth/verify` 旧页面，并将 AppShell 限定在准入后的 console layout。源码 `lib/server/page-admission.ts` / `lib/server/product-admin-admission.ts` 消费 Product 管理员投影，未创建独立登录。该提交和正常页面的已验范围、首次热更异常及剩余登录旅程见 [CURRENT](../../CURRENT.md#admin-session-boundary-20261023)；不把局部通过称为完整登录闭环。
+Task A正式组合已验证原生登录／退出／撤权、共享Admin准入和负控；当前Admin #5已合main。工程源码、原生浏览器与所有管理CRUD是不同范围，不扩大为全部后台功能通过。当前证据边界见[技术总览](../technical/00-system-overview.md#7-已验范围与仍保留的限制)和[CURRENT](../../CURRENT.md)。
 
 ## 历史决定为何被替代
 

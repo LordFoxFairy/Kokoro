@@ -1,44 +1,29 @@
-# Kokoro Root 文档索引
+# Kokoro 文档索引
 
-这是 Root `docs/` 的最小导航入口，面向贡献者、主控 Agent 和并行 worker。Root 文档只拥有跨仓治理、架构决策、仓库拓扑、部署编排与质量门禁；业务 API、数据库 Schema、生成代码和实现细节必须留在事实 owner 子仓。
+[总入口](README.md)面向团队统一阅读。本页只列活动入口；业务字段、SQL 和生成制品仍由子仓 owner 维护。
 
-## 必读顺序
+## 产品与工程首读
 
-1. [`CURRENT.md`](CURRENT.md)：当前有效文档白名单、实施主线和已确认边界。
-2. [`task.md`](task.md)：当前唯一任务状态表、依赖顺序、owner 与阶段门。
-3. [`progress.md`](progress.md)：当前 commit、命令输出、审查结论和风险的追加证据账。
-4. [`CODEBASE_MAP.md`](CODEBASE_MAP.md)：九个 active repository 的 owner、目录、运行链路和派工上下文。
-5. [`ARCHITECTURE_STANDARD.md`](ARCHITECTURE_STANDARD.md)：中文工程标准、分层、类型、SQL、API、Web、测试和 Agent 执行协议。
-6. [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md)：仓库映射、事实归属、归档状态和最近可用证据；HEAD、分支和 clean 状态必须以审计命令的当前输出为准。
-7. [`kokoro-handbook/README.md`](kokoro-handbook/README.md)：稳定的跨仓产品与技术手册。
+1. [工作台使用指南](../apps/kokoro-app/developer-docs/docs/product/index.md)：开始使用、聊天与结果、项目／定时、支持范围。
+2. [PRD](kokoro-handbook/product/09-v2-prd.md)：用户对象、批准需求与非目标，不当完成报告。
+3. [当前技术总览](kokoro-handbook/technical/00-system-overview.md)：实际链路、原生认证、AI SDK、文件与调度。
+4. [CURRENT](CURRENT.md)：当前交付事实；[Task A TODO](../todo.md)：唯一当前暂存事项。
+5. [代码地图](CODEBASE_MAP.md)、[仓库组合](REPOSITORY_STATUS.md)：定位实际 owner、目录及精确组合政策。
 
-## 按任务查找
+## 按问题定位
 
-| 任务 | 入口 |
+| 问题 | 入口 |
 | --- | --- |
-| 产品范围/交互关系/正式验收要求 | [当前 PRD](kokoro-handbook/product/09-v2-prd.md)，再读专题章节与现测试台账；不以旧已上线叙述为完成证据 |
-| 了解活动仓边界 | [`CODEBASE_MAP.md`](CODEBASE_MAP.md)、[`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) |
-| 初始化/验证 Submodule 组合 | [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md)、[ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)、[`../scripts/verify-repository-topology.py`](../scripts/verify-repository-topology.py) |
-| 修改架构或跨仓规则 | [`ARCHITECTURE_STANDARD.md`](ARCHITECTURE_STANDARD.md)、[`kokoro-handbook/technical/`](kokoro-handbook/technical/) |
-| 模型实际用量与正规积分定价 | [ADR-033](kokoro-handbook/decisions/ADR-033-actual-usage-and-pricing-ownership.md)，再读 Agent/Billing 当前三面与 `task.md` |
-| 设计/修改 API | 先定位事实 owner，再阅读该仓 `contract/README.md` 与 `docs/API_CONTRACT.md`；Root 不复制契约 |
-| 设计/修改 SQL | 先定位事实 owner，再阅读该仓 `database/schema.sql` 与 `docs/DATA_MODEL.md`；Root 不复制 Schema |
-| 执行质量门禁 | [`../scripts/INDEX.md`](../scripts/INDEX.md) 与各 owner README/ACCEPTANCE；旧全仓 runner 已暂停，System 隔离 smoke 不是全仓门 |
-| 测试计划/已测/失败/未验/复测 | [`test-cases.md`](test-cases.md)：唯一当前测试总台账；`task.md`派工，`progress.md`存证 |
-| 查看已验证事实 | [`reports/`](reports/)；报告必须包含 commit、命令、结果和时间 |
-| 给 Agent 派工 | [`CODEBASE_MAP.md`](CODEBASE_MAP.md) + [`ARCHITECTURE_STANDARD.md`](ARCHITECTURE_STANDARD.md) 第 11 节 |
-| 跟踪后端闭环 | [`task.md`](task.md)、[`progress.md`](progress.md)、[批准设计](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)、[当前 Wave 1B 计划](superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md)、[已验收 Wave 0B 计划](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)、[已验收 Wave 0A 计划](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md) |
+| 架构／owner／跨仓边界 | [总体架构](ARCHITECTURE_STANDARD.md)、[长期手册](kokoro-handbook/README.md)、有效 ADR |
+| API／数据变更 | 对应子仓 `contract/`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md` 和 canonical schema；不从旧原型推字段 |
+| Web 用户文档或公开 API 文档 | App [门户维护说明](../apps/kokoro-app/developer-docs/README.md)；API 参考只由固定 BFF artifact 生成 |
+| 类型／SQL／事务／API／测试规范 | [工程手册](kokoro-handbook/standards/)及 Root [AGENTS](../AGENTS.md) |
+| 当前验证命令 | [scripts 索引](../scripts/INDEX.md)及各 owner README/ACCEPTANCE；不因改文档启动全产品测试 |
+| Task B | [独立交接入口](handoffs/2026-10-30-task-b-capabilities-account.md)，保留其负责人、原 PR 和未验状态 |
+| 历史与旧验收 | [历史任务记录](task.md)、[历史证据账](progress.md)、[报告](reports/)；日期／commit／真实依赖界定范围，旧“当前”标题不覆盖最新事实 |
 
-## 文档层级
+## 维护边界
 
-```text
-当前事实与入口  -> CURRENT.md / CODEBASE_MAP.md / REPOSITORY_STATUS.md
-长期规则与决策  -> ARCHITECTURE_STANDARD.md / kokoro-handbook/
-任务与进度      -> task.md / progress.md
-实施计划        -> superpowers/plans/
-短期派工        -> handoffs/
-验证证据        -> reports/
-历史与研究      -> product/、prototypes/、research/、brainstorm/
-```
+长期决定归 `kokoro-handbook/`；临时方案只在需要时按主题读取。已被替代的 Task A 四份计划、旧 Session 产品拓扑已退役，可从 `bdebba56` 的 Git 历史追溯，不再列为实施入口。其它 owner 的需求、计划与原始证据不批量删除。
 
-历史、研究和过程文件不能覆盖当前规范；实现尚未完成的目标架构必须明确标记为缺口，不能把设计文档当作运行证据。新增跨仓规则先沉淀到 Root 手册，再由各 owner 子仓落到自己的 contract、Schema、代码、测试和 CI。
+保留 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)、[ADR-034](kokoro-handbook/decisions/ADR-034-independent-admin-web.md)、[ADR-035](kokoro-handbook/decisions/ADR-035-direct-internal-service-authentication.md)、[ADR-036](kokoro-handbook/decisions/ADR-036-bff-nestjs-convergence.md)等有效边界；本次只更新已被最终实现替代的说明，不新造规则中心。

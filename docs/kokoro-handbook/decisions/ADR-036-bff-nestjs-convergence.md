@@ -1,58 +1,32 @@
-# ADR-036 BFF NestJS 原生运行时与按能力收敛
+# ADR-036：BFF Nest 原生运行时与按能力收敛
 
-状态：Nest/DI/feature 收敛 Accepted / G0 approved (2026-10-31)；认证D0复核通过 (2026-11-03)，owner实施中/G1未验
+- 状态：Accepted；Task A交付范围内已完成。G0初始决定2026-10-31，最终事实核对2026-11-11。
+- 当前技术与认证边界见[系统总览](../technical/00-system-overview.md)，实际交付与下轮项见[CURRENT](../../CURRENT.md)和[TODO](../../../todo.md)。
 
-2026-11-02范围更新：用户否决后续I-38 Session引用并要求认证按标准重设计。**本ADR的Nest/DI/feature收敛决定保留，认证子设计门重开**；下方native-admission 1.0/hash仅为原G0历史前置，不再据此放行新认证实现。新认证边界与状态见 [Task A唯一方案](../../superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md) §3.6；用户未要求恢复旧逐业务Cookie方案。
+## 变更前的问题
 
-2026-11-03设计门复核：认证D0已按用户标准后端重做要求、ADR-034共享登录与ADR-035直接服务认证/BFF可信用户上下文完成三面复核，进入IAM owner合同/实现；无新增认证owner、票据或持久模型，不重复请求既定决定。旧native profile不恢复为新合同，G1/消费者/最终验证尚未完成。
+原BFF由手写 `node:http` listener和bootstrap dispatcher集中承担路由、认证、owner client、PostgreSQL／Redis和worker装配，并使用全局Service／Repository locator。旧代码是迁移前基线，不代表当前运行时。
 
-## Context
+## 保留的决定
 
-`apps/kokoro-bff` 当前由 `node:http` 直接创建 listener，并把大量 route、认证、owner client、PostgreSQL/Redis 装配和 worker 生命周期集中在 `bootstrap/server.ts` 与 `bootstrap/runtime.ts`。这套实现已经承接了完整的 public Product API、AG-UI durable ledger、outbox、取消、幂等和多个 owner client，但运行时没有 Nest Module/DI 边界，global `BffBusinessStore`/`BffApplicationServices`/`PostgresBffRepositories` 造成跨 feature locator，Repository/Service/Port 的职责难以审查。
+1. `src/main.ts` 通过Nest创建唯一应用／listener；`src/app.module.ts` 为唯一composition root。
+2. 配置、资源、owner client、feature和worker生命周期通过Module／Provider及显式DI装配，测试按实际需要override provider。
+3. 按Chat／AG-UI、Projects、ScheduledTasks、Account、Skills／MCP、Billing等业务能力聚合。Controller做wire／context／error映射；用例与事务留在实际拥有该行为的业务边界。
+4. Repository只为复杂查询／锁／事务／幂等／ledger／outbox等真实边界保留；简单owner投影直接消费生成客户端。不建BaseRepository、万能CommonService或重复DTO。
+5. `LegacyRoutesModule`、旧手写bootstrap dispatcher/composition和全局locator已在Task A清理中退役。不再把临时adapter列为允许保留的当前入口；不恢复alias、双读／双写或第二套listener。
+6. `database/schema.sql` 保持唯一canonical schema；本决定不引入跨owner SQL、迁移链或第二份业务存储。
 
-Kokoro 的 TypeScript 后端标准已经统一采用 NestJS 12 原生 runtime、Module、Controller、Provider 和显式 DI。C-1 的阶段提交已删除 BFF schema-evolution CLI/测试以及 App/Agent 的确认兼容逻辑；这些提交仅作为阶段证据，G0 放行前仍必须完成契约、逐文件 disposition 和验证矩阵审阅。
+## 最终认证裁决
 
-## Decision
+IAM拥有原生登录Session与续期；App薄adapter，BFF认证边缘鲜验后建立principal。普通IAM业务使用接收方直接服务认证＋可信actor，不转发人类Cookie／Session-ref／用户Bearer；本人账户会话管理保留专用peer＋issuer Cookie＋exact Origin例外。服务身份不取代当前权限、Run或资金授权。
 
-1. BFF 使用 `@nestjs/core` 12.0.1 + `@nestjs/platform-express` 12.0.1；`src/main.ts` 通过 `NestFactory.create()` 创建唯一应用和唯一 listener。
-2. `src/app.module.ts` 是唯一 composition root。配置、PostgreSQL、Redis、IAM admission、owner clients、feature modules、health 与 worker lifecycle 通过 Nest providers/imports/exports 装配；测试通过 `TestingModule` override provider。
-3. 业务按 capability 建立 feature modules：Health、Chat/AG-UI、Projects、ScheduledTasks、Account、Skills、MCP、Billing、System/IAM relay、Music。Controller 只做 wire/context/pipe/error mapping；Service 负责用例/授权/事务编排；外部 owner client 作为 integration provider。
-4. Repository 不是默认层。保留 Chat、Project、ScheduledTask、Idempotency、AG-UI ledger/outbox 等真实复杂数据访问边界；简单 owner projection 直接由 feature Service 注入 generated client。删除 global `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` locator，不建立 `BaseRepository`、万能 `CommonService` 或重复 DTO/ORM model。
-5. 迁移按 feature 完成可验证切片；Nest 是唯一 HTTP listener。未迁移的非 A routes 仅可由 Nest 内冻结 `LegacyRoutesModule` adapter 承载；在同一条 public contract、schema、错误、权限、幂等、取消和恢复语义下切换 Controller。禁止新 alias、双读/双写、第二套 HTTP listener 或 migration fallback。
-6. 所有 graph feature 切换完成后删除 `LegacyRoutesModule`、`src/bootstrap/server.ts`、`src/bootstrap/runtime.ts` 的手写 dispatcher/composition。`database/schema.sql` 继续是唯一 canonical schema；本 ADR 不引入 migration chain、表迁移或跨 owner SQL。
+采用[ADR-034](ADR-034-independent-admin-web.md)与[ADR-035](ADR-035-direct-internal-service-authentication.md)的当前边界。已否决的native-admission profile及旧hash不是有效实施前置，不恢复到机器合同。详细wire只在owner合同维护。
 
-## G0 release prerequisites
+## 生命周期与验证
 
-G0 放行前必须同时具备以下机器可核对材料：
+- Nest统一资源与worker关闭、readiness和drain，不用进程成功退出推断持久副作用完成。
+- 保留实际HTTP／SSE预算、取消、owner传输和原生认证relay，不靠默认middleware推导完整业务保障。
+- 相关完整默认、合同、类型／lint／build／架构门和指定真实PG／Redis／原生浏览器组合证据已按Task A记录交付；mock、条件跳过和真实依赖分别标明。旧G1未验叙述不再代表当前状态。
+- 不为后继文档维护重跑未变源码的全量门；新变更按影响面验证。CI账单／额度未执行不写成CI通过，未部署不写上线。
 
-| 材料 | 唯一 owner / writer | 固定位置 | 放行条件 |
-|---|---|---|---|
-| native-session admission contract `1.0.0` | IAM | `apps/kokoro-iam/contract/openapi/native-session-admission.v1.json` | `POST /internal/v1/native-session-admission/verify` 的请求、响应、错误闭集、Cookie/CSRF/撤权语义与 SHA-256 `5cf59df4b7bd9853edfd2eabb31afc236c0ec0db371f9737706fc129484fd83f` 固定；IAM generated client 与 BFF consumer 必须同片交付 |
-| BFF feature/provider map | Task A | 本 ADR 与 Task A inventory | 每个 module 的 imports/exports、provider token、owner client、生命周期与旧 route 映射逐项列明 |
-| C-1 disposition | App/BFF/Agent | Task A inventory | 每个删除/重写/保留文件有生产消费者、替代事实和测试证据 |
-| Repository/Service/Port disposition | BFF | Task A inventory | 每个现有 Port 有保留、拆分、并入或删除结论与事务/权限证据 |
-| Test/script matrix | App/BFF/Agent | Task A inventory | 默认脚本、fixture、generated oracle、integration 资源和替代测试逐项列明 |
-
-在上述材料通过审阅前，`apps/kokoro-bff` 的 Nest 依赖基线与 architecture gate 只作为预备提交，不进入 feature 迁移。
-
-## Consequences
-
-### Positive
-
-- Nest lifecycle 统一管理数据库、Redis、worker drain、readiness 和关闭顺序。
-- Module exports 明确跨 feature 依赖，global locator 与隐藏装配消失。
-- Controller/Service/Repository/owner client 的边界可由 architecture tests 检查，Repository 只在真实复杂度存在时保留。
-- 旧 dispatcher 删除后，BFF 只剩一套业务 runtime 与一套协议实现，便于后续 A-01/A-02/A-07。
-
-### Costs and risks
-
-- BFF route surface 很大，迁移需要按 Chat/Project/Scheduled/Skills/MCP 等能力分批提交并保持完整 contract gates。
-- 迁移期间不能使用兼容 alias 或第二 listener 掩盖遗漏；每个 feature 必须先有正/负路径测试再切换。
-- 现有 Node raw request/body budget、SSE、IAM relay、owner Connect/HTTP adapter 需要明确挂接 Nest raw-body/Express lifecycle，不能只依赖默认 middleware。
-- 真正完成必须证明旧 bootstrap/runtime 已删除，并重新运行完整 BFF tests、contract、build、架构门及必要 disposable PG/Redis integration。
-
-## Verification
-
-- `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test:architecture`, `pnpm contract:check`, `pnpm test`, `pnpm build`
-- `python3 scripts/verify-repository-topology.py`
-- 受影响的 PostgreSQL/Redis integration 使用独立 disposable fixture；skip 不记为通过。
+初始G0材料和临时转换阶段可从[固定历史版本](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/kokoro-handbook/decisions/ADR-036-bff-nestjs-convergence.md)追溯。历史门不形成第二套当前计划。

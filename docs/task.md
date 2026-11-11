@@ -1,4 +1,4 @@
-当前 Task A 执行顺序以 [TODO](../todo.md) 为准；设计与证据见[技术方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)，当前事实见 [CURRENT](CURRENT.md)。下方各日期记录保留历史。
+当前 Task A已按开发交付口径收尾；后继事项见 [TODO](../todo.md)，现行边界见[当前技术总览](kokoro-handbook/technical/00-system-overview.md)，当前事实见 [CURRENT](CURRENT.md)。下方各日期仅保留历史，不恢复旧执行门。
 
 ## 2026-10-22 集中PR交付推进
 
@@ -17087,7 +17087,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
-**机器 Goal active，Task A 未闭环。** 新建 Goal 沿原任务，T‑11 四项归并与 ScheduledTask、Chat、Projects 三项拆分已本地验收；Projects `d0724ec`、`a6ce80e`、`c781a8f`、`32357c0` 已提交，T‑09 终态配对待确认。[当前 TODO](../todo.md)、[技术方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[当前事实](CURRENT.md)维护现况。T‑17 和 T‑11 真实行为已本地验收；T‑11 首批四条真 PG/Redis 行为基线通过；StableId `f7d1e69`、两个 AgentRuns reader `76f2d04`、Personalization `335dbe3` 已本地提交；G0 处置已在 BFF 原 PR 分支本地收口；ScheduledTask `368e65e` 已本地提交。Chat 已收窄 RunDisplay `c005e27`，定向 Nest/HTTP、取消和真实 PG exact final 通过；AG‑UI process/head 已本地提交 `2ef307e`，真实 R124 同一 RR 与固定 watermark、R57 控制 ACK/拒绝、R237 底层授权先于 cursor 解析通过；Chat 本地宽聚合已由 `fb3cfa4` 退役；定向 HTTP/装配及真实 SET47、SET21、R146/R237、Feedback、R43/R124 通过。C‑4 中，Agent `40effb2` owner 门已通过，本地候选已快进；原 PR46 远端分支已核对，仍未推送。Root 治理与原生前台工具链已补验；BFF `32357c0` 正式默认门通过，两条 PG 用例未运行。Root 最新拓扑仅四处旧 gitlink，结构审计与旧基线逐条相同但仍失败，合同来源及 relay 核验差额另列；独立补证已实跑 3.0 生成门及 commit blob、Scheduler 契约，归类了 18 个失效证据路径，并补查 Billing/System 的有效 TypeScript 配置。Agent 8.11→BFF→App 终态配对待确认，精确组合 E2E 仍待。下列为历史检查点，不代表当前组合。
+**机器 Goal active，Task A 未闭环。** 新建 Goal 沿原任务，T‑11 四项归并与 ScheduledTask、Chat、Projects 三项拆分已本地验收；Projects `d0724ec`、`a6ce80e`、`c781a8f`、`32357c0` 已提交，T‑09 终态配对待确认。[当前 TODO](../todo.md)、[技术方案](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[当前事实](CURRENT.md)维护现况。T‑17 和 T‑11 真实行为已本地验收；T‑11 首批四条真 PG/Redis 行为基线通过；StableId `f7d1e69`、两个 AgentRuns reader `76f2d04`、Personalization `335dbe3` 已本地提交；G0 处置已在 BFF 原 PR 分支本地收口；ScheduledTask `368e65e` 已本地提交。Chat 已收窄 RunDisplay `c005e27`，定向 Nest/HTTP、取消和真实 PG exact final 通过；AG‑UI process/head 已本地提交 `2ef307e`，真实 R124 同一 RR 与固定 watermark、R57 控制 ACK/拒绝、R237 底层授权先于 cursor 解析通过；Chat 本地宽聚合已由 `fb3cfa4` 退役；定向 HTTP/装配及真实 SET47、SET21、R146/R237、Feedback、R43/R124 通过。C‑4 中，Agent `40effb2` owner 门已通过，本地候选已快进；原 PR46 远端分支已核对，仍未推送。Root 治理与原生前台工具链已补验；BFF `32357c0` 正式默认门通过，两条 PG 用例未运行。Root 最新拓扑仅四处旧 gitlink，结构审计与旧基线逐条相同但仍失败，合同来源及 relay 核验差额另列；独立补证已实跑 3.0 生成门及 commit blob、Scheduler 契约，归类了 18 个失效证据路径，并补查 Billing/System 的有效 TypeScript 配置。Agent 8.11→BFF→App 终态配对待确认，精确组合 E2E 仍待。下列为历史检查点，不代表当前组合。
 
 - Root535e7071配对App9ba65343/BFF4d6d17b/IAMe6a01cf；各仓PR独立draft，未merge/deploy。
 - T-17前置五处DI问题已修，真实容器回归入默认门；Root BFF完整check contract1344/default2344pass+2原skip/build PASS。
@@ -17119,7 +17119,7 @@ App e1be73e0 JSON规范化已独审/Root完整check6407pass/0skip并沿PR50推�
 
 ### Task A 2026-11-02 状态重新对齐
 
-Goal实际active；C前置闭环与原A产品验收分开。已验App冷登录/退出HTTP、Capability receiver；未验完整四旅程、Nest关闭/旧实现最终删除、最新base整合和同步E2E。IAM新测试候选在Root真实RED交接点，尚无运行结果；本轮不推进业务代码。执行顺序、owner、当前证据与估时缺口只在[唯一方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护；前述增量条目按对应基线视为历史，不再据旧候选状态覆盖最新结论。每仓独立PR，未完成前不merge main。
+Goal实际active；C前置闭环与原A产品验收分开。已验App冷登录/退出HTTP、Capability receiver；未验完整四旅程、Nest关闭/旧实现最终删除、最新base整合和同步E2E。IAM新测试候选在Root真实RED交接点，尚无运行结果；本轮不推进业务代码。执行顺序、owner、当前证据与估时缺口只在[唯一方案/TODO](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护；前述增量条目按对应基线视为历史，不再据旧候选状态覆盖最新结论。每仓独立PR，未完成前不merge main。
 
 T-05本轮接续实绩：Root已运行IAM新integration真实RED，1fail/10未选，失败为旧host不支持browser_fixture（ready已成功）。交原writer实现test-only协议，Root永久driver另一路先tests-only；真实GREEN、完整四旅程与最终闭环尚待。
 
@@ -17130,7 +17130,7 @@ T-05接收检查点：IAM1ee8d156已推原draft PR6，Root两host66pass/verify15
 
 Root dd447c68，Goal active；18 TODO分类11已验切片/2进行中/3等待/1开放/1门控，问题26项。IAM1ee8与永久driver均已交付，但正式四旅程cold_login账户入口不可见而超时，0/4；cleanup PASS不等于认证闭环。独立诊断确认HMR Upgrade14次404，I-26归T-05/T-13，下一动作是Root隔离代理精确HMR传输回归和修复，再跑原四旅程。主控旧交接文字滞后已修正，不等待用户再次批准。
 
-G0通过，G1/G2/G3均OPEN；Nest生命周期/raw删除、Capability最新base整合、Agent/最终组合门与可保留同步环境未齐。原A01～16责任保留，A01/A02/A07仍门控；完整A日期证据不足，旧C预算不滚动重置。唯一[方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)给出写区、关闭条件与下一检查点。本轮仅文档复核，未启动服务或修改业务代码；每仓独立原PR、不merge main。
+G0通过，G1/G2/G3均OPEN；Nest生命周期/raw删除、Capability最新base整合、Agent/最终组合门与可保留同步环境未齐。原A01～16责任保留，A01/A02/A07仍门控；完整A日期证据不足，旧C预算不滚动重置。唯一[方案/TODO](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)给出写区、关闭条件与下一检查点。本轮仅文档复核，未启动服务或修改业务代码；每仓独立原PR、不merge main。
 
 I-26本轮工程切片已获Root接收：原真实TLS握手101预期/404实际RED，最小代理修复双审后Root165定向/1959完整治理（3skip）通过，四文件停写hash保持。无产品认证或driver断言变更；下一动作精确提交后正式四旅程，G1仍OPEN。
 
@@ -17140,14 +17140,14 @@ I-26后正式run8160b600：冷登录账户入口/真实profile显示已过，进
 
 Goal active；34累计问题/18TODO分类不变。Root aec5775a精确App fdbb49f1/BFF105024d/IAM5fffe60，正式run2a960804d5cac08754f45228 native浏览器4/4、cleanup/credential scan通过，三服务source clean/gitlink/Node配对。I-30/I-34及Root场景边界调度已双审/主方全门：Root2005/3skip、App6411/0skip、BFF2350/2skip。不是私有副本收据，不代表所有仓库启动或常驻同步环境。
 
-I-29六份owner三面D0已通过、未实施native2；G1仍欠完整owner/consumer切换与I-31负控，故T-05继续IN_PROGRESS。下一步先IAM实现/正式artifact，再BFF迁全部消费者和删除生产回退；G2生命周期/删除、G3最终组合/同步环境仍OPEN。原A01～16保留，A01/A02/A07门控。唯一[方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护实际证据和下一动作。当前验收已终态，每仓原独立draft PR、不merge main/部署。
+I-29六份owner三面D0已通过、未实施native2；G1仍欠完整owner/consumer切换与I-31负控，故T-05继续IN_PROGRESS。下一步先IAM实现/正式artifact，再BFF迁全部消费者和删除生产回退；G2生命周期/删除、G3最终组合/同步环境仍OPEN。原A01～16保留，A01/A02/A07门控。唯一[方案/TODO](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护实际证据和下一动作。当前验收已终态，每仓原独立draft PR、不merge main/部署。
 
 
 ### Task A 2026-11-02 执行状态与Goal再核对
 
 机器Goal实查active；IAM唯一writer正在5fffe60基线的未提交候选上实施I-29，无环境/审批阻塞。上轮4/4收据再次读取passed，临时环境已回收；不代表所有仓库常驻或Task A闭环。BFF生产消费者只读盘点、IAM真实验收矩阵已交付，原A剩余量核量并行。旧“未实施”和I-33当前交接已纠正；具体桌面暂停原因没有调度日志证据。
 
-34累计问题/18TODO分类不变，G1/G2/G3仍OPEN；IAM当前定向结果仅阶段报告，待停写双审、主方真实PG/全门和正式artifact后进入BFF。当前候选45～70分钟为worker低置信度检查点预测，不是全A工期。完整A缺少原16项当前实现与验收核量，历史9～18人日仅C阶段旧预算，不滚动用作承诺。唯一[方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护后续执行；原A功能仍门控，每仓原独立PR、不merge main。
+34累计问题/18TODO分类不变，G1/G2/G3仍OPEN；IAM当前定向结果仅阶段报告，待停写双审、主方真实PG/全门和正式artifact后进入BFF。当前候选45～70分钟为worker低置信度检查点预测，不是全A工期。完整A缺少原16项当前实现与验收核量，历史9～18人日仅C阶段旧预算，不滚动用作承诺。唯一[方案/TODO](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护后续执行；原A功能仍门控，每仓原独立PR、不merge main。
 
 补充只读核量：I-29 BFF实际消费链约5～10工程人日（中低置信，仅本片含验收，不是全A或日历天）。原A16项已按证据分类，A07/A08明确有新增实现缺口，其他项各有现有成果及待修/待验/支持面缺口；本次不新增任何整项完成标记。详见唯一方案§5.1。
 
@@ -17161,7 +17161,7 @@ I-35中12失败为canonical非id表摘要/ADR-008 Session tombstone旧oracle，3
 
 ## 2026-11-02 当前检查点：测试价值处置与 SDK consumer
 
-以[唯一计划 §0.3 / I-36](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)为准。IAM 本地 cc3fbaf1 未推送；integration 484 与默认 1651 曾由主方执行通过，外部 consumer 1 PASS / 1 FAIL，Billing 旧凭据预期修复中。两路抽样证实重复与弱断言，不冒全量无冗余；风险承接后再删改。T-05/T-09 承接此项，Goal active，G1/G2/G3 OPEN，A 功能停写，每仓独立 PR、不 merge main。
+以[唯一计划 §0.3 / I-36](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)为准。IAM 本地 cc3fbaf1 未推送；integration 484 与默认 1651 曾由主方执行通过，外部 consumer 1 PASS / 1 FAIL，Billing 旧凭据预期修复中。两路抽样证实重复与弱断言，不冒全量无冗余；风险承接后再删改。T-05/T-09 承接此项，Goal active，G1/G2/G3 OPEN，A 功能停写，每仓独立 PR、不 merge main。
 
 
 ### 同日后续：I-38 内部认证边界重新核对
@@ -17251,7 +17251,7 @@ Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认�
 
 ### Task A 当前检查点（2026-11-03，G1收口与执行恢复）
 
-以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)及[CURRENT](CURRENT.md)为准。用户已恢复机器Goal active，主方实际核验；G1/T05当前冻结组合已验，G2/G3仍OPEN，A01/A02/A07停写。
+以[唯一技术方案 / Goal / TODO](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)及[CURRENT](CURRENT.md)为准。用户已恢复机器Goal active，主方实际核验；G1/T05当前冻结组合已验，G2/G3仍OPEN，A01/A02/A07停写。
 
 Root4e603743原正式五旅程、真实账户消费，以及真实Skill包生产全链/原BFF四GET和代表组合负控共同满足G1；主方及独审复核源码、收据、dist和DB清单保持，S3 exact版本/进程/自有资源已回收。Root2fc0436c是此前文档后继，不替换已验代码。不以数量或私有fixture代替旧smoke/R336、T17/C4与全产品验收。
 

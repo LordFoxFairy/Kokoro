@@ -114,16 +114,17 @@ Browser → kokoro-app same-origin adapter → kokoro-bff → owner services
 
 ## Git 与发布政策
 
-1. Root 和每个子仓 local/`origin` 只保留 `main`。
+1. 开发使用短期分支和正常 PR；合并后仅清理已交付、无后继改动的自有分支。不能为“只留 main”删除他人的工作或未合并依赖。
 2. 子仓先在自身完成 commit、验证与 push；Root 再提升精确 gitlink SHA。
 3. `.gitmodules` 的 `branch = main` 仅提示开发更新；组合发布由 gitlink SHA 锁定。
 4. 禁止把 `git submodule update --remote` 的浮动结果作为发布组合。
 
 ## 文档入口
 
-1. [当前状态](docs/CURRENT.md)
-2. [仓库组合状态](docs/REPOSITORY_STATUS.md)
-3. [代码地图](docs/CODEBASE_MAP.md)
-4. [Root 文档索引](docs/INDEX.md)
-5. [ADR-032：Submodule 组合与仓标识](docs/kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)
-6. [工程执行规则](AGENTS.md)
+1. [产品使用指南](apps/kokoro-app/developer-docs/docs/product/index.md)与[当前技术总览](docs/kokoro-handbook/technical/00-system-overview.md)
+2. [当前状态](docs/CURRENT.md)
+3. [仓库组合状态](docs/REPOSITORY_STATUS.md)
+4. [代码地图](docs/CODEBASE_MAP.md)
+5. [Root 文档索引](docs/INDEX.md)
+6. [ADR-032：Submodule 组合与仓标识](docs/kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)
+7. [工程执行规则](AGENTS.md)

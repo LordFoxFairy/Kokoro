@@ -1,3 +1,5 @@
+> 历史过程材料（Task A已收尾）：本页保留原设计／失败／验证事实，不再作为执行入口。现行边界见[当前技术总览](../../kokoro-handbook/technical/00-system-overview.md)，后继事项见[TODO](../../../todo.md)。
+
 # Task A G0 只读证据
 
 日期：2026-10-31（补充复核）
@@ -114,7 +116,7 @@ BFF 组合引用复核：`BffBusinessStore` 27 个引用文件、`PostgresBffRep
 
 - [清理重构技术方案](../specs/2026-10-30-task-a-cleanup-refactor-design.md)
 - [只读盘点清单](../specs/2026-10-30-task-a-cleanup-inventory.md)
-- [清理重构执行计划](../plans/2026-10-30-task-a-cleanup-refactor-execution.md)
+- [清理重构执行计划](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-10-30-task-a-cleanup-refactor-execution.md)
 
 ## G0 checklist
 
