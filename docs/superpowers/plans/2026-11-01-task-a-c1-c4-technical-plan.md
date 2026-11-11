@@ -6,6 +6,8 @@
 
 IAM #6、Admin #5、Storage #3 已合；本轮 Agent #46→`87577ea`、BFF #18→`8bead5c`、App #50→`af86159b` 正常 merge，保留精确已验提交。Root #66 收尾仍保留这些精确 pins，不机械换成 merge SHA。Capability #13 叠在其他 owner #12，两 PR／远端分支保持，不合 staging、不 retarget 带入 Task B。未变 Billing／System 沿继承 pin。清理前先私有归档唯一收据和原 App 无归属改动，不重跑未变的全量测试、不清卷、不部署。
 
+**收尾资料已归档／工作树已清退**：唯一验收目录压缩后逐项核 E2B 主收据和物理清理收据原 SHA，原 App 既存改动保留完整文件、基线、patch 和定向 stash，不混入本任务。原仓已具备全部 12 个精确提交且按 Root pins 同步。Task A Root／两验证工作树、4 个旧本地 runner 目录、退役验证 venv 及 envd 容器／测试镜像已清；他人工作树及共享服务／数据卷不动。定时 Task A 自动任务已删除。最终 Root PR 合并后切 main、删除自有已合并分支并核 clean，由主控最终回执确认；下轮项见唯一 TODO。
+
 下方为原设计门与历史实施证据；最新状态以 `todo.md`／CURRENT 顶部为准。
 
 ## 2026-11-10 · A‑10 已交付成果树执行门
