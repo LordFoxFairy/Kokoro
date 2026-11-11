@@ -14,7 +14,7 @@
 
 ## 当前阅读入口
 
-- [产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)：实际工作台操作及支持限制，源自现有公开门户，不新建站点。
+- [产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/product/index.md)：实际工作台操作及支持限制，源自现有公开门户，不新建站点。
 - [PRD](product/09-v2-prd.md)：已批准需求；[当前技术总览](technical/00-system-overview.md)：实际 owner、认证、执行／事件／文件／调度链。
 - [CURRENT](../CURRENT.md) 与 [Task A TODO](../../todo.md)：当前交付事实和暂存项。Task B 保留独立负责人，不用 Task A 结论代替其验收。
 

@@ -2,7 +2,7 @@
 
 核对日期：2026-11-11 UTC。本文描述 Task A 已交付的实际边界，替代旧三主仓／独立 Session 服务／临时认证引用方案。它是工程首读页，不是另一份可编辑 API、SQL 或状态机契约。
 
-当前产品操作见 [App 文档门户](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)；批准的产品要求见 [PRD](../product/09-v2-prd.md)；当前组合及暂存项分别见 [CURRENT](../../CURRENT.md)、[TODO](../../../todo.md)。
+当前产品操作见 [App 文档门户](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/product/index.md)；批准的产品要求见 [PRD](../product/09-v2-prd.md)；当前组合及暂存项分别见 [CURRENT](../../CURRENT.md)、[TODO](../../../todo.md)。
 
 ## 1. 一条产品链，不再保留旧入口
 
