@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import re
 import runpy
-import subprocess
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -65,20 +63,6 @@ def test_model_retirement_keeps_it_out_of_active_composition() -> None:
     clone = (ROOT / "deploy/clone-active-repositories.sh").read_text()
     assert '"kokoro-model|kokoro-model"' not in clone
 
-
-def test_unsafe_legacy_runners_are_paused_before_touching_infrastructure() -> None:
-    for relative, interpreter in (
-        ("scripts/e2e/run_stage2_owner_health.py", sys.executable),
-        ("scripts/verify-ten-repository-full.sh", "bash"),
-    ):
-        path = ROOT / relative
-        source = path.read_text()
-        assert "FLUSHDB" not in source and "DROP DATABASE" not in source
-        assert "VERIFICATION_ENTRY_PAUSED" in source
-        result = subprocess.run([interpreter, str(path)], capture_output=True, text=True, timeout=5)
-        assert result.returncode == 2
-        assert "VERIFICATION_ENTRY_PAUSED" in result.stderr
-        assert "run_system_owner_smoke.py" in result.stderr
 
 
 def test_codebase_map_keeps_scheduler_postgres_truth() -> None:

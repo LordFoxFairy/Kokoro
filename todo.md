@@ -1,4 +1,4 @@
-# Task A · 收尾与后续 TODO（2026-11-11 UTC）
+# Kokoro · 当前维护与暂存 TODO
 
 ## 当前裁决与范围
 
@@ -56,3 +56,18 @@
 - [x] App文档PR #52已合main，Root固定已验精确提交 `1fed28b8`，93项App来源用实际Git blobs核对；拓扑、15条契约边／0违例、原checkpoint及相关Root治理通过。
 
 本轮Root文档PR正常合并后同步main并清理仅本轮自有分支，最终状态以该PR／主控收尾回执为准；不动Task B，不部署。
+
+## 仓库维护首批（2026-11-11，独立于已交付 Task A）
+
+范围只含确认无消费者的删除与模块导出收敛，不新增层／协议／Schema，不重开Task A，也不接手Task B。
+
+- [x] Root：退役3个失效或仅报错占位的验证入口及其过时暂停测试，修正脚本入口索引。
+- [x] BFF：删除旧Agent列表投影死链及两个无消费者路由判断包装；现役读取／AG-UI／System投影保持，原PR #19已合main，精确已验提交 `0895e254`。
+- [x] Web：删除未使用的定时时间formatter，两个仅模块内使用的门户函数不再export；原PR #53已合main，精确已验提交 `b93acbd8`。
+- [x] 相关验证：BFF lint／类型／build和330项定向Chat／AG-UI／Nest架构回归通过；Web相关lint、108项定时/UI、类型与门户完整检查通过；Root治理／checkpoint312项及最终拓扑6项通过。入口调用最初漏tsx loader，按正规命令重跑通过；无源代码迁就测试。
+
+用户已确认沿用各仓PR合main并清理本轮分支。Root固定上述精确交付、按383项App/BFF来源引用读取实际Git blobs；15条契约边／0违例及原checkpoint通过。Root最终合并与分支清理由本轮PR／主控收尾回执确认。
+
+开发缓存：App旧Next dev生成类型引用三条已退役认证路由；确认无dev lock占用后只归档移除这份过期类型缓存，正规typegen／类型检查通过。不修改tsconfig、不恢复旧认证、不动其它预览／共享资源。
+
+不动：完整分页核对发现BFF `infrastructure/clients/agent/projection.ts` 与Task B PR #17重叠，故本轮排除；Skills／MCP／Custom API／账户／团队／管理等Task B业务与其PR保留。其它所谓legacy入口若仍有真实调用，不因命名删除。
