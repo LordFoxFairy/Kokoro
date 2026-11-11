@@ -1,5 +1,11 @@
 # Current Facts
 
+## 十轮定向维护审查完成，修复待推进（2026-11-11）
+
+基线7274322c的十个风险面已由三名只读代理和主控抽样核验，非全源码逐行审计。去重后新增四项：R-13项目业务／完成回执非原子、R-14 OAuth DNS pin跨授权驻留、R-15 Web聚合门重复跑同批测试、R-16 main-only工具误判合法组合／他人分支。主控已复核真实调用，并以本地doubles／DNS白盒／治理fixture验证关键反例；未运行真实PG故障集成、外部OAuth、浏览器或全套。没有业务源码／gitlink变更，不能写成已修复。
+
+先处理无Task B文件碰撞的R-13／R-16；R-14／R-15与他人当前写区关联，只交原owner，不动其PR。证据、最小修法与验收见[审计§12](reports/2026-11-11-typescript-auth-admin-audit.md#12-十轮定向维护审查)，状态只维护[TODO](../todo.md)。已交付Task A不重开，旧问题不重复计数，不再机械重复十轮。
+
 ## PR收尾纠偏与IAM候选交付（2026-11-11）
 
 全13仓实查原有8个OPEN，不再将“当轮PR完成”笼统称“所有子仓main交付完成”。现System #2、Billing #4已核独立owner证据并通过原PR正常合main（0a4e7932／43a60920），远程候选分支已清理；Root原精确源码pins49a5f8e／b7c98588保持并已main可达。用户确认后，我们的Task A Capability #13已正常合入其原接收分支，merge `e068fcaaeb0c40e1119ce88760f568a94bf0859c`；剩5个为Task B／其配对依赖，均不操作。#12保持OPEN／Draft，不合main；本次没有修改其PR元数据。#13合并树与24094960源码树全等且祖先可达，Root pin保持，自有远程分支已删除、本地无同名分支。详细证据／出口见[审计§11](reports/2026-11-11-typescript-auth-admin-audit.md#11-远程pr收尾复核2026-11-11)和[唯一TODO](../todo.md)。旧PR说明已纠正；远端失败CI是账户账单导致job未启动，不称通过、不绕保护。
