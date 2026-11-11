@@ -1,12 +1,12 @@
 # Kokoro repository composition
 
-状态：2026-09-20。Root 是 Git superproject：它只锁定子仓的精确 gitlink、维护跨仓治理与组合验证；每个子仓独立拥有代码、依赖锁、契约、数据、测试、CI 和发布。当前 phase-one 治理收敛记录见 [repository-governance reconciliation plan](superpowers/plans/2026-09-20-repository-governance-reconciliation-and-hygiene.md)，当前组合 SHA 与实测质量队列见 [CURRENT.md](CURRENT.md)。
+核对：2026-11-11。Root 是 Git superproject：只锁定子仓精确 gitlink、维护跨仓治理与组合验证；每个子仓独立拥有代码、依赖锁、契约、数据、测试、CI 和发布。当前共有 **12 个子仓，连同 Root 共 13 个 Git 仓库**；其中10个子仓以TypeScript为主，Agent为Python，Scheduler为Go。当前链路先读[技术总览](kokoro-handbook/technical/00-system-overview.md)，维护候选见[审计报告](reports/2026-11-11-typescript-auth-admin-audit.md)，执行项只维护[TODO](../todo.md)。下方带日期的旧验收与候选表只作历史证据，不覆盖当前gitlink。
 
 ## 组合清单
 
 | Root 路径 | GitHub 仓库 | 分类 | 唯一职责 |
 |---|---|---|---|
-| `apps/kokoro-app` | `LordFoxFairy/kokoro-app` | deployable Web | Web UI、浏览器状态、HttpOnly session、同源 adapter |
+| `apps/kokoro-app` | `LordFoxFairy/kokoro-app` | deployable Web | Web UI、浏览器状态、原生登录同源薄 adapter；Session事实归IAM |
 | `apps/kokoro-mori` | `LordFoxFairy/kokoro-mori` | deployable Web | Mori 音乐产品 UI |
 | `apps/kokoro-bff` | `LordFoxFairy/kokoro-bff` | service | Conversation、Message、Share、Project、ScheduledTask、公开 Product API、durable AG-UI projection |
 | `apps/kokoro-agent` | `LordFoxFairy/kokoro-agent` | service | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL、Evidence |
@@ -16,13 +16,14 @@
 | `apps/kokoro-capability` | `LordFoxFairy/kokoro-capability` | service | Skills 与 MCP control plane |
 | `apps/kokoro-storage` | `LordFoxFairy/kokoro-storage` | service | Blob、Upload、Asset、Artifact、Scan、object lifecycle metadata |
 | `apps/kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | service | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch |
-| `libs/kokoro-web-shared` | `LordFoxFairy/kokoro-web-shared` | versioned library | 独立发布的共享前端包 |
+| `libs/kokoro-web-shared` | `LordFoxFairy/kokoro-web-shared` | versioned library | 共享前端包；当前私有源码消费，统一版本发布与App副本收敛另列维护项 |
+| `apps/kokoro-admin` | `LordFoxFairy/kokoro-admin` | deployable Web | 同源 `/manage` 管理前端，复用 Product 登录，不拥有第二套Session或业务数据库 |
 
 `kokoro-app` 是 Web 仓的唯一 Git 标识；Root 不使用 `kokoro/` 或 `apps/kokoro/` 作为 alias。`kokoro-mori-p1-arrangement-recording` 是已移除的 Mori worktree，不是仓库或 submodule。`kokoro-model` 已合入 System model-catalog，不在组合清单中；Capability→Platform 的独立 clean-slate cutover 尚未发生。
 
 ## Git 与版本政策
 
-1. Root 与所有子仓本地、`origin` 只保留 `main`；每个 gitlink 锁定精确、已推送的 commit。当前精确 SHA 在 [CURRENT.md](CURRENT.md#已锁定的组合) 记录。
+1. `main` 是集成基线；开发沿短期分支／PR推进，合并且无未交接工作后再清理自有分支，不删除他人未合并工作。每个gitlink固定精确、已推送的提交，以Root Git树为准；状态说明见[CURRENT](CURRENT.md)。
 2. `.gitmodules` 的 `branch = main` 仅作更新提示，不能替代 gitlink 发布锁。
 3. 子仓先独立 commit、验证、推送；随后才更新 Root gitlink 并执行组合验证。禁止用 `git submodule update --remote` 形成浮动发布快照。
 4. Root 不建立跨仓 `pnpm-workspace.yaml`、共享语言 lockfile、共享 ORM schema、可编辑 contract 副本或 sibling source import。
@@ -33,7 +34,7 @@
 - Root `scripts/tests/` 只测试 Root 自己的拓扑与治理脚本；未来跨仓组合 contract/integration/e2e/smoke 归 `verification/`，不复制子仓测试。
 - 系统拓扑、跨仓 ADR、组合版本、部署、回滚与组合验证归 Root；业务 API、SQL schema、运行手册归事实 owner 子仓。
 
-## 验证入口与当前判定
+## 验证入口与结果口径
 
 ```bash
 git submodule update --init --recursive
@@ -43,7 +44,7 @@ python3 -m pytest scripts/tests -q
 python3 scripts/verify-ten-repository-standard.py --format json
 ```
 
-2026-09-20 的组合验证中，前三项分别为 `PASS`、`PASS`、`322 passed`。最后一项报告 `110` 个 owner violation 和 `1` 个 System TypeScript `unverified`，因此其 JSON status 是 `FAIL`；这是可见的逐仓收敛队列，而非组合拓扑或 main-only 失败，也不允许被表述为全仓质量完成。
+2026-11-11固定组合 `32c56199` 的拓扑检查PASS，能识别12子仓；脚本中的runtime_module_count=9不是Git仓库总数。旧ten-repository-standard实际只覆盖9子仓，本轮报告FAIL／414条原始规则记录／0 unverified，包含原生协议误报和解析能力不足，不是414个已确认缺陷。逐项证据与未运行范围见上述审计报告。历史2026-09-20的322项与110条规则记录不作为当前通过／失败证明；治理预检不代替owner行为验收。
 
 完整 clone 的复现命令与远端标识规则见 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)。
 
