@@ -451,3 +451,29 @@ Root治理153项及Ruff主控复验通过；新实际IAM pin对应的4条来源�
 3. 本轮十个风险面已有可追溯结论，停止继续机械扫描。后续修复只回归受影响风险；新证据改变判断时更新原条目，不再启动重复十轮。
 
 状态仅维护[唯一TODO](../../todo.md)；本次扫描完成不等于上述修复完成，也不重开已交付Task A。未改业务源码／gitlink／Schema／依赖、未部署、未操作他人PR。
+
+
+## 13. R-13／R-16最小修复执行（2026-11-11）
+
+用户确认只闭环R-13、R-16，沿自己的PR合main并清理，Task B不动。基线Root0643c551、BFF main c358e403（树与原pin00a9ebee相同）。BFF唯一writer负责Project局部实现和独占PG回归；主控负责Root、资源、验收和Git；另两名只读代理分别复核事务与退役范围。
+
+R-13采用现BFF owner内本地PG事务，不增Schema／token／第二套receipt adapter：外层保留claim及pending语义，业务事务先锁并重读receipt，匹配pending才执行业务与完成回执；已完成同fingerprint只回放，异fingerprint冲突，缺行不得补造成功。锁覆盖业务，60秒接管无法越过；失败整事务回滚，COMMIT ACK未知不删除持久终态，不盲重做。成功仅在提交后发送，现准入／owner／slug／错误语义不退化。项目store与现receipt repository复用同client，不复制通用claim SQL或重写其他消费者。
+
+R-16删除一次性main-only脚本及当前复现命令，改正ADR现行分支说明但保留历史PASS。现有拓扑入口承接精确pin身份，定向合法／错pin反例保护该边界，不新建通用扫描器。历史CODEBASE_MAP／旧计划中的原始记录不批量改写。
+
+写区已对照Task B最新完整文件清单：BFF旧business-store集成、通用idempotency测试、owner技术设计等重叠文件不写；新项目PG回归使用独占临时库，沿现Project fixture组织，不新建共享服务。Root此报告记录已批准的局部事务决定，不另造重复技术方案。R-14／R-15继续原owner交接，未授权扩入本轮。
+
+上述为实施前裁决；实际停写验收与交付结果如下。
+
+
+### 停写验收与交付回执
+
+- **R-13交付：** BFF精确源码`a3e190623183d56f95960d8b6feb89a84fda1ece`经自有[PR #21](https://github.com/LordFoxFairy/kokoro-bff/pull/21)正常merge main（58222407a64c66b57069f05ae618050d58a7b063）；合并树与已验源全等。自有本地／远程分支已删，checkout回到Root精确源。生产只改Project store、native handler和receipt repository的queryable构造类型；Schema、wire、依赖及通用receipt行为不变。
+- **真实RED保留：** 首轮独占PG触发器令完成receipt失败，create后仍残留1个project、instruction仍为older，正确复现缺陷而非测试装配失败。修复后主控独立真实PG回归9通过／0失败／0跳过，覆盖业务／revision回滚、同key原结果、HTTP成功响应丢失、真实COMMIT已执行后注入确认异常、同／异fingerprint过期claim及行锁阻挡reclaim。fixture只起测试HTTP、复用正式provider factory／middleware；IAM准入为明确替身，非完整Nest或真实IAM浏览器链。
+- **主控相关门：** build、lint、typecheck及五文件格式通过；现有idempotency、native admission、Nest feature、user admission和BFF五文件78通过／0失败／0跳过。未重复全默认或完整产品旅程，不冒称其它历史门已全绿。独立事务与最终fixture审查CLEAR。
+- **新增失败与修正：** 主控首次扩大focused为77通过／1失败：旧revoked-session fixture只mock create且禁止PG，与新事务边界未接线。没有生产回退、删断言或缩小用例；仅在该case局部mock原有withReceipt并沿同receipt对象保存，最终78通过。该文件与Task B名单重叠，但主控核过其实际三个diff区只涉credential／Share／末尾Admin，该case及helper不在其中；本轮所有原断言／helper和Task B实际改动均未改。BFF #17仍OPEN／Draft、head保持1e6765b3。
+- **资源：** 本轮所有PG临时库由fixture独立创建／注销；主控数据库库存102→102，本轮前缀库剩余0，未重置共享PG／Redis、未启动产品服务。真实集成重跑命令为`KOKORO_TEST_POSTGRES_ADMIN_URL=... node --import tsx --test --test-concurrency=1 test/project-mutation-receipt.integration.mjs`（在BFF运行，先正规build）；不修改Task B重叠的package入口。
+- **R-16验收：** 删除旧脚本、四处当前入口／政策说明已纠正，历史ADR §4.1验收事实保留；其中两条既存失效CURRENT锚点已核原Git内容并固定到4addb02c历史快照，不把过去PASS移作当前证明。旧checker合法fixture RED被保留为失败证据；现拓扑8项及Ruff通过。新增两项用真实本地Git＋bare origin证明detached与他人topic合法，错SHA仍FAIL，不访问远端或删除他人分支。独立退役审查CLEAR。
+- **Root组合：** 290项BFF来源引用按232个真实提交blob重算，不机械替换摘要；当前拓扑PASS、15条契约边／0违例、原checkpoint PASS。Root本次自有PR承载R-16、精确gitlink、inventory和台账，不接管Task B；最终合main／分支清理随对应Git回执确认。
+
+只闭环R-13／R-16。R-14／R-15及既有其它维护项未借本轮勾掉；未部署，未将未运行CI记通过。
