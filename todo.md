@@ -1,6 +1,22 @@
 # Kokoro · 当前维护与暂存 TODO
 
-## 当前裁决与范围
+## 当前执行：认证边界与旧代码维护（2026-11-11）
+
+已交付Task A不重开，Task B保持原负责人。本轮用户已要求从只读报告进入最小修复；依据[审计及本轮执行范围](docs/reports/2026-11-11-typescript-auth-admin-audit.md#8-后续执行2026-11-11)，不再新建第二份计划／任务表。
+
+- [x] 主控：核准13仓／10个TS子仓的组合事实；完整分页核BFF PR17的598条文件范围，避开其幂等测试／package／README／CURRENT等重叠写区。
+- [x] BFF writer：R-12用现个人上传接线先RED（Map 1≠0），持久提交成功后直接返回；主控定向14例、独立纯Map commit／快照／回放／冲突探针、lint／类型／build通过，独审CLEAR。原PR #20已合main，精确源码 `00a9ebee`。
+- [x] Admin writer：R-10删除无消费者的旧独立登录env、专属测试与未使用传输包装，101行；主控9文件64例、lint、正规typegen／非增量types、webpack build和构建后types通过，独审CLEAR。原PR #6已合main，精确源码 `9bed3d2a`；实际登录、菜单与Task B不动。
+- [x] 主控：纠正BFF现役AGENTS的旧IAM0.7／人类Bearer叙述；修正Root漏Admin和main-only过期入口。
+- [x] 认证审计负责人：逐实际caller未发现普通内部机器换票活链，保留真实外部OAuth与业务在线权限。旧Admin OAuth不可达允许表与Task B重叠、Billing旧总factory仅测试消费者，列报告§9后继，不抢写。最近日志止于10/20且无源码SHA，只作历史诊断。
+- [x] 主控：停写diff、消费者及交叉只读审查完成；子仓按原授权逐PR合main，来源按290项引用／232个实际Git blobs重核，不改机器契约。
+- [x] 主控：Root精确组合、15条契约边／0违例、原checkpoint、相关拓扑回归与文档来源链接核验通过，由本轮Root PR承载；最终合并和自有分支清理以关联PR及主控Git回执为准，不代表IAM／Admin后继候选已修。不部署、不操作Task B PR。
+
+后继候选：IAM R-01／R-02／R-04先与Task B确认当前实现和写权；Admin功能接线归B-13；Mori、shared包、contract check分别按owner排期，不因OAuth关键字或扫描数字机械删除。
+
+失败口径保留：Admin初次types因旧Next生成物引用已删登录路由失败，只私有归档两份过期类型并正规重生成后通过；未改tsconfig或恢复旧路由。Root在暂存新gitlink前的组合检查正确拒绝旧index／新来源不配对，暂存精确pins后重新验证；未放宽校验。现有Vite config-loader提示为非阻断旧警告，未声称全部工具噪声已清。
+
+## 已交付 Task A 的裁决与范围
 
 用户最新确认：**本地 Docker E2B 协议验收通过后，Task A 按本次开发交付口径完成；其余真实账号／语音验收暂存下轮 TODO。** 本轮通过原 PR 合入 `main` 并清理 Task A 本地分支／工作树，不部署、不做真实支付。Task B 由其他人负责，不接手其 PR、分支或工作树。
 

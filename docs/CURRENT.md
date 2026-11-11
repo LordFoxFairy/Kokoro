@@ -1,5 +1,13 @@
 # Current Facts
 
+## 认证边界与旧代码维护（2026-11-11，子仓已交付）
+
+本轮从[审计报告](reports/2026-11-11-typescript-auth-admin-audit.md)进入最小修复，执行状态只维护[TODO](../todo.md)。普通内部调用未发现主动client_credentials／token换票现役caller；直接服务凭据、第三方OAuth和在线业务权限是不同边界，不按关键字删除。
+
+BFF修复持久幂等回执仍重复留在无界Map的问题：现上传接线先RED，再一行返回修复，主控Node24定向14项、纯Map直接行为探针、lint／类型／build通过。Admin只删除无消费者的旧独立登录配置、专属测试和传输包装；主控归档移除两份过期Next类型缓存，正规typegen、非增量types及webpack build通过，未恢复旧登录路由／改tsconfig。后台菜单与Task B功能不动。
+
+Root组合入口补齐Admin、纠正main-only过期叙述；BFF AGENTS纠正旧IAM0.7／人类Bearer指引。BFF #20、Admin #6已正常合main，Root锁已验源码 `00a9ebee`／`9bed3d2a`，290项来源引用按232个实际Git blobs重核；Root最终合并与清理随本轮PR交付，不提前冒称。IAM限流／批量撤销和Admin功能接线保留后继owner交接，不冒本轮已修全部问题。未部署、未改Schema／公开契约、未重跑Task A全量。
+
 ## 仓库维护首批（2026-11-11，America/New_York）
 
 这是Task A交付后的局部维护，不重开Task A、不接手Task B，不改变API／SQL／依赖或运行语义。删除3个无可运行目标的旧验证入口；BFF移除无消费者Agent列表投影及两个路由判断包装，现役System投影与handler字节不变；Web删除未使用formatter、收窄两个模块内helper导出。
