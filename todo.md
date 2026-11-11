@@ -1,5 +1,27 @@
 # Kokoro · 当前维护与暂存 TODO
 
+## 当前优先级纠偏：远程 PR 与 main 交付收尾（2026-11-11）
+
+用户指出远程PR仍多，当前先收口交付债务，不继续扩展新代码。**“本轮PR已合并／Root固定组合已验”不等于“所有子仓都已完成main交付”。** 全部13仓初查8个OPEN，现已将System #2／Billing #4正常合main，余6个；明细见[报告§11](docs/reports/2026-11-11-typescript-auth-admin-audit.md#11-远程pr收尾复核2026-11-11)。Task B按原负责人保留，不为清零擅自合并／关闭。
+
+- [x] 主控：逐仓查OPEN、fetch精确main／head／base，核Root当前pins；8个head均未成为main祖先，没有仅凭PR数量可直接关闭的依据。
+- [x] 主控：承认Capability #13是我们的Task A遗留；修正其PR描述中“最新base未集成”等过时内容，保持真实stack，不伪写合并状态。
+- [ ] Task A收尾：Capability #12先由其owner交付main，再复核／retarget／验收合入我们的#13，最后核Root精确组合并删自有分支。当前#13相对#12仍有11个独有提交，不直接close或整包带入#12。
+- [x] 主控：System #2／Billing #4已通过原PR正常合main，merge分别 `0a4e7932`／`43a60920`；196／426个交付输入逐项核Git相等，复用精确历史验收，独立代码审查／最终文档复核完成。CI因账户账单未启动不称通过，未绕保护、未重复真实资金旅程；两个候选远端分支已清理，Root原已验源码pins不变且现已在main可达。
+- [x] 在手维护：先完成上述历史PR收口，再将原已停写IAM候选经主控验收与原PR #7合main；未增加新切片。Root本次PR承载组合校验／报告与TODO，最终合并清理按Git回执确认，不借此勾掉Capability #13。
+
+## 当前执行：IAM 可用性与会话撤销修复（2026-11-11）
+
+用户同意继续修复，复用[审计报告§10](docs/reports/2026-11-11-typescript-auth-admin-audit.md#10-iam后继修复设计门2026-11-11)，不新建第二套任务中心。IAM唯一writer负责源码／对应测试／owner当前说明，主控负责边界、资源与验收；另外两名agent只读复核。Task B保持其PR和功能写区，不部署。
+
+- [x] 主控：Root／IAM clean、fetch后main身份已核；IAM当前无open PR，main树与原已验pin相同。本轮沿codex/iam-maintenance短分支实施，不直接写main。
+- [x] IAM writer／主控：R-01普通BFF owner可信actor分桶100/60、R-02同事务keyset批量撤销、R-04读取5秒／HTTP响应30秒及迟到结果退休已实现，独审与主控验收通过；保其它认证分支、rotation/CAS、墓碑子token、整批回滚及unknown副作用边界。
+- [x] Root治理writer／主控：不变SDK发行锚与runtime pin解耦，原独立归档摘要、SDK整树／合同相等、祖先／lock／SRI／dirty／repack负控保持；相关153项、Ruff和当前真实15条契约边／0违例、原checkpoint通过。不改Task B消费者或伪造provenance。
+- [x] 主控：前置格式／lint／类型／合同生成／breaking／SDK检查通过；首次默认唯一失败为旧源码Math.min字面oracle，保留AST唯一writer并由现行为／真PG承接后默认1631通过、build通过；真实隔离PG3文件24通过，库存102→102，无共享数据重置。未用源码字符串迁就旧逐行SQL。
+- [x] IAM 原PR #7已正常合main，精确已验源码 `cee88df4`；Root本次PR固定该提交并承载报告／TODO，最终自有分支清理以主控Git回执确认。未部署、不合Task B；新核的get-session源IP容量仍OPEN，不声称所有候选已全修。
+
+新核实的边界：官方get-session按源IP／路径100/60计数，BFF汇聚请求可能继续共享；它与普通业务actor桶是两层。本轮不随意把阈值调高、不伪称整条准入限流已全修，后续需按真实拓扑／容量明确策略。后台功能接线仍归Task B。
+
 ## 当前执行：认证边界与旧代码维护（2026-11-11）
 
 已交付Task A不重开，Task B保持原负责人。本轮用户已要求从只读报告进入最小修复；依据[审计及本轮执行范围](docs/reports/2026-11-11-typescript-auth-admin-audit.md#8-后续执行2026-11-11)，不再新建第二份计划／任务表。
@@ -57,7 +79,7 @@
 ## 清理保护边界
 
 - Task B Root #67、App #49，及独立 BFF #17／Storage #2／Capability #12 和其他人的 Skills／MCP 工作树不动。
-- 继承的 Billing／System 精确 pin 不在各自 main，不借 Task A 合并其独立工作；保持 Root 锁定版本。
+- Billing／System精确源码pins保持；2026-11-11另按独立owner证据通过原PR #4／#2完成main交付，不据此勾掉Task B产品范围。
 - 原仓 App 登录失败页的既存未提交修改已保存完整文件、基线与二进制补丁；先核摘要再仅恢复该路径，不整仓 reset。
 - 唯一私有验收资料、失败证据与必要复跑脚本迁出任务工作树后再清理，机密不进 Git。GitHub CI 因账户账单／额度未启动，未称 CI 通过、不绕分支保护。
 

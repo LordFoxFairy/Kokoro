@@ -1560,6 +1560,7 @@ snapshots:
 """.encode(),
         contract_path: json_bytes({"openapi": "3.1.0", "info": {"version": version}}),
         config_path: b'export const input = "../contract/openapi/iam.internal.v1.json";\n',
+        "sdk/src/index.ts": b"export {};\n",
         sdk_manifest_path: json_bytes(
             {
                 "name": package,
@@ -1600,7 +1601,11 @@ snapshots:
         (owner_sha, version): sha256(official_archive).hexdigest()
     }
 
-    if drift == "matching_wrong_contract":
+    if drift == "unknown_release_source":
+        provenance["source"]["commit"] = "0" * 40
+    elif drift == "dirty_source":
+        provenance["source"]["dirty"] = True
+    elif drift == "matching_wrong_contract":
         provenance["contract"]["sha256"] = "0" * 64
     elif drift == "matching_wrong_owner_config":
         provenance["generator"]["config_sha256"] = "0" * 64
@@ -1757,6 +1762,109 @@ snapshots:
     return edge
 
 
+def advance_iam_archive_runtime(
+    fixture: InventoryFixture,
+    edge: dict[str, object],
+    files: dict[str, bytes],
+    *,
+    unrelated: bool = False,
+) -> str:
+    repository = fixture.root / "apps/kokoro-iam"
+    if unrelated:
+        run(repository, "git", "checkout", "--orphan", "unrelated-runtime")
+    for relative, content in files.items():
+        path = repository / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    run(repository, "git", "add", *files)
+    run(repository, "git", "commit", "-m", "test: advance IAM runtime")
+    current = run(repository, "git", "rev-parse", "HEAD")
+    edge["owner"]["repository_commit"] = current
+    edge["owner"]["contract_sha256"] = sha256(
+        fixture.module.git_blob(
+            fixture.root, "apps/kokoro-iam", current, fixture.module.IAM_OPENAPI
+        )
+    ).hexdigest()
+    for reference in [*edge["evidence"], *edge["version_assertions"]]:
+        if reference["repository_path"] == "apps/kokoro-iam":
+            reference["repository_commit"] = current
+            reference["sha256"] = sha256(
+                fixture.module.git_blob(
+                    fixture.root, "apps/kokoro-iam", current, reference["path"]
+                )
+            ).hexdigest()
+    run(
+        fixture.root,
+        "git",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "160000",
+        current,
+        "apps/kokoro-iam",
+    )
+    return current
+
+
+def test_capability_iam_archive_keeps_verified_release_after_private_runtime_change(
+    fixture,
+) -> None:
+    edge = use_capability_iam_sdk_archive(fixture)
+    release = edge["owner"]["repository_commit"]
+
+    current = advance_iam_archive_runtime(
+        fixture, edge, {"src/private-guard.ts": b"export const bounded = true;\n"}
+    )
+
+    assert current != release
+    assert fixture.verify() == []
+
+
+@pytest.mark.parametrize(
+    ("path", "content", "diagnostic"),
+    [
+        ("sdk/src/index.ts", b"export const changed = true;\n", "SDK source tree"),
+        (
+            "contract/openapi/iam.internal.v1.json",
+            b'{"openapi":"3.1.0","info":{"version":"0.21.0"}}\n\n',
+            "provenance",
+        ),
+    ],
+)
+def test_capability_iam_archive_rejects_runtime_sdk_or_contract_drift(
+    fixture, path: str, content: bytes, diagnostic: str
+) -> None:
+    edge = use_capability_iam_sdk_archive(fixture)
+    advance_iam_archive_runtime(fixture, edge, {path: content})
+
+    errors = fixture.verify()
+    assert any(diagnostic in error for error in errors), errors
+
+
+def test_capability_iam_archive_requires_release_source_to_be_runtime_ancestor(
+    fixture,
+) -> None:
+    edge = use_capability_iam_sdk_archive(fixture)
+    advance_iam_archive_runtime(
+        fixture,
+        edge,
+        {"src/private-guard.ts": b"export const unrelated = true;\n"},
+        unrelated=True,
+    )
+
+    errors = fixture.verify()
+    assert any("ancestor" in error for error in errors), errors
+
+
+def test_capability_iam_archive_rejects_unknown_provenance_release_source(
+    fixture,
+) -> None:
+    use_capability_iam_sdk_archive(fixture, drift="unknown_release_source")
+
+    errors = fixture.verify()
+    assert any("archive" in error.lower() for error in errors), errors
+
+
 def test_capability_iam_sdk_archive_accepts_exact_owner_and_file_lock(fixture) -> None:
     use_capability_iam_sdk_archive(fixture)
 
@@ -1787,6 +1895,7 @@ def test_capability_iam_sdk_archive_assertion_is_edge_local(
 @pytest.mark.parametrize(
     ("drift", "diagnostic"),
     [
+        ("dirty_source", "provenance"),
         ("matching_wrong_contract", "provenance"),
         ("matching_wrong_owner_config", "provenance"),
         ("matching_wrong_owner_lock", "provenance"),
