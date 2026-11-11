@@ -5,6 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
+- 当前执行状态先读[唯一TODO](../../todo.md)和[最新盘点§14](#14-剩余问题盘点与最小维护批次)；第1～7节是原始快照，不把已修问题继续当当前故障。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -477,3 +478,30 @@ R-16删除一次性main-only脚本及当前复现命令，改正ADR现行分支�
 - **Root组合：** 290项BFF来源引用按232个真实提交blob重算，不机械替换摘要；当前拓扑PASS、15条契约边／0违例、原checkpoint PASS。Root本次自有PR承载R-16、精确gitlink、inventory和台账，不接管Task B；最终合main／分支清理随对应Git回执确认。
 
 只闭环R-13／R-16。R-14／R-15及既有其它维护项未借本轮勾掉；未部署，未将未运行CI记通过。
+
+
+## 14. 剩余问题盘点与最小维护批次
+
+日期：2026-11-11（America/New_York）。起点Root `f0efcb879b35ae852261372692cd743158b7758b`，不重复十轮扫描。对既有R-01～R-16按已提交事实去重：已闭环R-01／R-02／R-04／R-10／R-12／R-13／R-16共7项；仍有遗留R-03／R-05／R-06／R-07／R-08／R-09／R-11／R-14／R-15共9项，其中R-08已部分完成。这是维护问题范围，不是九起已发生事故。
+
+此外，§9的BFF旧Admin允许表、Billing旧总factory是两条旧代码清理候选，不再包装成新增编号；容量策略、非合作副作用语义及用户暂存外部验收分别保留，不混算故障数。唯一执行状态已整理为[当前TODO](../../todo.md)，旧重复完成记录由Git历史和本报告承接，不再占据当前队列。
+
+本轮只处理三片：R-08的App／Billing文档余项；无生产caller的Billing总factory及只保护退役模式的分支／类型；R-11的Mori工具依赖分片。Billing生产Personal／Catalog及真实JWT/JWKS、operator保障不变；有效旧测试迁现役入口或复用已有保护，不以减少数量为目标。Mori仅固定已锁plugin-react6.1.1和Node22类型22.20.1，不改运行依赖、Node要求或pnpm11.2.2。App仅改两篇工程README，不迁共享包、不改业务／依赖。
+
+三owner均从fetch后的main树开始，原Root pins与main树相同：Billing43a60920（原pinb7c98588）、Mori12a10608、Appe3ece750（原pinb93acbd8）。App #49全分页287路径不含两篇README；Billing无他人现役PR写区，Mori亦未操作他人PR。Root与各仓Git／PR由主控串行，三名聚焦代理各自写区隔离，独立只读审查再核最终候选。
+
+上段为起始盘点与执行范围；停写验收与实际交付结果如下。R-03／R-06／R-14／R-15及重叠部分均不借本轮勾掉，R-05正式业务准入不混进开发类型对齐。
+
+
+### 本批停写验收与结余
+
+- **既存WIP保护：** 原仓App登录失败页的完整文件／基线／二进制补丁私有归档保留；尚无本轮已核恢复或交接完成的证据，TODO继续列待核实，不因压缩历史删除该义务，也不直接覆盖当前main或他人修改。
+- **盘点结余：** R-08已列文档余项收口，故编号问题变为8闭环／8仍有遗留；遗留为R-03／R-05／R-06／R-07／R-09／R-11／R-14／R-15。R-11仅Mori完成，App类型余项仍在，不能整体关闭。Billing旧总factory候选另已清理，BFF旧Admin允许表候选继续交原owner，不增新编号凑数。四项产品验收暂存及容量／取消策略边界仍单列。
+- **App文档交付：** [#54](https://github.com/LordFoxFairy/kokoro-app/pull/54)正常合main，源码`7182873fced2a58f0dd3bd052f492f10aef266e4`，merge`1e6b1aa5bf7d482f699f8ac0eded5c4faf362152`。仅README及packages README；主控15本地相对链接、manifest／lock／真实SDK／Playwright入口事实检查通过，独审CLEAR。没有业务／门户构建／浏览器重跑，不把preview入口存在当真实owner旅程通过。Task B #49完整287路径不含两文档。
+- **Billing清理交付：** [#5](https://github.com/LordFoxFairy/kokoro-billing/pull/5)正常合main，源码`afbfd790c28939cf0e85c0db0b40b737271ee450`，merge`ecdea64b380705c9d5728ce9a62823b6be9c3594`。仅旧aggregate factory、专属helpers和3个无consumer类型删除；从createBillingPersonalAuth到文件末尾的现役Personal／Catalog实现与基线逐字相同，JWKS verifier未改。有效EdDSA／tenant／R73真实JWT与签名断言迁现役factory，旧header／admin／白名单退役模式或已被现identity／operator HTTP承接的测试退役，并将三个错factor负控交现役入口。不按数量删保障。
+- **Billing验证：** worker基线7文件290通过，迁移后且删除前288通过，删除后288通过。主控对冻结输入独立格式、lint、类型、build及同7文件288通过／0跳过。worker首轮lint41项生成类型未解析，正规prisma:generate／typecheck／build后消失，失败证据保留，未修改那些非任务业务。无Schema／机器合同／依赖变更，不跑真实PG或全默认，未称全产品门绿。
+- **Mori依赖分片：** [#2](https://github.com/LordFoxFairy/kokoro-mori/pull/2)正常合main，源码`d363816e58d3e96fadcc75021d89d789c20916e8`，merge`5de3a79084a89d596ea252368b695ed3e4558baa`。仅manifest／lock两文件，插件latest固定到旧lock6.1.1，Node类型20.19.43对齐22.20.1，undici6.21.0保持。主控限定转换后全lock与基线逐字相等，除了这两声明、Node类型版本／integrity及关联peer key，没有任何运行resolver／SRI变化；未升级Next／React／Vite／pnpm。
+- **Mori验证：** Node22.23.4／pnpm11.2.2按owner要求，worker frozen安装接受，主控完整pnpm check的lint／types／86文件706测试／build通过；jsdom HTMLMediaElement.play未实现提示保留，不称媒体实机验收。未改R-05正式认证接线或共享包迁移。
+- **交付控制：** 独立只读审查三片CLEAR；主控核冻结10个路径hash与最终源码一致。三owner自有分支删除前均核精确tip，main包含源且merge树等于已验源；保留Root精确源码pins，不机械换merge SHA。不操作他人PR、分支或worktree，不启业务服务／DB，不部署、不以远端CI代本地证据。
+
+Root本次PR仅承接App／Billing／Mori三精确gitlink、95项来源引用（按87个真实提交blob重新核摘要）和报告／CURRENT／唯一TODO；Mori没有既有contract边，不为此新建空契约。实际组合／链接与最终main清理由本次Root PR和主控Git回执确认。
