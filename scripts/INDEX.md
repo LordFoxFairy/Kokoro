@@ -9,9 +9,11 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 
 - `python3 scripts/verify-backend-design.py --manifest-only` verifies Root architecture documentation and Agent boundary markers.
 - `python3 scripts/verify-repository-topology.py --allow-uninitialized` verifies active/archived repository topology and Phase 1 composition.
-- `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the six owner repositories. It emits stable
-  text by default and machine-readable diagnostics with `--format json`; a non-zero result remains the explicit work queue until
-  every repository converges.
+- `python3 scripts/verify-ten-repository-standard.py` audits the twelve active child repositories, including Mori, Admin
+  and `libs/kokoro-web-shared`; the historical command name is retained. Profiles distinguish services, web adapters and the
+  source-only library. It emits text or `--format json`; structural records require review and are not confirmed bug counts.
+  Unsupported syntax or unavailable publisher objects remain blocking `unverified`, without a false missing-owner
+  cascade; missing valid pins and known tampering are violations. Missing installed TypeScript tools are separately unverified (`--require-installed-tools` makes them blocking).
 - `python3 -m pytest scripts/tests/test_contract_compatibility.py scripts/tests/test_contract_checkpoint.py -q` exercises the
   frozen inventory parser and fail-closed gitlink, commit-blob digest, topology, package-version and checkpoint checks. Exit `0`
   means the focused verifier tests pass.

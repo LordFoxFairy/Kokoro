@@ -151,7 +151,9 @@ def check_bff(failures: list[Failure]) -> None:
         )
 
 
-def check_agent(failures: list[Failure]) -> None:
+def check_agent(
+    failures: list[Failure], unverified: list[Failure] | None = None
+) -> None:
     repository_name = "kokoro-agent"
     repository = ROOT / REPOSITORY_PATHS[repository_name]
     package_root = repository / "src" / "kokoro_agent"
@@ -199,10 +201,10 @@ def check_agent(failures: list[Failure]) -> None:
     if not (repository / "uv.lock").is_file():
         add(failures, repository_name, "python-tooling", "uv.lock is missing")
     confirmed_openapi = [
-        check_openapi_contract(repository_name, specification, failures)
+        check_openapi_contract(repository_name, specification, failures, unverified)
         for specification in openapi_contract_candidates(repository)
     ]
-    if not any(confirmed_openapi):
+    if not any(confirmed_openapi) and None not in confirmed_openapi:
         add(
             failures,
             repository_name,
@@ -272,10 +274,9 @@ def check_agent(failures: list[Failure]) -> None:
                 "production-doubles",
                 f"{relative} contains a production test double",
             )
-        if (
-            not is_profile_read_only_generated_source(repository_name, relative)
-            and re.search(r"\b[a-z0-9_]+_at_unix_seconds\b", text, re.IGNORECASE)
-        ):
+        if not is_profile_read_only_generated_source(
+            repository_name, relative
+        ) and re.search(r"\b[a-z0-9_]+_at_unix_seconds\b", text, re.IGNORECASE):
             add(
                 failures,
                 repository_name,

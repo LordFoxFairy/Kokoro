@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)和[最新盘点§14](#14-剩余问题盘点与最小维护批次)；第1～7节是原始快照，不把已修问题继续当当前故障。
+- 当前执行状态先读[唯一TODO](../../todo.md)和[最新维护§15](#15-r-07-storage分片与r-09治理校准)；第1～7节是原始快照，不把已修问题继续当当前故障。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -505,3 +505,32 @@ R-16删除一次性main-only脚本及当前复现命令，改正ADR现行分支�
 - **交付控制：** 独立只读审查三片CLEAR；主控核冻结10个路径hash与最终源码一致。三owner自有分支删除前均核精确tip，main包含源且merge树等于已验源；保留Root精确源码pins，不机械换merge SHA。不操作他人PR、分支或worktree，不启业务服务／DB，不部署、不以远端CI代本地证据。
 
 Root本次PR仅承接App／Billing／Mori三精确gitlink、95项来源引用（按87个真实提交blob重新核摘要）和报告／CURRENT／唯一TODO；Mori没有既有contract边，不为此新建空契约。实际组合／链接与最终main清理由本次Root PR和主控Git回执确认。
+
+
+## 15. R-07 Storage分片与R-09治理校准
+
+日期：2026-11-11（America/New_York）。起点Root `ff0e36dfea6e77b55ef21fb2ee4352830a48799a`。Storage从已合main `635b18f83151a8a2dd28fa982ab8db4fa5c6ebea`开始：与原Root pin b60931e9仅差两行已经交付的架构测试，整个生产src树相同，保留main更新而非回退。Task B Root #67和Storage #2的最新全分页文件范围已核，不触及其业务／Schema／扩展脚本；主控与两writer分区，Git／台账只由主控处理。
+
+R-07只修Storage，不改Capability：保留原正式Buf template和显式generate；只读check用本地固定CLI的output前缀生成到唯一临时目录，复用同normalizer，对完整相对文件集合与Buffer字节比对，缺失／多余／漂移失败，symlink不穿出目录，成功／异常finally回收。HTTP原--check与现语义／RPC／provenance检查保留；不改proto、运行代码、Schema或依赖。回归使用隔离fixture，不为测试损坏正常工作区生成物。
+
+R-09只修三个已证机制：profiles真实覆盖12子仓（含libs/shared实际路径、Admin真实源码目录），web／源码library按固定职责验质量入口，不给无DB／传输owner造空Schema或契约／发布模板；保留已经存在的BetterAuth精确pin／provenance例外，以正式owner路径／visibility识别native／browser-private，不全放过vendor或/v2；保留受限YAML解析器，不新增依赖或自建完整parser，确实unsupported进入阻断unverified并停止“缺owner契约”级联，可识别的无效JSON／结构和真正缺文件仍失败。现TS工具安装unknown语义不借机更改。
+
+只补这些命令／分类器的合法、违规、未知反例，再运行静态诊断观察残余FAIL，不把原414条词法记录当编码任务或零违规目标。Storage只跑相关契约／脚本静态验证，Root只跑相关治理测试；不启动业务服务、浏览器、PG／Redis／S3／Scanner或全产品套件。
+
+### 阶段证据与必要纠偏
+
+- Storage自有[#4](https://github.com/LordFoxFairy/kokoro-storage/pull/4)已正常合main，源码`231bb6632c9962d18ce48c6e998384fb76497d06`，merge`a8edebf83f9b1df9e428c2c8ce35b5ce812f5046`；合并树与已验源相等，自有本地／远程topic已删，checkout保留精确源码pin。主控独立7项真实命令回归、typecheck、focused ESLint／格式、正式contract:check通过，321个tracked／新增输入验证前后摘要不变，独审CLEAR。旧正式check对漂移仍退出0的RED保留。早期fixture触发pnpm自动安装及macOS长TMPDIR引起tsx IPC错误属环境失败；最终fixture显式禁安装并用短路径，不将环境失败称缺陷RED。远端CI显示FAIL，日志接口返回log not found；未冒称远端通过，未重推／绕保护。
+- R-09首轮独审发现YAML非字符串版本被误判unsupported；补JSON／YAML等价反例修正后，主控341项fixture通过，真实静态诊断随后仍FAIL：12仓、552条结构规则记录、4项unverified（BFF／Billing的受限YAML解析，shared两个未安装TS工具）。它证明覆盖／诊断已变化，**不证明原生／snapshot归属已收口**：当前合法browser-private、历史IAM／Scheduler导入与Mori adapter仍误判。沿同写区补已有manifest／owner Git blob的可追溯来源分类，不豁免裸vendor、篡改或未知来源，也不把552条记录变为552个TODO。
+- 精确Storage组合首次拓扑PASS，但兼容／checkpoint FAIL：Agent原固定Storage发布receipt仍指向b60931e9，被强制要求等于当前Storage运行源码，即使proto与provenance完全相同。最小纠偏沿已采用的“不可变发布锚与私有runtime解耦”：仅Storage允许精确祖先发布锚，逐字核当前／发布的全部生成输入和owner provenance，原消费副本／生成器／运行依赖负控保留；Platform不变，不为内部check脚本变更重发Agent相同机器契约。主控记录此局部治理决定，再由独立写区补反例、停写验收。
+
+### R-09最终停写验收
+
+主控独立治理fixture 372通过；现有真实CLI smoke另单独执行并采同一次child输出，故不是把deselected项称通过。八文件Ruff／format及diff检查通过，独立归属复审CLEAR。最终实际诊断仍exit1／FAIL：12仓、294条结构记录、4项unverified；所针对的http-versioning、snapshot-provenance、contract-owner误报记录为0。原552／4候选保留，第二次实际诊断只因首轮发现未收口归属问题而补，不通过反复改基线／删规则刷绿。
+
+4项未验证为BFF与Billing canonical YAML超出受限解析器能力，以及shared两个package未安装TypeScript工具；前两项默认阻断，后两项沿原可选工具语义。没有替换parser、安装shared依赖或将缺证据记PASS。294条记录包含84条文件粒度词法提示与63条operation治理记录等，需结合owner事实筛选，**不是294个已确认缺陷或本轮待修数量**。导入契约只证明所固定发布来源（含历史snapshot），不证明当前消费活跃；Mori同源版本合法也不补造缺失metadata。原R-09的覆盖／归属／诊断机制按此有界范围完成，其余维护项继续唯一TODO，不借工具校准宣布整个产品全绿。
+
+### 精确组合与本批交付范围
+
+Storage发布锚回归先复现private runtime变更误拒的RED；冻结后writer完整兼容性151通过，主控独立9项新增行为／负控与11项checkpoint回归通过，相关Ruff／format通过。发布OID、祖先、COMMON／STORAGE proto、owner provenance逐字一致仍是硬门，改源、未知／非canonical／非祖先发布均失败；Platform／IAM原分支未改，Agent receipt字节及消费者commit不动。随后主控实际拓扑PASS、15条契约边／0违例、原Task A checkpoint PASS。Storage15项来源引用按9个真实提交Git blobs重核，没有机械换摘要。
+
+最终编号为9项有界收口／7项遗留（5待处理、R-07与R-11部分完成）。R-07只交Storage，R-09只修Root分类／诊断；原产品暂存、App既存WIP保护／交接及Task B重叠项原样保留。Root本PR承接上述代码、精确Storage gitlink和唯一TODO／文档，不操作他人PR、分支、worktree，不部署。未重跑全产品／业务服务／真实基础设施，也不把远端CI记为本地通过。

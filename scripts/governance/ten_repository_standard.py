@@ -1,4 +1,4 @@
-"""Shared profiles, diagnostics and parsers for the ten-repository audit."""
+"""Shared profiles, diagnostics and parsers for the repository audit."""
 
 from __future__ import annotations
 
@@ -89,6 +89,15 @@ class RepositoryProfile:
     schema_drift_script: str | None = None
     schema_drift_checker: str | None = None
     upstream_openapi_snapshots: tuple[str, ...] = ()
+    source_roots: tuple[str, ...] = ("src",)
+    compiler_projects: tuple[str, ...] = ("tsconfig.json",)
+    quality_scripts: tuple[str, ...] | None = None
+    private_http_paths: tuple[str, ...] = ()
+    internal_http_paths: tuple[str, ...] = ()
+    web_adapter_http_prefixes: tuple[str, ...] = ()
+    imported_openapi_manifests: tuple[tuple[str, str], ...] = ()
+    historical_openapi_snapshots: tuple[tuple[str, str], ...] = ()
+    native_source_routes: tuple[tuple[str, str], ...] = ()
     read_only_generated_source_paths: tuple[str, ...] = (
         DEFAULT_READ_ONLY_GENERATED_SOURCE_PATHS
     )
@@ -97,7 +106,46 @@ class RepositoryProfile:
 # Current owner facts, not the future topology. BFF uses Node 24; its
 # feature-owned adapters still live in the existing layered source tree.
 REPOSITORY_PROFILES = {
-    "kokoro-app": RepositoryProfile("web", False, None, node_major=22),
+    "kokoro-app": RepositoryProfile(
+        "web",
+        False,
+        None,
+        node_major=22,
+        imported_openapi_manifests=(
+            ("kokoro-bff", "contract/bff-auth-session-source.json"),
+        ),
+    ),
+    "kokoro-mori": RepositoryProfile(
+        "web",
+        False,
+        None,
+        node_major=22,
+        web_adapter_http_prefixes=("/api/v1/mori/",),
+        quality_scripts=("lint", "typecheck", "test", "build"),
+    ),
+    "kokoro-admin": RepositoryProfile(
+        "web",
+        False,
+        None,
+        node_major=22,
+        source_roots=("app", "components", "lib"),
+        imported_openapi_manifests=(
+            ("kokoro-bff", "contract/bff-auth-session-source.json"),
+        ),
+        quality_scripts=("lint", "typecheck", "test", "build"),
+    ),
+    "kokoro-web-shared": RepositoryProfile(
+        "typescript-library",
+        False,
+        None,
+        node_major=22,
+        source_roots=("packages/web-core/src", "packages/i18n/src"),
+        compiler_projects=(
+            "packages/web-core/tsconfig.json",
+            "packages/i18n/tsconfig.json",
+        ),
+        quality_scripts=("lint", "typecheck", "test"),
+    ),
     "kokoro-bff": RepositoryProfile(
         "typescript-service",
         True,
@@ -105,6 +153,45 @@ REPOSITORY_PROFILES = {
         "database/schema.sql",
         "sql",
         24,
+        imported_openapi_manifests=(
+            ("kokoro-iam", "contract/dependencies/iam-auth.json"),
+            ("kokoro-iam", "contract/dependencies/iam-http.json"),
+            ("kokoro-scheduler", "contract/dependencies/scheduler.json"),
+            ("kokoro-iam", "contract/iam-relay-policy.json"),
+        ),
+        # Historical import provenance only; this does not assert active consumption.
+        historical_openapi_snapshots=(
+            (
+                "contract/vendor/kokoro-iam/4db7012a85752071f5fd30b9a5a3b4977e9dd4f3/iam.internal.v1.json",
+                "contract/openapi/iam.internal.v1.json",
+            ),
+        ),
+        private_http_paths=(
+            "/browser/v1/auth/session",
+            "/browser/v1/mcp/servers/{server_id}/prepare-receipt",
+            "/browser/v1/mcp/servers/{server_id}/icon",
+            "/browser/v1/mcp/servers/{server_id}/project-publications",
+            "/browser/v1/projects/{project_id}/mcp-pins",
+            "/browser/v1/projects/{project_id}/mcp-pins/{pin_id}",
+            "/browser/v1/mcp/project-publication-receipts",
+        ),
+        # Published non-OpenAPI policies: exact source and route, not a prefix waiver.
+        native_source_routes=(
+            (
+                "src/http/routes/iam-protocol-relay.policy.ts",
+                "/iam/interactions/invitation",
+            ),
+            *(
+                ("src/http/routes/skill-download.policy.ts", route)
+                for route in (
+                    "/skill-downloads/{handle}",
+                    "/browser/v1/skill-installations/{installation_id}/download",
+                    "/browser/v1/skills/{version_id}/download",
+                    "/browser/v1/skill-shares/{share_id}/download",
+                    "/browser/v1/projects/{projectId}/skill-installations/{installation_id}/download",
+                )
+            ),
+        ),
     ),
     "kokoro-agent": RepositoryProfile(
         "python-service",
@@ -127,6 +214,10 @@ REPOSITORY_PROFILES = {
         24,
         retired_source_paths=RETIRED_TS_TOP_LEVEL_DIRECTORIES,
         upstream_openapi_snapshots=("contract/vendor/better-auth.v1.7.3.json",),
+        private_http_paths=tuple(
+            f"/iam/v1/tenants/{{tenant_id}}/invitations/{{invitation_id}}/{action}"
+            for action in ("context", "accept", "reject")
+        ),
         read_only_generated_source_paths=(
             *DEFAULT_READ_ONLY_GENERATED_SOURCE_PATHS,
             "src/database/prisma-client/",
@@ -179,15 +270,21 @@ REPOSITORY_PROFILES = {
         "database/schema.sql",
         "sql",
         required_source_paths=REQUIRED_SCHEDULER_LAYERS,
+        internal_http_paths=tuple(
+            f"/internal/scheduler/v1/schedules/{{name}}{action}"
+            for action in ("", "/pause", "/resume")
+        ),
     ),
 }
 REPOSITORY_PATHS = {name: Path("apps") / name for name in REPOSITORY_PROFILES}
+
+REPOSITORY_PATHS["kokoro-web-shared"] = Path("libs/kokoro-web-shared")
 
 REPOSITORIES = tuple(REPOSITORY_PROFILES)
 TS_REPOSITORIES = tuple(
     name
     for name, profile in REPOSITORY_PROFILES.items()
-    if profile.kind in {"web", "typescript-service"}
+    if profile.kind in {"web", "typescript-service", "typescript-library"}
 )
 LOCAL_REDIS_DATABASES = {
     name: profile.redis_database
@@ -205,6 +302,8 @@ class Failure:
 
 def required_quality_scripts(repository_name: str) -> tuple[str, ...]:
     profile = REPOSITORY_PROFILES[repository_name]
+    if profile.quality_scripts is not None:
+        return profile.quality_scripts
     if profile.kind == "web":
         return ("lint", "typecheck", "test", "build", "test:e2e")
     if profile.kind == "typescript-service":
@@ -234,7 +333,11 @@ def tracked_or_worktree_files(repository: Path, relative_root: str) -> list[Path
 
 
 def source_files(repository: Path) -> list[Path]:
-    return tracked_or_worktree_files(repository, "src")
+    profile = REPOSITORY_PROFILES.get(repository.name)
+    roots = profile.source_roots if profile else ("src",)
+    return sorted(
+        {path for root in roots for path in tracked_or_worktree_files(repository, root)}
+    )
 
 
 def is_profile_read_only_generated_source(

@@ -1,8 +1,18 @@
 # Current Facts
 
-## 当前维护盘点与本批交付（2026-11-11）
+## R-07 Storage／R-09治理校准（2026-11-11）
 
-16个编号问题现为8已闭环／8有遗留（7待处理、R-11部分完成），本轮起点为7／9。R-08已列入口余项经App #54与Billing #5修正；Billing无生产caller总factory／3孤立类型退役，现役Personal／Catalog鉴权实现逐字不变。主控相关288通过、格式／lint／类型／build通过；初次worker生成物未刷新的lint失败保留，未改其它业务去刷绿。
+Storage自有[#4](https://github.com/LordFoxFairy/kokoro-storage/pull/4)已正常合main，源码231bb663、合并树等于已验源，自有topic已清理。contract:check隔离生成、完整路径／字节比较，保原显式generate、HTTP／语义检查；主控7项真实命令回归、类型／focused lint／格式／正式check通过，321个输入摘要不变。Capability余项未动，R-07仅部分完成。
+
+Root第一候选341项fixture通过后，真实12仓诊断FAIL／552条结构记录／4项unverified暴露未收口归属，现已定向修正。最终主控372项fixture与现CLI smoke、Ruff／format通过、独审CLEAR；实际child预检仍exit1／FAIL，294条结构记录／4项unverified，不是294个已确认故障。目标版本路径／snapshot归属／缺owner级联误报记录为0；BFF／Billing超出受限YAML解析能力与shared两package工具缺失仍如实列未验证。不新增parser／工具安装或追数字清零。
+
+编号现为9项有界收口、7项遗留（5待处理、R-07／R-11部分完成），R-09及组合由本Root PR承接。Storage首次兼容门暴露Agent不可变发布receipt与私有runtime源码硬绑定，仅补Storage祖先／同输入证明，不为check脚本变更重发相同Agent合同；精确组合结果见下方最终回执。唯一状态见[TODO](../todo.md)，证据与局部裁决见[报告§15](reports/2026-11-11-typescript-auth-admin-audit.md#15-r-07-storage分片与r-09治理校准)。Task B及部署不动，未启动业务／数据资源。
+
+组合最终回执：Storage15项来源按9个真实Git blobs重核；主控9项新增发布锚回归、11项checkpoint回归及相关Ruff／format通过，writer完整兼容性151通过。实际拓扑PASS、15条边／0违例、原checkpoint PASS，首次硬绑FAIL证据保留。发布祖先／proto／provenance负控不减，Agent／Platform／IAM消费者未变；本Root PR只交付该精确组合和治理校准。
+
+## 上批维护盘点与交付（2026-11-11）
+
+上批交付后16个编号问题为8已闭环／8有遗留（7待处理、R-11部分完成），当批起点为7／9。R-08已列入口余项经App #54与Billing #5修正；Billing无生产caller总factory／3孤立类型退役，现役Personal／Catalog鉴权实现逐字不变。主控相关288通过、格式／lint／类型／build通过；初次worker生成物未刷新的lint失败保留，未改其它业务去刷绿。
 
 Mori #2完成R-11本仓片：仅固定原已锁React插件和Node22类型，运行resolver／SRI守恒；主控Node22.23.4／pnpm11.2.2的owner check通过（含706测试和build）。App类型余项留原owner，R-11不整体勾掉。App两篇工程README只跑15本地链接／事实检查，未重跑业务；R-06双writer／规范交付仍待收敛。源码组合为App7182873f、Billingafbfd790、Morid363816e，其余pins不变。
 
