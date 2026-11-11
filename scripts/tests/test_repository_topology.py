@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import json
 import re
 import runpy
+import subprocess
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -80,3 +84,59 @@ def test_active_production_plan_keeps_nine_runtime_owners() -> None:
         "kokoro-billing", "kokoro-capability", "kokoro-storage", "kokoro-scheduler",
     ]
     assert "model-catalog" in scope
+
+
+@pytest.mark.parametrize("head_matches_gitlink", [True, False])
+def test_pinned_detached_checkout_and_other_topic_are_valid_but_wrong_pin_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], head_matches_gitlink: bool
+) -> None:
+    """Composition follows the recorded commit, not branch-name cleanup policy."""
+    checkout = tmp_path / "root"
+    child = checkout / "apps/fixture"
+    remote = tmp_path / "origin.git"
+    child.mkdir(parents=True)
+
+    def git(*args: str, cwd: Path = checkout) -> str:
+        return subprocess.check_output(
+            ["git", "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false", *args],
+            cwd=cwd, text=True, stderr=subprocess.DEVNULL,
+        ).strip()
+
+    git("init", "-q", "-b", "main")
+    git("init", "-q", "-b", "main", cwd=child)
+    git("config", "user.name", "Fixture", cwd=child)
+    git("config", "user.email", "fixture@example.test", cwd=child)
+    (child / "source.txt").write_text("pinned\n")
+    git("add", "source.txt", cwd=child)
+    git("commit", "-qm", "fixture", cwd=child)
+    pin = git("rev-parse", "HEAD", cwd=child)
+    git("branch", "codex/other-owner", cwd=child)
+    git("clone", "--bare", "--quiet", str(child), str(remote))
+    git("remote", "add", "origin", str(remote), cwd=child)
+    git("checkout", "--detach", "--quiet", cwd=child)
+    if not head_matches_gitlink:
+        (child / "source.txt").write_text("different commit\n")
+        git("add", "source.txt", cwd=child)
+        git("commit", "-qm", "different", cwd=child)
+
+    for key, value in (("path", "apps/fixture"), ("url", str(remote)), ("branch", "main")):
+        git("config", "--file", ".gitmodules", f"submodule.fixture.{key}", value)
+    git("add", ".gitmodules")
+    git("update-index", "--add", "--cacheinfo", f"160000,{pin},apps/fixture")
+    assert git("branch", "--show-current", cwd=child) == ""
+    assert git("--git-dir", str(remote), "show-ref", "--verify", "refs/heads/codex/other-owner")
+
+    topology = runpy.run_path(str(ROOT / "scripts/verify-repository-topology.py"))
+    main = topology["main"]
+    globals_ = main.__globals__
+    real_run = topology["run"]
+    monkeypatch.setitem(globals_, "ROOT", checkout)
+    monkeypatch.setitem(globals_, "MODULES", {"fixture": ("apps/fixture", str(remote))})
+    monkeypatch.setitem(globals_, "RUNTIME_MODULES", ("fixture",))
+    monkeypatch.setitem(globals_, "ARCHIVED", frozenset())
+    monkeypatch.setitem(globals_, "run", lambda *args, cwd=checkout: real_run(*args, cwd=cwd))
+    assert main([]) == (0 if head_matches_gitlink else 1)
+    evidence = json.loads(capsys.readouterr().out)
+    assert evidence["status"] == ("PASS" if head_matches_gitlink else "FAIL")
+    if not head_matches_gitlink:
+        assert evidence["errors"] == ["fixture: checkout HEAD differs from recorded gitlink"]

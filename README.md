@@ -31,9 +31,10 @@ cd Kokoro
 git submodule update --init --recursive
 
 python3 scripts/verify-repository-topology.py
-python3 scripts/verify-main-only.py
 python3 -m pytest scripts/tests
 ```
+
+子仓按精确gitlink检出时处于detached HEAD是正常状态；`main`是集成基线，不要求其他人的远端topic分支消失。只在自己的PR合并且无后继工作后清理对应分支，不以清理为由改变组合SHA。
 
 每个子仓都有自己的依赖锁、CI、测试、构建、发布和文档。进入目标目录后按该仓 README/ACCEPTANCE 执行，例如：
 

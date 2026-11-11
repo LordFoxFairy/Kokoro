@@ -69,6 +69,8 @@ those local checks with a generated cross-repository mirror.
 The E2E runners start each independent checkout through its own documented entrypoint. They communicate over loopback HTTP
 and disposable infrastructure; they do not import child source, share a database or derive a contract from another repository.
 
+The one-time `verify-main-only.py` script is retired: a valid pinned submodule can be detached and other owners may retain active topic branches. Use the exact topology check and only clean branches belonging to your delivered PR; do not restore a global remote-branch deletion requirement.
+
 The retired full-repository shell/owner-health placeholders and `run_stage2_bff_mock.py` were removed. The first two
 only printed a paused diagnostic; the mock runner targeted an absent Root-level BFF path and a runtime mode the current
 BFF explicitly rejects. No active CI, ops or helper import consumed them. Their source remains in Git history, not as

@@ -39,10 +39,11 @@
 ```bash
 git submodule update --init --recursive
 python3 scripts/verify-repository-topology.py
-python3 scripts/verify-main-only.py
 python3 -m pytest scripts/tests -q
 python3 scripts/verify-ten-repository-standard.py --format json
 ```
+
+精确gitlink检出的子仓可合法处于detached HEAD；他人的正常topic分支不属于组合错误。一次性“全远端仅main”检查已退役，自有分支清理按对应PR合并／无后继工作回执确认，不枚举或删除其他人的分支。
 
 2026-11-11固定组合 `32c56199` 的拓扑检查PASS，能识别12子仓；脚本中的runtime_module_count=9不是Git仓库总数。旧ten-repository-standard实际只覆盖9子仓，本轮报告FAIL／414条原始规则记录／0 unverified，包含原生协议误报和解析能力不足，不是414个已确认缺陷。逐项证据与未运行范围见上述审计报告。历史2026-09-20的322项与110条规则记录不作为当前通过／失败证明；治理预检不代替owner行为验收。
 
