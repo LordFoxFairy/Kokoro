@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)和[最新维护§15](#15-r-07-storage分片与r-09治理校准)；第1～7节是原始快照，不把已修问题继续当当前故障。
+- 当前执行状态先读[唯一TODO](../../todo.md)和[最新维护§16](#16-r-05-mori同源adapter修复)；第1～7节是原始快照，不把已修问题继续当当前故障。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -534,3 +534,27 @@ R-09只修三个已证机制：profiles真实覆盖12子仓（含libs/shared实�
 Storage发布锚回归先复现private runtime变更误拒的RED；冻结后writer完整兼容性151通过，主控独立9项新增行为／负控与11项checkpoint回归通过，相关Ruff／format通过。发布OID、祖先、COMMON／STORAGE proto、owner provenance逐字一致仍是硬门，改源、未知／非canonical／非祖先发布均失败；Platform／IAM原分支未改，Agent receipt字节及消费者commit不动。随后主控实际拓扑PASS、15条契约边／0违例、原Task A checkpoint PASS。Storage15项来源引用按9个真实提交Git blobs重核，没有机械换摘要。
 
 最终编号为9项有界收口／7项遗留（5待处理、R-07与R-11部分完成）。R-07只交Storage，R-09只修Root分类／诊断；原产品暂存、App既存WIP保护／交接及Task B重叠项原样保留。Root本PR承接上述代码、精确Storage gitlink和唯一TODO／文档，不操作他人PR、分支、worktree，不部署。未重跑全产品／业务服务／真实基础设施，也不把远端CI记为本地通过。
+
+## 16. R-05 Mori同源adapter修复
+
+日期：2026-11-11。用户授权继续R-05，沿自有PR合main并清分支，不动Task B。Root基线7edca39a，Mori从main 5de3a790开始，与原pind363816e树相同；已核Mori没有他人OPEN PR。复用原R-05范围与Mori技术／API设计，不另建计划中心。唯一源码writer负责现route.ts与route.test.ts；另一writer只负责7份旧Cookie机器契约、相关契约断言与工程文档；主控独占Root台账／Git／资源验收，第三名代理只读审查。
+
+### 最小设计与验收边界
+
+Mori不成为身份owner，只消费Product在同一公开origin已建立的IAM原生会话。配置只接现Product三项KOKORO_BFF_BASE_URL、KOKORO_INTERNAL_SECRET_WEB_BFF、KOKORO_WEB_ORIGIN；先核入站同源，再向BFF固定Origin及服务凭据，Cookie限定原生6名，忽略其他Cookie并拒歧义，旧kokoro_session不再有效。删除namespace、可选principal及根据loopback注入的全部默认，不新增fixture模式或独立OAuth／token／SDK。fixture仅测试harness显式配置同一通道；禁跟随重定向，保多Set-Cookie及追踪。Mori七份当前已声明旧session的契约只更正认证scheme，不动业务字段或owner。
+
+普通命令body上限1MiB／读取5秒；仅既有音频PUT creative-source-uploads/{ref}/content保UI 50MiB／读取120秒，随后回执30秒。普通API从入口到响应完30秒；媒体／SSE首头30秒，之后仅pending upstream read空闲60秒，不以播放器背压当卡死、不用普通短总期限截正常流。原字节、Range／If-Range、Last-Event-ID和幂等键保持，取消传上游并清reader／timer／listener，不自动重试未知写结果。数值为本次本地传输保护，不冒代表性SLO测试。
+
+现Mori没有独立登录／session路由，Product return_to尚未支持任意Mori路由；本片不复制完整登录系统或改App／IAM。BFF当前Music映射缺媒体、上传等Mori preview seam；不接管该业务owner、不声称独立站冷登录／真实播放或音乐产品全功能已通。验收只补当前adapter失败反例与原生凭据／有界传输；主控一次相关owner check、实际socket到现BFF入口的局部接线（IAM准入与Music owner明确替身），不重复Task A全产品或真实PG／Redis／音频provider验证。设计门先落Mori TECHNICAL_DESIGN／API_CONTRACT相关段后再开生产修改。
+
+上述是实施前决定，停写后的实际结果与交付另补。
+
+### 停写验收与交付
+
+- **Mori交付：** 自有[#3](https://github.com/LordFoxFairy/kokoro-mori/pull/3)正常合main，已验源码`3a4400e3dd9ed9530f06309c718e0e0e3f46520f`，merge`6d98924ebbfb3ae707901b6ed812f6503ff17173`；合并树与已验源一致，自有本地／远程topic已清理，Root锁精确源码而非浮动main。18路径只含现adapter／回归、认证契约与必要文档，无依赖／Schema／owner改动，远端未见CI运行，不将它说成通过。
+- **有意义的RED与局部修正：** 先复现旧代码缺Origin、1MiB+1仍放行，以及7份旧session契约。独审指出写入响应若伪装audio/SSE会逃逸普通总预算，限定仅GET长流；主控按锁定Next源码核实其内部URL来自fetchHostname／port，公开Host／Origin正常也可能不同，故不拿内部URL作身份，未信任x-forwarded-host。两处先补行为RED后修正，保坏Host／Origin原负控。冻结route30通过、契约三文件13通过；不为缩数量删保障，不新增框架／配置层。
+- **主控一次owner门：** Node22.23.4／pnpm11.2.2的`pnpm --config.verify-deps-before-run=false check`通过：lint／类型、87文件739测试／0失败／0跳过、production build。270个tracked／新增输入摘要前后不变，冻结源码／契约与交付逐字相同。之后主控只补CURRENT真实验收与RUNBOOK亲建测试进程措辞，未重跑无关全门。独立18路径实现审查CLEAR，当前链接／diff检查通过。
+- **实际HTTP接线：** 用亲建独占端口启动生产Next（Node22）和现BFF Music入口（Node24）本地HTTP peer；IAM admission及Music owner明确替身。通过公开Host／Origin与内部Next URL分离的成功读取、原生Cookie筛选、多Set-Cookie；同会话第二次准入撤权401，准入累计2次／Music owner仅1次，跨源与旧Cookie在Mori层拒绝、不增加准入。未运行真实IAM浏览器登录或Music供应商／媒体链。测试Next、BFF与owner socket均已关闭，未动正常服务、PG／Redis／卷或他人资源。
+- **真实首轮失败保留：** 主控HTTP首测403，诊断显示mori_origin_rejected且BFF零准入。用同机最小HTTP回显定位Node24 fetch未发送指定Host（实际为内部127.0.0.1），而http.request正确传公开Host；仅改验收脚本后同旅程PASS，未放宽生产Host校验。首FAIL、诊断及最终PASS私有证据均保留，不将该夹具失败冒生产缺陷。
+
+R-05按原报告的adapter欠账范围收口，编号变为10收口／6遗留（4待处理、R-07／R-11部分完成）。Mori独立冷登录／Product挂载和Music owner上传／媒体等未接能力另列产品暂存，不借修代理冒音乐产品交付；其余Task B重叠项及App既存WIP交接仍保持。Root只更新精确Mori gitlink和现报告／CURRENT／唯一TODO，原inventory无Mori引用，不新造空活跃契约边；主控实际拓扑PASS、15条契约边／0违例、原Task A checkpoint PASS；Root自有PR承接该精确组合。
