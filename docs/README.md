@@ -10,7 +10,7 @@
 | 产品／研发：批准的需求和对象关系 | [产品要求 PRD](kokoro-handbook/product/09-v2-prd.md) |
 | 工程：链路、身份、事件、数据分别由谁负责 | [当前技术总览](kokoro-handbook/technical/00-system-overview.md) |
 | 接口调用者：怎样接入 | [开发者文档](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/api/index.md)，参考页由 BFF 正式合同生成 |
-| 协作：本次交付、未验和下轮事项 | [当前事实](CURRENT.md)、[唯一 Task A TODO](../todo.md)；Task B 由其独立负责人维护 |
+| 协作：本次交付、未验和下轮事项 | [当前事实](CURRENT.md)、[维护与暂存 TODO](../todo.md)；Task B 由其独立负责人维护 |
 | 改代码：目录、规范与验证入口 | [代码地图](CODEBASE_MAP.md)、[总体架构](ARCHITECTURE_STANDARD.md)、[完整索引](INDEX.md) |
 
 ## 怎么判断一份文档是否有效

@@ -1,5 +1,13 @@
 # Current Facts
 
+## 仓库维护首批（2026-11-11，America/New_York）
+
+这是Task A交付后的局部维护，不重开Task A、不接手Task B，不改变API／SQL／依赖或运行语义。删除3个无可运行目标的旧验证入口；BFF移除无消费者Agent列表投影及两个路由判断包装，现役System投影与handler字节不变；Web删除未使用formatter、收窄两个模块内helper导出。
+
+BFF #19、App #53已合main，Root锁已验 `0895e254`／`b93acbd8`。相关lint／类型／build、定向行为／架构和门户完整检查通过，Root来源用实际Git blobs重核，拓扑／15条契约边／原checkpoint通过。只归档移除了无活跃占用的陈旧Next开发类型缓存，没有用排除规则掩盖错误。
+
+Task B PR文件已完整分页核对，其Agent客户端projection重叠文件排除；现役legacy命名模块、共享fixture／runtime及历史checkpoint有消费者，保留。后续可读性重构仅针对实际职责问题，不按文件行数加空层。执行清单见[TODO](../todo.md)，最终合并和本轮分支清理以本轮Root PR／主控收尾回执为准。未部署，未新建或清理共享基础设施。
+
 ## Task A 当前交付（2026-11-11 UTC）
 
 Task A 已按用户确认的开发交付口径收尾。Root 原 #66 已合 main，基线 `bdebba56`；IAM #6、Admin #5、Storage #3、Agent #46、BFF #18、App #50 均已通过各自原 PR 合入。实际组合继续锁定已验精确子提交，不机械换成 merge SHA。

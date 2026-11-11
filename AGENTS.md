@@ -27,7 +27,7 @@ git diff --check
 | Go Scheduler | `gofmt -l .`（输出为空）、`go vet ./...`、`go test ./...`、`go build ./...` |
 | 数据 owner | 本仓 Schema 安装/迁移入口；`pnpm db:apply-schema` 仅在指定隔离测试资源上执行 |
 
-`scripts/verify-ten-repository-full.sh` 与 `scripts/e2e/run_stage2_owner_health.py` 已暂停，诊断后退出 2，不作为验收入口。
+旧全仓 runner 与 Stage 2 mock/health 空入口已退役；按影响面运行对应 owner 的正式门禁，不恢复共享状态编排或第二套 mock runtime。
 `scripts/e2e/run_system_owner_smoke.py` 只验证其隔离 System 跨仓 HTTP 链路，不代表全产品验收。
 
 ## 2. 按需读取与规则归属
