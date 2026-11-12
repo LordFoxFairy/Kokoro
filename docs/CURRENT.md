@@ -1,3 +1,11 @@
+## 2026-11-12 native后台登录阶段通过，磁盘失败与恢复
+
+绑定Rootdf295dac/精确六owner的第六run：真实IAM/System/Billing/BFF/App/Admin启动，匿名Admin API401、正式/login303；CUA独立localhost原生账号实际登录进入工作台，无Bearer/假Cookie。访问/manage/models首次编译时Turbopack SST出现ENOSPC、owned_service_exited，尚无模型/标签/费率/政策业务写。本轮outcome FAIL；自动回收最终receipt同受ENOSPC影响，不能称自动cleanup PASS。
+
+主控查全注册pgroup已无进程，先仅删其生成.next释放空间，再沿具名资源marker/原helper回收同一测试库与Redis/origin键；库回收前九业务表（model definition/revision/label、费率/政策、账户/hold/journal、Agent outbox）均0。自有shorttmp/source/deps、账号/密钥文件回收，原生测试Cookie清除/页关，人工cleanup PASS独立留证。正常BFF随后发现旧进程exit1/无监听，旧log不足证根因；仅同aad/原配置恢复，healthz/readyz200。原工作台native刷新auth/session及models均200/189事件无截断，原会话保持，无新模型/资金动作；正常App200。未清正常数据、卷或他人资源。
+
+私有driver后继只增加容量控制：已锁Next16.2.6支持的dev磁盘缓存关闭，仍Turbopack；两private config独立记录原blob/补丁摘要，不混IAM三test-only接缝。启动要求2GiB/运行保底1GiB，低于则正常退出回收；错误记录失败不阻断finally。静态准备通过，未重跑；随后只回收原TaskA已终态私有qualification的两node_modules与一.next叶，保源码/收据/manifest；主控核七门终态、基线为当前App祖先、无活跃argv/正常依赖链接。allocated约2.35GiB因APFS共享实际仅增143MiB，现Data约1.38GiB仍低于2GiB预算，不拿逻辑大小冒实得、不继续无界扫描或删除正常输出。Goal持续active，完整后台写旅程和原TaskB其余具名残项仍OPEN；原PR不合main/不部署。
+
 ## 2026-11-12 修复Billing启动器陈旧readiness并补当前政策事实
 
 第四隔离run正常构建/IAM/System已走通，Billing真实/readyz持续200却等待超时，outcome FAIL/cleanup PASS。主控比对Billing canonical/controller/生成ReadyResponse：正式Root helper仍要求早已退役的data.module，故不是Billing/PG不健康。api_perf_audit仅删此旧期望，现原测试用独立canonical body替代复制被测READY；真实RED两项→本文件41 PASS/0 SKIP，主控同41/两SHA/格式检查复验。status=ready/PG=ok/绝对期限/停止等原行为不变；既有sys.path后import E402保留，不冒全lint/全Root门绿。仅修Root test接线，Billing生产源码/协议不改；新冻结组合后再补同一次缺失native后台旅程，不重跑模型/资金。
