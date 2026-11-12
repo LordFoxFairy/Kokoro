@@ -27,8 +27,11 @@
 - **资金与供应商边界**：当前开发账户available0／held20，20不是已确认扣费；未知usage未补零／退款。原2条requested_unknown不凭历史日志／当前admission0回填denied，保原恢复机制。此前把502行误读response-invalid的判断已撤回，422 schema有效；供应商stream APIError的现checkpoint仅核到overload标记，未获得确切供应商错误码，不盲重试／追加积分。
 - **正常 owner 与沙箱已接线**：恢复原 MCP keyring（未替换现加密行密钥），移除本地退休配置并按现协议配对 Capability→IAM执行 purpose；Storage／Capability正式源码health/ready200，七个正常核心HTTP owner就绪。Agent→Platform／Storage现服务凭据已配对；旧Worker在队列无pending、仅本人既存财务unknown时正常drain退出，官方Worker现激活Agent c2c563e，普通Chat显式Docker，不选Custom API也能执行。配置/凭据/进程证据留ignored。
 - **普通沙箱组件已交候选**：Agent c2c563e已推原#47；配置/Factory冻结与清理共用原backend，Docker主容器通用限额、无provider scratch捕获已解耦。停写默认3626 PASS／955 deselected，全Ruff／pyright／contract／build通过；真实Docker三个定向用例PASS（含inspect、root只读/workspace可写、scratch/recover同源区分和回收）。scratch初轮fixture漏建目录已仅修测试再验；不冒整个真实产品链闭环。
-- **真实 Skill 准备进行中**：专用开发账号保持platform_admin=false，仅本地operator沿原动态角色增create_draft/install；正常浏览器原上传由skill_forbidden越过授权，现Storage CreateUpload500导致local_skill_import_dependency_unavailable，发生在文件bytes上传前。主控保原文件/命令，子代理定向诊断，不修改Task B、不放宽认证、不用旧验收Skill冒真实产品。
-- **仍未运行**：本轮真实Skill/MCP／沙箱产物旅程、AG-UI单轨实现、首页可视改造。Task B四PR／源码写区不动。私有配置、凭据、数据库备份与原始诊断均在ignored目录，不进Git。
+- **真实 Skill 安装已验**：专用开发账号保持platform_admin=false，仅本地operator沿原动态角色增create_draft/install；原浏览器上传先越过角色拒绝，再定位Storage普通上传也引用workspace_output枚举导致500。有pg_dump备份后，以实际Prisma live→canonical差异核准仅补枚举和2列，未重写Storage业务行；后置Prisma diff为空。原文件/命令恢复成功，正常UI显示structured-report已安装并启用；不是模型加载/调用Skill通过。
+- **真实 MCP 控制面已验**：连接列表500由本地Capability库缺current_connector_id及配套约束导致；精确catalog命中现owner已知parent，备份并停本轮writer后用正式installer扩展，按其规则回填30个唯一合法旧绑定，后置canonical通过，恢复原源码进程，未改Task B源码/PR。正常浏览器列表恢复；真实Context7公共MCP握手/发现2工具并连接成功，新草稿显式选中Connectors(1)。Agent调用仍未验，不用本地echo协议替身冒真实服务。
+- **本次普通Docker真实任务未成功**：conv_bce7bc6d正常提交/唯一Run，经正式System resolve/credential→真实provider仍返回APIError/overload，页面model_unavailable且刷新一致；没有工具执行/文件/FINAL证据。System正常/models存在11候选、当前映射有效，不等于chat容量；不盲重复任务。此轮仅一次有流水的10非现金开发积分（累计30），旧hold不猜零/不释放；正沿现System/Billing owner准备一个非默认dev label的合法替代配置，不改旧默认/旧attempt/生产协议。
+- **下个检查点**：完成本地可选模型与exact费率配对，查正常Composer现能力入口未显示的具体接线，显式选择真实Skill+MCP再跑一次端到端；同时保G3方案的SDK reader/历史baseline/terminal顺序要求，不借fixture称整体通过。
+- **仍未完成**：成功模型执行Skill/MCP／沙箱产物旅程、AG-UI单轨实现、首页可视改造。Task B四PR／源码写区不动。私有配置、凭据、数据库备份与原始诊断均在ignored目录，不进Git。
 
 ### 已确认的边界
 

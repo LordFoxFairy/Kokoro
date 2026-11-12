@@ -12,7 +12,9 @@ BFF正常源码启动修复ee62845已推自有[Draft #27](https://github.com/Lor
 
 System正式resolve初503由provider DNS落198.18/15且未获精确host许可导致；沿既有配置只给当前provider hostname opt-in后恢复200。供应商后续SSE抛APIError，现checkpoint固定标记核到overload，细因缺确切供应商代码，仍无正常正文。开发积分当前available0／held20，20不是确认扣费，不补零／擅自退款；旧2条封存unknown不凭日志或当前404改denied。供应商错误不阻断独立普通后端接线，不重复模型重试。
 
-Storage／Capability已用原持久配置恢复，实际health/ready200；原MCP keyring与当前密文版本核等，未随机替换密钥，启动前旧cleanup队列已盘点。Agent c2c563e普通Chat backend选择与Custom API解耦已推原#47；真实Docker执行、scratch/recover、容器限制及清理三项定向PASS，正常Worker已激活。真实Skill导入已从账号角色403推进到Storage CreateUpload500，当前定向排查本地依赖接线；文件尚未上传成功，不冒Skill通过。专用账号仅增现动态角色create_draft/install，保留member和platform_admin=false，不伪造Session或改生产授权。Task B／Mori／部署不动，所有秘密、诊断及备份仍仅本地ignored。
+Storage／Capability已用原持久配置恢复，实际health/ready200；原MCP keyring与当前密文版本核等，未随机替换密钥，启动前旧cleanup队列已盘点。Agent c2c563e普通Chat backend选择与Custom API解耦已推原#47；真实Docker执行、scratch/recover、容器限制及清理三项定向PASS，正常Worker已激活。真实Skill导入先遇角色403与Storage旧枚举500，后按下段修复并正常安装，不冒模型调用Skill通过。专用账号仅增现动态角色create_draft/install，保留member和platform_admin=false，不伪造Session或改生产授权。Task B／Mori／部署不动，所有秘密、诊断及备份仍仅本地ignored。
+
+后续正常浏览器实测：Storage现有库经备份和Prisma exact diff仅补1枚举/2列，后置diff为空；原structured-report上传恢复成功并enabled。Capability本地库精确命中正式installer已知parent，经原受锁回填/索引/check扩展后canonical通过，连接列表恢复；真实Context7公共MCP已ready/发现2工具/connected，新草稿已显式选择，尚无Agent工具调用。conv_bce7bc6d新普通Docker任务仍在真实provider流收到overload，model_unavailable刷新保持，无工具/FINAL；此轮仅补一次10非现金dev积分（累计30），不以已hold冒扣费，不重试或猜退款。正准备一个非默认可选dev label及exact新revision费率，保旧默认不变；只用现owner配置操作，不扩协议/框架。
 
 原冻结recipe在装配前核request／lease并拒不兼容配置，保留它；scratch过程版本与普通workspace交付不是同一来源。App live入口丢SDK chunks、实时正文仍自拼，历史slot才用SDK reader；这些现态不由旧“已AI SDK”描述覆盖。
 
