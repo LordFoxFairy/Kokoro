@@ -1,6 +1,6 @@
 # Kokoro · 当前维护 TODO
 
-核对日期：2026-11-11（America/New_York）。本轮起点Root `9957b41d`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
+核对日期：2026-11-11（America/New_York）。本轮起点Root `fbbd77b1`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
 
 ## 当前盘点
 
@@ -10,6 +10,8 @@
 
 ## 当前推进：主工作台／BFF／IAM认证与旧代码清理
 
+- [x] **BFF认证状态请求生命周期**：自有PR #23已合main，源码6346f623；原handler内的请求作用域统一期限／取消／清理，活连接超时仍原503，断连／迟到结果不写。主控51项相关回归及build／lint／types／format通过，原5测试块保留；无新认证框架／协议。
+- **设计准则**：先用职责、状态和不变量证明问题，再选合适模式；可以替换旧实现并同步删除，但不为模式增加空类／层。IAM账户事务／具名Repository及原生会话边界本轮复核合理，不强行重写，不重开R-01／R-02／R-04。
 - [x] App R-11／R-15已通过自有PR #55合main：Node22类型对齐，保22项生成检查，本地／CI／release验证默认测试只跑一次，独立入口和覆盖不减。主控一次完整check通过；Task B实际hunk与共享CURRENT未动。
 - [x] BFF不可达的旧Admin OAuth允许表已删除，自有PR #22合main；Web原生登录／Admin业务／外部OAuth保留，主控44项相关回归与build／lint／types通过。
 - [x] IAM过期0.20待接线指引已纠正，主链不换OAuth token、现役外部OAuth配置保留；自有PR #8合main，主控22链接／机器版本与摘要事实通过。
@@ -40,7 +42,7 @@
 | R-13 | Project业务／完成回执同事务，回滚／重放／竞争／提交响应未知已定向验；BFF #21，源码a3e19062，Root #75 |
 | R-16 | 一次性main-only脚本及当前入口退役，合法detached／他人topic与错pin反例保留；Root #75，mainf0efcb87 |
 
-详细实际命令、失败／复验、跳过与未运行边界见[报告§13～17](docs/reports/2026-11-11-typescript-auth-admin-audit.md#17-主线范围纠偏与最小清理)。不拿测试数量代替行为闭环。
+详细实际命令、失败／复验、跳过与未运行边界见[报告§13～18](docs/reports/2026-11-11-typescript-auth-admin-audit.md#18-认证状态请求作用域)。不拿测试数量代替行为闭环。
 
 ## 旧代码候选（不重复立编号）
 
