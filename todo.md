@@ -9,7 +9,7 @@
 | 阶段 | 当前状态／完成条件 | 负责人／写区 |
 | --- | --- | --- |
 | G0 设计与范围 | **已收敛、分片实施**：[实施方案](docs/superpowers/specs/2026-11-12-agent-runtime-closure-design.md)沿现BackendProtocol／registry；运行中发现的准入补口已过§12独审，不引入新owner／公开字段／Schema | 主控唯一writer；三个具名agents只读研究／独审，Git与资源串行 |
-| G1 正常运行＋Agent首纵切 | **进行中**：正常登录／核心运行已恢复；BFF启动、供应商流错误分类、单次准入与明确拒绝已交候选，并实测正常浏览器拒绝／刷新。下一步普通Chat后端选择与Custom API解耦，同时恢复Storage／Capability正常配置；再完成真实模型→Skill→MCP→沙箱→FINAL。供应商当前尚无正常正文，不以负路径替代首片 | Agent现配置／Factory／profile／sandbox；Root恢复既有本地材料／资源与实际验收；不动Task B控制面 |
+| G1 正常运行＋Agent首纵切 | **进行中**：正常登录／核心运行已恢复；BFF启动、供应商流错误分类、单次准入与明确拒绝已交候选，并实测正常浏览器拒绝／刷新。普通Chat后端解耦已提交c2c563e并激活官方Worker；Storage／Capability已ready。正在补真实Skill导入正常环境接线，再完成真实模型→Skill→MCP→沙箱→FINAL。供应商当前尚无正常正文，不以负路径替代首片 | Agent现配置／Factory／profile／sandbox；Root恢复既有本地材料／资源与实际验收；不动Task B控制面 |
 | G2 产物来源闭合 | **待G1**：过程文件与FINAL两种事实分别验收，exact run/version/bytes可恢复；不把scratch output_path与同名workspace文件冒同源。指定过程版本直接交付同字节FINAL需沿原owner API裁决后再实施，不暗加复制／工具入口 | Agent／Storage现交付与不可变版本消费者；主控把控设计增量 |
 | G3 AG-UI／AI SDK | **候选方向已核**：live目前丢SDK chunks、正文仍自拼，历史才使用SDK。推荐现decoder→mapper→SDK reader唯一正文装配；engine仍管命令／cursor／恢复。活动显示按稳定业务ID收敛；准入失败文案应覆盖资金／权限，不把资金拒绝只解释成模型权限；不暴露raw reasoning/tool payload、不再造useChat提交／恢复链 | App独立切片；同文件Share实际hunk保护，现contract默认不增量 |
 | G4 首页与文档／集成收口 | **候选方向**：/app保持单Composer，通用任务先行、工具按需展开；补真实加载／错误、窄屏／键盘／长草稿。参考Manus公开说明，可视对照尚未做。更新产品/API适用文档（Agent内部API文档2处已存历史v2 proto链接在此收尾，不恢复旧协议），停写验收后自有PR合main／清本轮topic | App首页已有组件/CSS，Root精确组合；不改后台／营销站或重做品牌 |
@@ -25,7 +25,9 @@
 - **实际链路结果**：首次发送因既有BFF Agent开关false而503；核队列后启用，原请求202准入。System probe被本机DNS解析198.18/15且无精确host许可拒绝；仅把现有provider hostname加入既有配置后，正式resolve200，未关闭地址校验／改key／伪造health。
 - **正常负路径已补验**：官方Worker激活源码432bd322、无observer；真实浏览器新任务→BFF→Agent→Billing余额拒绝→AG-UI显示model_access_denied，刷新一致。owner为denied＋sealed1＋dispatch0；financial pending仍为原2条，无新增。不把这条候选负路径称真实供应商／Skills／沙箱／FINAL通过。页面文案仍偏模型权限，随G3纠正。
 - **资金与供应商边界**：当前开发账户available0／held20，20不是已确认扣费；未知usage未补零／退款。原2条requested_unknown不凭历史日志／当前admission0回填denied，保原恢复机制。此前把502行误读response-invalid的判断已撤回，422 schema有效；供应商stream APIError的现checkpoint仅核到overload标记，未获得确切供应商错误码，不盲重试／追加积分。
-- **接线准备**：Storage正式配置可解析、尚未启动；Capability配置仍有已退休项，且缺现执行purpose和MCP private keyring。主控下一步核原持久材料／当前加密行并恢复配置，不随机替换已有加密密钥、不改Task B源码；启动前盘点它的旧队列副作用。不是新OAuth／配置平台任务。
+- **正常 owner 与沙箱已接线**：恢复原 MCP keyring（未替换现加密行密钥），移除本地退休配置并按现协议配对 Capability→IAM执行 purpose；Storage／Capability正式源码health/ready200，七个正常核心HTTP owner就绪。Agent→Platform／Storage现服务凭据已配对；旧Worker在队列无pending、仅本人既存财务unknown时正常drain退出，官方Worker现激活Agent c2c563e，普通Chat显式Docker，不选Custom API也能执行。配置/凭据/进程证据留ignored。
+- **普通沙箱组件已交候选**：Agent c2c563e已推原#47；配置/Factory冻结与清理共用原backend，Docker主容器通用限额、无provider scratch捕获已解耦。停写默认3626 PASS／955 deselected，全Ruff／pyright／contract／build通过；真实Docker三个定向用例PASS（含inspect、root只读/workspace可写、scratch/recover同源区分和回收）。scratch初轮fixture漏建目录已仅修测试再验；不冒整个真实产品链闭环。
+- **真实 Skill 准备进行中**：专用开发账号保持platform_admin=false，仅本地operator沿原动态角色增create_draft/install；正常浏览器原上传由skill_forbidden越过授权，现Storage CreateUpload500导致local_skill_import_dependency_unavailable，发生在文件bytes上传前。主控保原文件/命令，子代理定向诊断，不修改Task B、不放宽认证、不用旧验收Skill冒真实产品。
 - **仍未运行**：本轮真实Skill/MCP／沙箱产物旅程、AG-UI单轨实现、首页可视改造。Task B四PR／源码写区不动。私有配置、凭据、数据库备份与原始诊断均在ignored目录，不进Git。
 
 ### 已确认的边界

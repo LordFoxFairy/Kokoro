@@ -4,15 +4,15 @@
 
 用户要求优先真实Agent／Skills／MCP／沙箱／产物，再打磨AG-UI与/app首页。机器Goal为active，唯一状态看[TODO](../todo.md)。本轮基线Root07241f03；[首片设计](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)已独审，普通后端复用原BackendProtocol／registry，未新增平台。Agent已有下述候选生产修复；成功模型／Skills／MCP／沙箱／FINAL整体尚未闭环。
 
-正常持久运行已恢复：复用原基础设施及凭据，按canonical有备份补现有BFF／Agent schema drift，未重写业务行／清卷；五个HTTP服务health/ready实际200，独立Agent Worker运行。用户全权本地授权后，专用开发账号经原IAM注册／SMTP验证，operator补普通member，已正常浏览器登录。Billing原CreditService事务先发10、再为定向供应商诊断发10（累计20个非现金开发积分），首笔真实页面刷新及+10流水已核；不是管理员HTTP或邀请旅程通过，不伪造Session、不直接改余额。
+正常持久运行已恢复：复用原基础设施及凭据，按canonical有备份补现有BFF／Agent schema drift，未重写业务行／清卷；七个核心HTTP服务health/ready实际200，独立Agent Worker运行。用户全权本地授权后，专用开发账号经原IAM注册／SMTP验证，operator补普通member，已正常浏览器登录。Billing原CreditService事务先发10、再为定向供应商诊断发10（累计20个非现金开发积分），首笔真实页面刷新及+10流水已核；不是管理员HTTP或邀请旅程通过，不伪造Session、不直接改余额。
 
-BFF正常源码启动修复ee62845已推自有[Draft #27](https://github.com/LordFoxFairy/kokoro-bff/pull/27)，未合main；主控43项相关回归、lint／typecheck／build通过。Agent1f20393精确承接SDK基类APIError为model_unavailable/false；432bd322实现单次reserve、已有pending只recover，以及严格余额拒绝在原Run/lease锁内原子封存denied/not_dispatched。独审发现recover迟到ACK取消缺检查，主控真PG先RED再修后GREEN；最终Approved。focused unit262 PASS／4标记deselected、真实PG54 PASS／0 SKIP、全Pyright／Ruff／contract／build通过；完整默认门留Agent整片收口一次，不称全仓绿。自有[Agent #47](https://github.com/LordFoxFairy/kokoro-agent/pull/47)为Draft，未合main、Root gitlink尚未更新。
+BFF正常源码启动修复ee62845已推自有[Draft #27](https://github.com/LordFoxFairy/kokoro-bff/pull/27)，未合main；主控43项相关回归、lint／typecheck／build通过。Agent1f20393精确承接SDK基类APIError为model_unavailable/false；432bd322实现单次reserve、已有pending只recover，以及严格余额拒绝在原Run/lease锁内原子封存denied/not_dispatched。独审发现recover迟到ACK取消缺检查，主控真PG先RED再修后GREEN；最终Approved。focused unit262 PASS／4标记deselected、真实PG54 PASS／0 SKIP、全Pyright／Ruff／contract／build通过；本轮后续普通沙箱切片停写默认3626 PASS／955 deselected，不称Root全组合已验。自有[Agent #47](https://github.com/LordFoxFairy/kokoro-agent/pull/47)为Draft，未合main、Root gitlink尚未更新。
 
-正常官方Worker已激活源码432bd322，无诊断observer。真实已登录浏览器新任务经BFF→Agent→实际Billing余额拒绝，AG-UI显示model_access_denied，刷新一致；owner为denied、sealed1、dispatch0，原financial pending2条未增加。页面文案仍偏权限，G3一并纠正；这是候选负路径，不代表成功模型／Skill/MCP／沙箱／FINAL或Root精确组合通过。
+正常官方Worker现激活源码c2c563e（普通Docker/Platform/Storage配置），无诊断observer；下述浏览器负路径在432bd322实测。真实已登录浏览器新任务经BFF→Agent→实际Billing余额拒绝，AG-UI显示model_access_denied，刷新一致；owner为denied、sealed1、dispatch0，原financial pending2条未增加。页面文案仍偏权限，G3一并纠正；这是候选负路径，不代表成功模型／Skill/MCP／沙箱／FINAL或Root精确组合通过。
 
 System正式resolve初503由provider DNS落198.18/15且未获精确host许可导致；沿既有配置只给当前provider hostname opt-in后恢复200。供应商后续SSE抛APIError，现checkpoint固定标记核到overload，细因缺确切供应商代码，仍无正常正文。开发积分当前available0／held20，20不是确认扣费，不补零／擅自退款；旧2条封存unknown不凭日志或当前404改denied。供应商错误不阻断独立普通后端接线，不重复模型重试。
 
-下一步恢复Storage／Capability现正常配置并完成普通任务可插拔后端：Storage parser已过，Capability仍留退休项且缺执行purpose／MCP private keyring；先核原材料与当前加密行，不随机换密钥。两owner尚未启动，Capability启动旧release/cleanup副作用由主控盘点。不扩Task B／Mori／部署，所有秘密、诊断及备份仍仅本地ignored。
+Storage／Capability已用原持久配置恢复，实际health/ready200；原MCP keyring与当前密文版本核等，未随机替换密钥，启动前旧cleanup队列已盘点。Agent c2c563e普通Chat backend选择与Custom API解耦已推原#47；真实Docker执行、scratch/recover、容器限制及清理三项定向PASS，正常Worker已激活。真实Skill导入已从账号角色403推进到Storage CreateUpload500，当前定向排查本地依赖接线；文件尚未上传成功，不冒Skill通过。专用账号仅增现动态角色create_draft/install，保留member和platform_admin=false，不伪造Session或改生产授权。Task B／Mori／部署不动，所有秘密、诊断及备份仍仅本地ignored。
 
 原冻结recipe在装配前核request／lease并拒不兼容配置，保留它；scratch过程版本与普通workspace交付不是同一来源。App live入口丢SDK chunks、实时正文仍自拼，历史slot才用SDK reader；这些现态不由旧“已AI SDK”描述覆盖。
 

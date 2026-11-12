@@ -28,7 +28,7 @@
 - **推荐：修现有插拔接线。** 受信 Worker 配置选择普通 Chat backend；复用原 connector、SDK loop、租约、profile、Storage 交付与事件链。改动限 Agent 配置／装配／相关实际耦合处。
 - 不采用重写执行平台：不建 SandboxManager、通用工具注册中心、第二 runner、内部 OAuth/token/SDK 或新事件总线；现接口已具备扩展点。
 
-使用已有 `Backend` 类型和 registry，不再声明一套 provider 枚举。新增普通 Chat 配置时遵守本仓 config.py／config_file.py／example 唯一映射，不改浏览器 Run body。普通产品任务不因此获得宿主 `local_shell`。已有 custom 扩展点保留；不支持某项授权环境的后端明确失败，不假设所有插件自动具备 Custom API 安全能力。
+使用已有 `Backend` 类型和 registry，不再声明一套 provider 枚举。 普通Chat选择使用`KOKORO_AGENT_CHAT_BACKEND`／YAML `sandbox.chat_backend`；缺省不覆盖受信Feature声明，显式配置由现SandboxSettings验证真实参数，禁止host local_shell。Factory只在一处生成effective Feature，供build和cleanup共用，原catalog保持不变。新增普通 Chat 配置时遵守本仓 config.py／config_file.py／example 唯一映射，不改浏览器 Run body。普通产品任务不因此获得宿主 `local_shell`。已有 custom 扩展点保留；不支持某项授权环境的后端明确失败，不假设所有插件自动具备 Custom API 安全能力。
 
 ## 4. 后端选择、冻结与恢复
 
