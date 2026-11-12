@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)和[最新维护§16](#16-r-05-mori同源adapter修复)；第1～7节是原始快照，不把已修问题继续当当前故障。
+- 当前执行状态先读[唯一TODO](../../todo.md)和[最新主线§17](#17-主线范围纠偏与最小清理)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -558,3 +558,25 @@ Mori不成为身份owner，只消费Product在同一公开origin已建立的IAM�
 - **真实首轮失败保留：** 主控HTTP首测403，诊断显示mori_origin_rejected且BFF零准入。用同机最小HTTP回显定位Node24 fetch未发送指定Host（实际为内部127.0.0.1），而http.request正确传公开Host；仅改验收脚本后同旅程PASS，未放宽生产Host校验。首FAIL、诊断及最终PASS私有证据均保留，不将该夹具失败冒生产缺陷。
 
 R-05按原报告的adapter欠账范围收口，编号变为10收口／6遗留（4待处理、R-07／R-11部分完成）。Mori独立冷登录／Product挂载和Music owner上传／媒体等未接能力另列产品暂存，不借修代理冒音乐产品交付；其余Task B重叠项及App既存WIP交接仍保持。Root只更新精确Mori gitlink和现报告／CURRENT／唯一TODO，原inventory无Mori引用，不新造空活跃契约边；主控实际拓扑PASS、15条契约边／0违例、原Task A checkpoint PASS；Root自有PR承接该精确组合。
+
+## 17. 主线范围纠偏与最小清理
+
+日期：2026-11-11，基线Root9957b41d。用户明确重点是主工作台、BFF、IAM/OAuth及旧代码，不是Mori独立音乐产品。本轮停止Mori后续，产品待办退出唯一TODO；旧合并保留历史，不擅自回滚main，也不将其计作主线交付。原16编号排除范围外R-05后，主线15项为9收口／6遗留。以下只处理既有问题，不启动新一轮全仓扫描或认证重写。
+
+**独立写区与基线：** App main1e6b1aa5、BFF main58222407、IAM main9f260bb6，三者树分别等于原Root pins7182873f／a3e19062／cee88df4。每仓从非递归fetch后的main建自有codex/product-auth-cleanup；三聚焦writer隔离，主控独占Root、验收与Git。Task B App #49的package实际hunk是contract新增generator，未改check或Node类型，lock／vitest配置不在其清单；BFF #17的同policy实际hunk是三条账务business准入，不碰admitBrowserService尾部旧表。按实际区块保留对方改动，不操作其PR或分支。
+
+- **BFF旧代码：** kind:iam唯一生产caller先经过现原生／邀请闭集，旧Admin四项/jwks、/oauth2/token、/oauth2/userinfo、/oauth2/revoke没有可达消费者。仅browser-service-credential.policy.ts尾部改拒绝，在既有iam-protocol-relay-policy测试承接；保web-bff、Admin business及凭据校验。IAM自身对外端点／OAuth、BFF native relay、机器合同、生成物与Schema均不改。
+- **App R-11／R-15：** 仅package／lock及两条CI的验证步骤；App共享CURRENT与Task B有多处实际hunk，保持原文，由Root台账和本PR承接记录。Node类型对齐本组合既有22.20.1，pnpm／运行依赖保持；聚合check使用锁定pnpm原生正则sequential执行现全部contract:check:*，再lint／types／default test一次／build。独立contract、test:architecture、test入口及glob保持，现22项generated checks不减，Task B未来新增同模式检查自然承接。不新增runner、测试框架或删除断言；先在亲建最小fixture证明命令集合／重复次数／失败传播，最终主控只跑一次调整后的owner聚合门。
+- **IAM文档：** README当前0.20尚待consumer的叙述与canonical／SDK0.21及BFF正式pin不符，更新README和contract README当前段。introspection／Product client配置有真实调用，仍是必填：它们服务保留OAuth／资源授权分支，不表示普通Browser／BFF主链需OAuth换票。不删除这些配置、不改运行代码，不用文档变更重跑IAM全业务测试；历史版本／验收标题保留。
+
+本轮无新owner、Schema、API、SDK、token或缓存层；局部清理复用既有决定，无另建ADR／计划／准入表。亲建fixture不启动正常业务服务或共享资源，Mori／Task B／App既存WIP保护范围不动。以上是实施与最少验收边界，实际停写结果另补。
+
+### 停写验收与交付
+
+- **BFF旧允许表：** 自有[#22](https://github.com/LordFoxFairy/kokoro-bff/pull/22)正常合main；源码`22943ec3efa3709b130e89d24f15b1d0fbc072e5`、merge`545b1fd3b57b32ea68b4bdbe8c13b44233bf53ab`，合并树等于已验源。生产仅1行，现有test增加2个聚焦case／63行，原测试块完整保留。先正规build旧行为RED1失败／1通过，再修复GREEN11通过；主控独立build／lint／类型及policy／transport／native session／user admission四文件44通过／0跳过，1134输入摘要无漂移，独审CLEAR。初次默认formatter噪声已撤回，使用正式no-semi／160参数检查，不因格式扩大源码改动。published relay、generated、SDK、依赖与Schema不变；不重跑无关全默认／真实PG／Redis／浏览器。
+- **IAM文档：** 自有[#8](https://github.com/LordFoxFairy/kokoro-iam/pull/8)正常合main；源码`40cda8e32347b72b3932b496a5fe85c824e03136`、merge`421f36fe92cfaeff6e41c4cb0cc416f699cb0453`，合并树等于已验源。仅两文档，主控22本地链接、canonical／SDK／BFFconsumer版本和固定摘要事实、冻结hash／diff通过；没有运行源码或配置删除，不以此重跑IAM业务门。真实introspection／Product client配置及外部OAuth保留，普通BFF业务不新增换票。
+- **App R-11／R-15：** 自有[#55](https://github.com/LordFoxFairy/kokoro-app/pull/55)正常合main；源码`906f9c01bb77ced651637198a665a7465e0df016`、merge`c6131dde7a1653584a9a6391440dcbb83a58a75a`。最终仅package／lock／ci.yml／release-image.yml四路径；Task B共享CURRENT完全未改，记录归Root。主控独立把新lock的Node版本／SRI／specifier逆归一后与基线逐字相等，1200包图其它字段与运行resolver守恒，undici6.21不动；manifest只改types及check两键，两个workflow精确转换之外全字节相同，Cloudflare无此重复未动。
+- **编排与实际门：** 锁定pnpm原生命令在亲建fixture实跑：原Vitest3次→新1次，22项生成检查各1次；检查exit23时后续lint／test／build不进入，fixture已回收。主控冻结输入一次Node22.23.4／pnpm11.25完整check通过：22项生成检查、lint／类型、363文件6519测试／0失败／0跳过、production build，日志只一次Vitest启动，1558输入摘要前后不变；独审4路径CLEAR。不删测试断言或缩发现范围，不用数量推断收益；未单独跑Playwright／全产品，也未创建tag、运行release或部署。
+- **安装失败边界：** lock更新初次workspace-root保护拒绝，随后显式-w；offline frozen因供应链元数据缓存不全失败，并非类型或业务失败。保留原供应链策略，在线frozen29.3秒通过，实际Node类型22.20.1；registry额外deprecated元数据噪声已去除，原caret声明风格保留、lock精确固定。不禁策略、不借机刷新运行依赖，所有原失败保留。
+
+三个子仓自有本地／远程topic清理前均核精确tip、源为main祖先及合并树相等，checkout保留已验精确源。主线15项现为11收口／4遗留（R-03／R-06／R-14待原owner，R-07部分完成），旧BFF候选另已清理，不新增编号凑数。Task B PR和分支未操作，既存App WIP及产品暂存原样保留；Mori不计本轮进度。Root387项来源按320个真实提交Git blobs重新核摘要，原发行锚／consumer机器字节不机械换新；本次Root PR只承接精确组合与现台账。
