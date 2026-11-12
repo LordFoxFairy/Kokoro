@@ -1,5 +1,11 @@
 # Current Facts
 
+## 统一维护批次：App／BFF／IAM（2026-11-12）
+
+用户要求已建立一个统一机器Goal，不再逐微小问题开启一轮；阶段只维护[TODO](../todo.md)，范围／排除项与证据复用[报告§21](reports/2026-11-11-typescript-auth-admin-audit.md#21-统一维护goal与集中批次)。三面集中核查确认两项：App现body reader默认继承request.signal，BFF现JSON入口fatal UTF8；只替换两处现有逻辑，不加15秒入站策略、认证层或parser框架。IAM原生会话／账户／service+actor本轮未确认新项，不按OAuth关键字清理；坏百分号等疑点已用正式框架反例排除。
+
+App自有#56源码556dc0f0、BFF#26源码7c503f08均已合main且树等于已验源，自有topic已清。主控App一次完整owner check通过（22生成检查／lint／types／6522测试／build），BFF真实Chat HTTP损坏字节200→400且无新增写、相关150项／静态／build通过，冻结独审CLEAR。Root本PR锁两精确源，383引用按317真实Git blobs重核，拓扑／15边0违例／原checkpoint通过。机器Goal仅在本Root PR实际合入和最终clean核对后结束，不提前声称Git出口完成；Task B／Mori／部署与原owner遗留不动。
+
 ## 当前链路优化：职责对齐与上传入口收敛（2026-11-11）
 
 用户已批准保留 Browser→App 同源 adapter→BFF 产品应用后端→业务 owner 的主链，优先收短多余跳转、减少重复规则，不新增服务／认证层。现有[技术总览](kokoro-handbook/technical/00-system-overview.md#web-与后台的职责边界)已区分实际调用、文件数据面例外与未实施目标：BFF不是纯代理，AI SDK不是第二网络协议，部分Admin API仍回经Product App。管理回环与Hub拆分交Task B owner对齐，本轮不改其写区。
