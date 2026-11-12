@@ -1,3 +1,18 @@
+## 2026-11-12 Task B 正式接管：先保成果、再补最小缺口
+
+用户明确将Task B移交本会话主控 `/root`。本节是当前入口，以下历史记录保留各自时间／基线；不重开已交付Task A、不因旧待验表重新实现功能。唯一执行清单是[Root TODO](../../../todo.md)，原功能范围见[Task B交接](../../handoffs/2026-10-30-task-b-capabilities-account.md)。
+
+| 项 | 当前事实／下一动作 | 负责人／写区 |
+| --- | --- | --- |
+| 原PR与组合 | Root#67原477562a4、App#49 d6dd3cd0、BFF#17 1e6765b3、Capability#12 e068fcaa；主控先合入Rootmain1092d99b，保原14提交／468行记录和12个已验gitlink，不直接激活旧指针。App/BFF有明显主线分叉，须按功能保双方成果 | 主控唯一Git／Root台账／资源；不强推或删除旧worktree |
+| Capability已包含成果 | Root pin24094960与#12 e068fcaa源码树相同，后者仅多merge提交；MCP新授权、API隔离和Skills旧“待提交”叙述不能当当前缺功能 | api_perf_audit先只读核验；不重造owner |
+| R-07首片 | check仍先generate并改写生成文件。沿现脚本生成到自有临时目录、比较完整集合和字节，显式generate继续写；失败保持原输入并回收自有临时目录。无wire、数据模型或业务运行变化 | api_perf_audit单writer：package／现normalizer与直接contract check／相关测试；主控交接精确写区后实施 |
+| R-14后继 | singleton client永久origin DNS pin限制合法独立操作轮换。只把pin约束到一次有界OAuth操作，保同操作漂移拒绝／公网验证／实际IP连接／Host／SNI／取消；不清共享Map处理并发 | 同owner后继，先在现技术设计写局部生命周期结论；不改协议／Schema |
+| B-01／B-02 | 先固定消费版本／实际加载源；只补新授权刷新删除、冲突／撤权／迟到／秘密边界。已有Docker执行／清理／刷新收据复用，不跑新模型凑证据 | owner→BFF→App按依赖；原PR内交付 |
+| 其余功能域 | Skills作者版本／安装使用、账户／Team／Share／模型积分与对应Admin按现收据盘点，仅实现当前缺口；视觉／多语言／性能／文档随片收尾 | composer_ui_audit先只读；主控验收和写区裁决 |
+
+交付：各仓沿原PR，本地受影响风险和相应owner门通过后正常合main、Root固定精确组合并清本轮分支。不部署、不清卷，不引入内部OAuth、重复认证／缓存／SDK或无用层。真实支付继续关闭、完整云E2B沿已接受边界暂存；外部供应商权限缺口只约束对应末端，不伪造成功、不暂停独立工作。机器Goal当前为空，未隐式另建；TODO与本节承担当前续接。
+
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
 
 ### 2026-10-29 后继：连接器菜单顺序已正常修正

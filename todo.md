@@ -2,7 +2,22 @@
 
 更新：2026-11-12。唯一执行清单；当前批次基线Root `4d6c29f4`，不重开已交付Task A，不重复扫描凑问题。
 
-## 当前批次：Composer体验＋页面请求性能
+## 当前任务：Task B 正式接管（2026-11-12）
+
+用户已把 Task B 移交本主控，历史“Task B 不动”仅约束当时 Task A／UI 批次，不再排除本任务。沿[原功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)和[既有有效计划](docs/superpowers/plans/2026-09-03-kokoro-production-closure.md)推进，不重开已交付 Task A、不另起任务中心。以下是接管后的真实剩余队列，不把原15个功能域当15个新故障。
+
+- [x] B-T0 接管：确认原 Root #67、App #49、BFF #17、Capability #12 及当前 main；主控保原PR历史、全部12个已验 main gitlink和正常运行源，不盲激活旧组合。Root原分支已合入当前main；原468行Task B记录保留。
+- [ ] B-T1／R-07（进行中，api_perf_audit）：Capability contract check 改为只读；显式generate仍能写。临时生成后完整集合／字节比较，覆盖漂移与异常回收；不改 wire、Schema、生成器算法或正常服务。
+- [ ] B-T2／R-14（后继）：OAuth DNS pin 限定一次有界操作，保同操作DNS漂移拒绝、实际IP连接／Host／SNI／取消，不清共享Map冒修复；先补局部生命周期设计。
+- [ ] B-T3（只读盘点中，composer_ui_audit；集成主控）：App/BFF原PR与最新main按真实功能合并，保原 Task B成果和Task A修复；不整树择一、不强推。共享入口／契约先由owner交付。
+- [ ] B-01／B-02：消费者与当前实际加载源配对后，只补MCP显式断开→新授权→Prepare→刷新／删除，以及Custom API缺失的冲突／撤权／迟到与秘密边界验证。已有真实Docker成功／取消／刷新不重跑；完整云E2B沿已接受边界暂存。
+- [ ] B-03～B-05：核Skills已有作者／版本／安装／使用收据与当前源码，仅补入口一致性、剩余权限及后台缺口，不重新造功能。
+- [ ] B-06～B-13：按原表核账户会话、设置／个性化、团队／分享、模型／积分和对应Admin；复用已有成果，补实际缺口后逐片交付。真实支付继续关闭，不新增内部OAuth／认证层。
+- [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。原PERF-02 pins重复准入、模型目录取消和icon404纳入当前owner核验，不再以“Task B不动”为由搁置，也不抢跑改未核明的事实。
+
+主控唯一管理Root台账／Git／资源／最终验收；两agents先独立调查，R-07单writer。每仓沿原PR，完整验收后正常合main并清本轮分支；不部署、不清卷、不删除归属未明worktree。机器Goal当前为空，本轮先以唯一TODO推进，未从普通任务隐式创建Goal。
+
+## 上批已交付：Composer体验＋页面请求性能
 
 [诊断与最小方案](docs/reports/2026-11-12-composer-ui-and-api-performance.md)。主控先真实采样再修根因，不把单截图通过冒全站UI完善；不为“性能”增加cache／新认证层。
 

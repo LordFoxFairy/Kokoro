@@ -1,6 +1,14 @@
 # Current Facts
 
-## 当前批次：Composer菜单与首页无用请求（2026-11-12）
+## 当前任务：Task B 已移交本主控（2026-11-12）
+
+按用户最新指令接手技能／连接器／账户协作全链路，原Task A／UI批次的“Task B不动”保留为历史范围，不再约束此次任务。唯一执行清单是[TODO](../todo.md)，功能范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)，进展／设计复用既有production-closure计划。
+
+原Root #67 head477562a4与当前main1092d99b分叉；主控先非递归fetch并合入当前main，原Task B14个提交／468行记录全部保留。所有12个gitlink仍固定当前已验main组合，无业务源／正常服务变化；初始自动merge保留的旧Scheduler/System指针已在本地发布前纠正，最终逐一核等，不以清冲突代替组合验收。Capability pin24094960与PR#12 e068fcaa源码树相同，功能不是待重做；App#49／BFF#17则已落后main，需要保双方成果的实际集成，不盲切旧分支运行。
+
+首片R-07只读contract check，后继R-14操作级DNS pin，再按B-01／B-02补缺失旅程；账户／Skills／后台同时先只读核当前证据。多agents分区，主控唯一台账／Git／资源与验收。原支付关闭和完整云E2B暂存边界保持；不部署／清卷，不删除未交接worktree。
+
+## 上批已交付：Composer菜单与首页无用请求（2026-11-12）
 
 用户已确认优先定位／间距／选中态／长名称，同时关注接口性能。本批按[报告](reports/2026-11-12-composer-ui-and-api-performance.md)的最小方案完成局部菜单与读取职责优化，不删模型／改默认或增加缓存／认证层。主控focused411、完整lint／非增量TS／build、原预览runner中英1000／320 fine/coarse八例通过；17个源码／测试输入冻结核等，两个独立writer交叉审查CLEAR。首轮键盘驱动异步焦点失败与修正如实保留。
 
