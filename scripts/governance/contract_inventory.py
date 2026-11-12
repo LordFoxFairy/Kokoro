@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import base64
+import gzip
 import hashlib
+import io
 import json
 import re
 import subprocess
+import tarfile
+import tomllib
+import zlib
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -28,7 +34,6 @@ EXPECTED_EDGE_IDS = frozenset(
         "EDGE-CAPABILITY-STORAGE",
         "EDGE-CAPABILITY-IAM",
         "EDGE-SCHEDULER-BFF",
-        "EDGE-SCHEDULER-AGENT",
     }
 )
 EXPECTED_VIOLATION_IDS = frozenset()
@@ -38,9 +43,52 @@ EXACT_SEMVER_PATTERN = re.compile(
 )
 VERSION_MANIFEST_KINDS = {
     "code_generator_version": frozenset({"npm-package-json"}),
-    "runtime_package_version": frozenset({"npm-package-json", "plain-version-file"}),
+    "runtime_package_version": frozenset(
+        {"npm-package-json", "plain-version-file", "uv-lock", "npm-file-archive"}
+    ),
     "producer_runtime_version": frozenset({"go-mod"}),
 }
+
+
+AGENT_SYSTEM_EDGE = "EDGE-AGENT-SYSTEM"
+AGENT_STORAGE_EDGE = "EDGE-AGENT-STORAGE"
+AGENT_STORAGE_PIN = "contract/storage/v3/provenance.json"
+AGENT_STORAGE_VENDOR = "contract/storage/v3"
+AGENT_PLATFORM_EDGE = "EDGE-AGENT-CAPABILITY"
+AGENT_PLATFORM_VENDOR = "contract/platform/v1"
+AGENT_PLATFORM_PIN = f"{AGENT_PLATFORM_VENDOR}/provenance.json"
+PLATFORM_PROTO = "kokoro/platform/v1/platform_runtime.proto"
+MCP_PROTO = "kokoro/platform/v1/mcp_runtime.proto"
+CUSTOM_API_PROTO = "kokoro/platform/v1/custom_api_runtime.proto"
+COMMON_PROTO = "kokoro/common/v1/common.proto"
+STORAGE_REPOSITORY = "apps/kokoro-storage"
+STORAGE_PROTO = "kokoro/storage/v3/storage.proto"
+AGENT_SYSTEM_GENERATOR = "not-applicable:handwritten-agent-system-http"
+AGENT_REPOSITORY = "apps/kokoro-agent"
+SYSTEM_REPOSITORY = "apps/kokoro-system"
+SYSTEM_OPENAPI = "contract/openapi/system.openapi.json"
+CONTRACT_PROVENANCE = "contract/provenance.json"
+SYSTEM_CLIENT = "src/kokoro_agent/clients/system.py"
+CAPABILITY_IAM_EDGE = "EDGE-CAPABILITY-IAM"
+CAPABILITY_REPOSITORY = "apps/kokoro-capability"
+IAM_REPOSITORY = "apps/kokoro-iam"
+IAM_OPENAPI = "contract/openapi/iam.internal.v1.json"
+IAM_SDK_PACKAGE = "@kokoro/iam-client"
+IAM_SDK_GENERATOR = "@hey-api/openapi-ts"
+IAM_SDK_MANIFEST = "sdk/package.json"
+# IAM does not store tarballs in the source tree. Anchor the independently
+# packed clean-owner release here, not in the consuming repo's lock/evidence.
+IAM_SDK_RELEASE_ARCHIVES = {
+    (
+        "b6a9745b340149808afb1aae357574d0aa7bbad3",
+        "0.21.0",
+    ): "458da2ba96daa7784f0cd296b92fc0e428232e49119c0ca25485788ffc1dcad9",
+}
+IAM_SDK_VERIFIER = "src/infrastructure/iam/execution-authorization-verifier.ts"
+SYSTEM_OPERATIONS = (
+    "POST /v1/system/model-catalog/resolve",
+    "POST /v1/system/model-catalog/credentials/read",
+)
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -389,6 +437,664 @@ def _verify_go_mod_assertion(
         errors.append(f"{label}: go.mod version {match.group(1)!r} != {version!r}")
 
 
+def _verify_agent_uv_lock(
+    label: str, package_name: str, version: str, blob: bytes, errors: list[str]
+) -> None:
+    try:
+        lock = tomllib.loads(blob.decode("utf-8"))
+    except (UnicodeDecodeError, tomllib.TOMLDecodeError):
+        errors.append(f"{label}: uv.lock must be valid UTF-8 TOML")
+        return
+    packages = lock.get("package")
+    if (
+        type(lock.get("version")) is not int
+        or lock["version"] != 1
+        or not isinstance(packages, list)
+        or any(not isinstance(package, dict) for package in packages)
+    ):
+        errors.append(f"{label}: uv.lock must contain version 1 package records")
+        return
+    projects = [
+        package for package in packages if package.get("name") == "kokoro-agent"
+    ]
+    if (
+        len(projects) != 1
+        or projects[0].get("source") != {"editable": "."}
+        or "resolution-markers" in projects[0]
+    ):
+        errors.append(
+            f"{label}: uv.lock must have one unconditional editable kokoro-agent root"
+        )
+        return
+    dependencies = projects[0].get("dependencies")
+    if (
+        not isinstance(dependencies, list)
+        or any(
+            not isinstance(dependency, dict)
+            or not isinstance(dependency.get("name"), str)
+            or not dependency["name"].strip()
+            for dependency in dependencies
+        )
+        or [
+            dependency
+            for dependency in dependencies
+            if dependency["name"] == package_name
+        ]
+        != [{"name": package_name}]
+    ):
+        errors.append(
+            f"{label}: uv.lock must have one direct runtime {package_name} dependency"
+        )
+    matches = [package for package in packages if package.get("name") == package_name]
+    source = matches[0].get("source") if len(matches) == 1 else None
+    if (
+        EXACT_SEMVER_PATTERN.fullmatch(version) is None
+        or len(matches) != 1
+        or matches[0].get("version") != version
+        or "resolution-markers" in matches[0]
+        or not isinstance(source, dict)
+        or set(source) != {"registry"}
+        or not isinstance(source["registry"], str)
+        or not source["registry"].strip()
+    ):
+        errors.append(
+            f"{label}: uv.lock must resolve one registry {package_name} at {version!r}"
+        )
+
+
+def _strict_json_blob(blob: bytes) -> Any:
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON field")
+            result[key] = value
+        return result
+
+    def invalid_constant(value: str) -> Any:
+        raise ValueError(f"invalid JSON constant: {value}")
+
+    return json.loads(
+        blob.decode("utf-8"), object_pairs_hook=unique, parse_constant=invalid_constant
+    )
+
+
+def _verify_agent_connect_codegen(
+    root: Path,
+    label: str,
+    edge: dict[str, Any],
+    assertion: dict[str, Any],
+    errors: list[str],
+) -> None:
+    version = _text(assertion, "version", label, errors)
+    if EXACT_SEMVER_PATTERN.fullmatch(version) is None:
+        errors.append(f"{label}: generator must be an exact semantic version")
+        return
+    _verify_declared_package_version(
+        label,
+        _text(assertion, "declared_value", label, errors),
+        "protoc-gen-connectrpc",
+        version,
+        errors,
+    )
+    blob = _verify_blob_reference(root, label, assertion, errors)
+    if blob is None:
+        return
+    platform = edge["id"] == AGENT_PLATFORM_EDGE
+    owner_name, owner_repo, vendor_prefix, inputs = (
+        (
+            "kokoro-platform",
+            CAPABILITY_REPOSITORY,
+            AGENT_PLATFORM_VENDOR,
+            (COMMON_PROTO, PLATFORM_PROTO, MCP_PROTO, CUSTOM_API_PROTO),
+        )
+        if platform
+        else (
+            "kokoro-storage",
+            STORAGE_REPOSITORY,
+            AGENT_STORAGE_VENDOR,
+            (COMMON_PROTO, STORAGE_PROTO),
+        )
+    )
+    try:
+        pin = _strict_json_blob(blob)
+        owner_commit = edge["owner"]["repository_commit"]
+        if not isinstance(pin, dict) or (
+            pin.get("owner"),
+            pin.get("owner_repository"),
+        ) != (owner_name, owner_repo):
+            raise ValueError("Agent Connect receipt owner pin differs")
+        release = pin.get("owner_commit")
+        if platform:
+            if release != owner_commit:
+                raise ValueError("Agent Connect receipt owner pin differs")
+        else:
+            if not isinstance(release, str):
+                raise ValueError(
+                    "Agent Storage release requires a canonical commit OID"
+                )
+            release = _canonical_object_id(release)
+            owner_commit = _canonical_object_id(owner_commit)
+            ancestry = subprocess.run(
+                [
+                    "git",
+                    "--no-replace-objects",
+                    "merge-base",
+                    "--is-ancestor",
+                    release,
+                    owner_commit,
+                ],
+                cwd=root / owner_repo,
+                capture_output=True,
+                check=False,
+            )
+            if ancestry.returncode:
+                raise ValueError("Agent Storage release must be a runtime ancestor")
+            for path in (
+                *(f"contract/proto/{source}" for source in inputs),
+                CONTRACT_PROVENANCE,
+            ):
+                if git_blob(root, owner_repo, release, path) != git_blob(
+                    root, owner_repo, owner_commit, path
+                ):
+                    raise ValueError(
+                        f"Agent Storage runtime differs from release: {path}"
+                    )
+        agent_commit = assertion["repository_commit"]
+        sources = []
+        combined = hashlib.sha256()
+        for source in inputs:
+            owner_path = f"contract/proto/{source}"
+            vendor = f"{vendor_prefix}/proto/{source}"
+            owner_bytes = git_blob(root, owner_repo, owner_commit, owner_path)
+            if owner_bytes != git_blob(root, AGENT_REPOSITORY, agent_commit, vendor):
+                raise ValueError(f"Agent Connect vendor differs from owner: {source}")
+            combined.update(owner_bytes)
+            sources.append(
+                {
+                    "owner_path": owner_path,
+                    "path": vendor,
+                    "sha256": sha256_bytes(owner_bytes),
+                }
+            )
+        if platform:
+            config_path = f"{vendor_prefix}/codegen.json"
+            config_blob = git_blob(root, AGENT_REPOSITORY, agent_commit, config_path)
+            config = _strict_json_blob(config_blob)
+            expected = {
+                "version": "v1",
+                "inputs": [f"proto/{source}" for source in inputs],
+                **{
+                    key: _json_pointer(pin, f"/codegen/{key}")
+                    for key in (
+                        "buf_bin",
+                        "protoc_gen_py",
+                        "protoc_gen_connectrpc",
+                        "connectrpc_parameter",
+                    )
+                },
+            }
+            for tool in ("buf_bin", "protoc_gen_py"):
+                value = expected[tool]
+                if (
+                    not isinstance(value, str)
+                    or EXACT_SEMVER_PATTERN.fullmatch(value) is None
+                ):
+                    raise ValueError(
+                        f"Agent Platform {tool} must be an exact semantic version"
+                    )
+            custom = _json_pointer(pin, "/custom_api_runtime/sources")
+            if (
+                pin.get("sources") != sources[:-1]
+                or not isinstance(custom, list)
+                or [
+                    ref
+                    for ref in custom
+                    if isinstance(ref, dict) and ref.get("path") == sources[-1]["path"]
+                ]
+                != sources[-1:]
+                or pin.get("generation_inputs")
+                != [{"path": config_path, "sha256": sha256_bytes(config_blob)}]
+                or config != expected
+            ):
+                raise ValueError(
+                    "Agent Platform sources or codegen configuration differ"
+                )
+        else:
+            provenance = git_blob(root, owner_repo, owner_commit, CONTRACT_PROVENANCE)
+            provenance_path = f"{vendor_prefix}/owner-provenance.json"
+            if provenance != git_blob(
+                root, AGENT_REPOSITORY, agent_commit, provenance_path
+            ):
+                raise ValueError("Agent Storage vendor provenance differs from owner")
+            provenance_data = _strict_json_blob(provenance)
+            if (
+                not isinstance(provenance_data, dict)
+                or provenance_data.get("files") != list(inputs)
+                or provenance_data.get("combinedSha256") != combined.hexdigest()
+                or pin.get("sources") != sources
+                or pin.get("owner_provenance")
+                != {
+                    "path": provenance_path,
+                    "sha256": sha256_bytes(provenance),
+                    "combined_sha256": combined.hexdigest(),
+                }
+            ):
+                raise ValueError("Agent Storage source or provenance digest differs")
+        if (
+            _json_pointer(pin, "/codegen/protoc_gen_connectrpc") != version
+            or _json_pointer(pin, "/codegen/connectrpc_parameter") != "io=async"
+            or f"connectrpc@{_json_pointer(pin, '/runtime/connectrpc')}"
+            != edge["runtime_package_version"]
+        ):
+            raise ValueError(
+                "Agent Connect generation or runtime version differs from receipt"
+            )
+    except (KeyError, TypeError, ValueError) as error:
+        errors.append(f"{label}: {error}")
+
+
+def _verify_agent_system_receipt(
+    root: Path, edge: dict[str, Any], errors: list[str]
+) -> None:
+    label = f"{AGENT_SYSTEM_EDGE}: System consumer receipt"
+    evidence = edge.get("evidence")
+    try:
+        required = {}
+        for path in (SYSTEM_CLIENT, CONTRACT_PROVENANCE):
+            references = (
+                [
+                    ref
+                    for ref in evidence
+                    if isinstance(ref, dict)
+                    and ref.get("repository_path") == AGENT_REPOSITORY
+                    and ref.get("path") == path
+                ]
+                if isinstance(evidence, list)
+                else []
+            )
+            if len(references) != 1:
+                raise ValueError(f"requires one pinned Agent {path} reference")
+            blob = _verify_blob_reference(root, label, references[0], errors)
+            if not blob or not blob.strip():
+                raise ValueError(f"missing Agent {path} blob")
+            required[path] = blob
+
+        owner = edge["owner"]
+        commit = owner["repository_commit"]
+        provenance = git_blob(root, SYSTEM_REPOSITORY, commit, CONTRACT_PROVENANCE)
+        producer = _json_pointer(_strict_json_blob(provenance), "/openapi")
+        sources = _json_pointer(producer, "/sourceSha256")
+        if (
+            producer.get("file") != "openapi/system.openapi.json"
+            or producer.get("sha256") != owner["contract_sha256"]
+            or not isinstance(sources, dict)
+            or not sources
+        ):
+            raise ValueError("System owner provenance differs from the pinned OpenAPI")
+        for path, digest in sources.items():
+            if sha256_bytes(git_blob(root, SYSTEM_REPOSITORY, commit, path)) != digest:
+                raise ValueError(f"System source digest differs at {path}")
+        openapi = _strict_json_blob(
+            git_blob(root, SYSTEM_REPOSITORY, commit, SYSTEM_OPENAPI)
+        )
+        for operation in SYSTEM_OPERATIONS:
+            method, path = operation.split(" ", 1)
+            operations = _json_pointer(openapi, "/paths")
+            if not isinstance(operations.get(path, {}).get(method.lower()), dict):
+                raise ValueError(f"System OpenAPI lacks {operation}")
+        dependencies = _json_pointer(
+            _strict_json_blob(required[CONTRACT_PROVENANCE]), "/consumer_dependencies"
+        )
+        if not isinstance(dependencies, list):
+            raise ValueError("Agent consumer_dependencies must be a list")
+        matches = [
+            dependency
+            for dependency in dependencies
+            if isinstance(dependency, dict)
+            and dependency.get("owner") == "kokoro-system"
+        ]
+        expected = {
+            "owner": "kokoro-system",
+            "contract": SYSTEM_OPENAPI,
+            "version": owner["contract_version"],
+            "source_commit": commit,
+            "sha256": owner["contract_sha256"],
+            "provenance": {
+                "path": CONTRACT_PROVENANCE,
+                "sha256": sha256_bytes(provenance),
+            },
+            "source_sha256": sources,
+            "operations": list(SYSTEM_OPERATIONS),
+        }
+        if matches != [expected]:
+            raise ValueError(
+                "Agent receipt differs from the pinned System owner or operations"
+            )
+    except (AttributeError, KeyError, TypeError, ValueError) as error:
+        errors.append(f"{label}: {error}")
+
+
+def _iam_sdk_archive_members(blob: bytes) -> dict[str, bytes]:
+    limit = 4 * 1024 * 1024
+    with gzip.GzipFile(fileobj=io.BytesIO(blob)) as archive:
+        tar = archive.read(limit + 1)
+    if len(tar) > limit:
+        raise ValueError("archive expands beyond the SDK size limit")
+    required = {
+        "package/package.json",
+        "package/dist/provenance.json",
+        "package/dist/index.js",
+    }
+    seen = set()
+    result = {}
+    with tarfile.open(fileobj=io.BytesIO(tar), mode="r:") as archive:
+        for member in archive:
+            name = member.name
+            if (
+                not member.isfile()
+                or not name.startswith("package/")
+                or "\\" in name
+                or safe_relative_path(name).as_posix() != name
+                or name in seen
+            ):
+                raise ValueError("archive has an unsafe or duplicate member")
+            seen.add(name)
+            if name in required:
+                content = archive.extractfile(member)
+                if content is None or member.size == 0 or member.size > 128 * 1024:
+                    raise ValueError(f"archive member is missing or invalid: {name}")
+                with content:
+                    result[name] = content.read()
+    if set(result) != required:
+        raise ValueError("archive lacks its SDK entrypoint, manifest, or provenance")
+    return result
+
+
+def _verify_pnpm_file_lock(
+    lock: bytes,
+    owner_lock: bytes,
+    archive_path: str,
+    version: str,
+    integrity: str,
+    dependencies: dict,
+) -> None:
+    from scripts.governance.contract_checks import (
+        _yaml_block_mapping,
+        _yaml_mapping_entries,
+    )
+
+    def document(text: str) -> dict:
+        root = _yaml_mapping_entries(text)
+        if root["lockfileVersion"] != ("'9.0'", ""):
+            raise ValueError("expected pnpm lockfile version 9")
+        return root
+
+    def packages(root: dict, section: str) -> dict:
+        value, body = root[section]
+        # pnpm emits unquoted scalar package keys such as accepts@2.0.0;
+        # normalize only those canonical keys at the section's key indent.
+        body = re.sub(
+            r"(?m)^  ([A-Za-z0-9_][A-Za-z0-9._/@+()~-]*)(?=:[ \t]*(?:$| ))",
+            lambda match: f"  '{match.group(1)}'",
+            body,
+        )
+        return _yaml_block_mapping((value, body))
+
+    try:
+        root = document(lock.decode("utf-8"))
+        imports = _yaml_block_mapping(root["importers"])
+        importer = _yaml_block_mapping(imports["."])
+        for other in ("devDependencies", "optionalDependencies", "peerDependencies"):
+            if other in importer and IAM_SDK_PACKAGE in _yaml_block_mapping(
+                importer[other]
+            ):
+                raise ValueError(
+                    "archive is also selected outside the runtime importer"
+                )
+        deps = _yaml_block_mapping(importer["dependencies"])
+        selected = _yaml_block_mapping(deps[IAM_SDK_PACKAGE])
+        reference = f"file:{archive_path}"
+        if selected != {"specifier": (reference, ""), "version": (reference, "")}:
+            raise ValueError("default runtime importer selects a different archive")
+        key = f"{IAM_SDK_PACKAGE}@{reference}"
+        installed_packages = packages(root, "packages")
+        installed_snapshots = packages(root, "snapshots")
+        package = _yaml_block_mapping(installed_packages[key])
+        expected = f"{{integrity: {integrity}, tarball: {reference}}}"
+        if package.get("resolution") != (expected, "") or package.get("version") != (
+            version,
+            "",
+        ):
+            raise ValueError("archive resolution, integrity, or version differs")
+        snapshot = installed_snapshots[key]
+        if not dependencies:
+            if snapshot != ("{}", ""):
+                raise ValueError("expected an empty archive snapshot")
+            return
+        snapshot = _yaml_block_mapping(snapshot)
+        if set(snapshot) != {"dependencies"}:
+            raise ValueError("archive snapshot has extra dependency selections")
+        locked = _yaml_block_mapping(snapshot["dependencies"])
+        if locked != {name: (value, "") for name, value in dependencies.items()}:
+            raise ValueError("archive snapshot dependencies differ")
+        # IAM's pnpm bootstrap document precedes the actual project graph.
+        owner_docs = [
+            part
+            for part in re.split(r"(?m)^---[ \t]*$", owner_lock.decode("utf-8"))
+            if part.strip()
+        ]
+        if not 1 <= len(owner_docs) <= 2:
+            raise ValueError("unexpected IAM lock document layout")
+        owner = document(owner_docs[-1])
+        producer_packages = packages(owner, "packages")
+        producer_snapshots = packages(owner, "snapshots")
+        for name, value in dependencies.items():
+            dependency = f"{name}@{value}"
+            if (
+                not isinstance(value, str)
+                or EXACT_SEMVER_PATTERN.fullmatch(value) is None
+                or installed_packages[dependency] != producer_packages[dependency]
+                or installed_snapshots[dependency] != producer_snapshots[dependency]
+            ):
+                raise ValueError(
+                    f"archive dependency {name} resolves differently from IAM"
+                )
+    except (AttributeError, KeyError, TypeError, ValueError) as error:
+        raise ValueError(f"pnpm lock: {error}") from error
+
+
+def _verify_iam_sdk_release_inputs(root: Path, release: str, current: str) -> None:
+    repository = root / IAM_REPOSITORY
+    ancestry = subprocess.run(
+        [
+            "git",
+            "--no-replace-objects",
+            "merge-base",
+            "--is-ancestor",
+            release,
+            current,
+        ],
+        cwd=repository,
+        capture_output=True,
+        check=False,
+    )
+    if ancestry.returncode:
+        raise ValueError("IAM SDK release source must be a runtime ancestor")
+
+    def sdk_tree(commit: str) -> bytes:
+        result = subprocess.run(
+            ["git", "--no-replace-objects", "ls-tree", "-d", commit, "--", "sdk"],
+            cwd=repository,
+            capture_output=True,
+            check=False,
+        )
+        fields = result.stdout.split()
+        if (
+            result.returncode
+            or len(fields) != 4
+            or fields[:2] != [b"040000", b"tree"]
+            or fields[3] != b"sdk"
+        ):
+            raise ValueError("IAM SDK source tree is unavailable")
+        return fields[2]
+
+    if sdk_tree(release) != sdk_tree(current):
+        raise ValueError("runtime IAM SDK source tree differs from its release")
+    if git_blob(root, IAM_REPOSITORY, release, IAM_OPENAPI) != git_blob(
+        root, IAM_REPOSITORY, current, IAM_OPENAPI
+    ):
+        raise ValueError("runtime IAM contract differs from the SDK release")
+
+
+def _verify_capability_iam_archive(
+    root: Path, edge: dict[str, Any], assertion: dict[str, Any], errors: list[str]
+) -> None:
+    label = f"{CAPABILITY_IAM_EDGE}: IAM SDK archive"
+    owner = edge["owner"]
+    try:
+        version = assertion.get("version")
+        if (
+            not isinstance(version, str)
+            or EXACT_SEMVER_PATTERN.fullmatch(version) is None
+        ):
+            raise ValueError("archive version must be exact semantic version")
+        if version != owner["contract_version"]:
+            raise ValueError("archive version differs from the IAM owner contract")
+        archive_path = f"vendor/iam/kokoro-iam-client-{version}.tgz"
+        paths = (
+            archive_path,
+            "vendor/iam/provenance.json",
+            "pnpm-lock.yaml",
+            IAM_SDK_VERIFIER,
+        )
+        evidence = edge.get("evidence")
+        blobs = {}
+        for path in paths:
+            matches = (
+                [
+                    ref
+                    for ref in evidence
+                    if isinstance(ref, dict)
+                    and ref.get("repository_path") == CAPABILITY_REPOSITORY
+                    and ref.get("path") == path
+                    and ref.get("repository_commit")
+                    == assertion.get("repository_commit")
+                ]
+                if isinstance(evidence, list)
+                else []
+            )
+            if len(matches) != 1:
+                raise ValueError(f"requires one pinned Capability {path} reference")
+            blob = _verify_blob_reference(root, label, matches[0], errors)
+            if not blob:
+                raise ValueError(f"missing Capability {path} blob")
+            blobs[path] = blob
+
+        consumer = _verify_blob_reference(root, label, assertion, errors)
+        if not consumer:
+            raise ValueError("missing Capability package.json")
+        consumer_manifest = _strict_json_blob(consumer)
+        if (
+            _json_pointer(consumer_manifest, "/dependencies/@kokoro~1iam-client")
+            != f"file:{archive_path}"
+        ):
+            raise ValueError(
+                "Capability runtime dependency does not select the archive"
+            )
+        for other in ("devDependencies", "optionalDependencies", "peerDependencies"):
+            if IAM_SDK_PACKAGE in consumer_manifest.get(other, {}):
+                raise ValueError(
+                    "Capability manifest also selects the archive outside runtime dependencies"
+                )
+
+        commit = owner["repository_commit"]
+
+        def owner_blob(path: str) -> bytes:
+            return git_blob(root, IAM_REPOSITORY, commit, path)
+
+        packed = _iam_sdk_archive_members(blobs[archive_path])
+        owner_sdk = _strict_json_blob(owner_blob(IAM_SDK_MANIFEST))
+        if (
+            _strict_json_blob(packed["package/package.json"]) != owner_sdk
+            or owner_sdk.get("name") != IAM_SDK_PACKAGE
+            or owner_sdk.get("version") != version
+        ):
+            raise ValueError("archive manifest differs from the IAM SDK owner")
+        if (
+            packed["package/dist/provenance.json"]
+            != blobs["vendor/iam/provenance.json"]
+        ):
+            raise ValueError("archive embedded provenance differs from the sidecar")
+        owner_generator = _json_pointer(
+            owner_sdk, "/devDependencies/@hey-api~1openapi-ts"
+        )
+        pnpm = _json_pointer(
+            _strict_json_blob(owner_blob("package.json")), "/packageManager"
+        )
+        if not isinstance(pnpm, str) or not pnpm.startswith("pnpm@"):
+            raise ValueError("archive provenance requires an IAM pnpm pin")
+        provenance = _strict_json_blob(blobs["vendor/iam/provenance.json"])
+        release = _json_pointer(provenance, "/source/commit")
+        if not isinstance(release, str):
+            raise ValueError("archive provenance release source is missing")
+        release = _canonical_object_id(release)
+        expected = {
+            "schema_version": 1,
+            "package": {"name": IAM_SDK_PACKAGE, "version": version},
+            "source": {"commit": release, "dirty": False},
+            "contract": {"path": IAM_OPENAPI, "sha256": owner["contract_sha256"]},
+            "generator": {
+                "package": IAM_SDK_GENERATOR,
+                "version": owner_generator,
+                "config_sha256": sha256_bytes(owner_blob("sdk/openapi-ts.config.ts")),
+            },
+            "lockfile_sha256": sha256_bytes(owner_blob("pnpm-lock.yaml")),
+            "runtime": {
+                "node": "v" + owner_blob(".node-version").decode("utf-8").strip(),
+                "pnpm": pnpm.removeprefix("pnpm@"),
+            },
+        }
+        if provenance != expected or provenance["source"]["dirty"] is not False:
+            raise ValueError("archive provenance differs from the exact IAM source")
+        if (
+            edge.get("code_generator_version")
+            != f"{IAM_SDK_GENERATOR}@{owner_generator}"
+        ):
+            raise ValueError(
+                "archive generator differs from the declared IAM generator"
+            )
+        integrity = "sha512-" + base64.b64encode(
+            hashlib.sha512(blobs[archive_path]).digest()
+        ).decode("ascii")
+        _verify_pnpm_file_lock(
+            blobs["pnpm-lock.yaml"],
+            owner_blob("pnpm-lock.yaml"),
+            archive_path,
+            version,
+            integrity,
+            owner_sdk.get("dependencies", {}),
+        )
+        if sha256_bytes(blobs[archive_path]) != IAM_SDK_RELEASE_ARCHIVES.get(
+            (release, version)
+        ):
+            raise ValueError(
+                "digest does not match the independently verified clean IAM archive"
+            )
+        _verify_iam_sdk_release_inputs(root, release, commit)
+    except (
+        AttributeError,
+        EOFError,
+        KeyError,
+        OSError,
+        tarfile.TarError,
+        zlib.error,
+        TypeError,
+        ValueError,
+    ) as error:
+        errors.append(f"{label}: {error}")
+
+
 def _verify_version_assertion(
     root: Path,
     label: str,
@@ -423,6 +1129,8 @@ def _verify_version_assertion(
         )
     elif manifest_kind == "go-mod":
         _verify_go_mod_assertion(label, assertion, package_name, version, blob, errors)
+    elif manifest_kind == "uv-lock" and blob is not None:
+        _verify_agent_uv_lock(label, package_name, version, blob, errors)
 
 
 def _verify_version_assertions(
@@ -437,16 +1145,79 @@ def _verify_version_assertions(
         return
     required = {"runtime_package_version"}
     generator = edge.get("code_generator_version")
-    generator_exempt = (
+    owner = edge.get("owner")
+    capability_iam = (
+        edge_id == CAPABILITY_IAM_EDGE
+        and edge.get("caller") == "Capability"
+        and edge.get("protocol") == "http-openapi"
+        and isinstance(owner, dict)
+        and owner.get("name") == "kokoro-iam"
+        and owner.get("repository_path") == IAM_REPOSITORY
+        and owner.get("contract_path") == IAM_OPENAPI
+    )
+    if edge_id == CAPABILITY_IAM_EDGE and not capability_iam:
+        errors.append(
+            f"{edge_id}: archive assertion requires the scoped Capability IAM edge"
+        )
+    agent_system = (
+        edge_id == AGENT_SYSTEM_EDGE
+        and edge.get("caller") == "Agent"
+        and edge.get("protocol") == "http-openapi"
+        and isinstance(owner, dict)
+        and owner.get("name") == "kokoro-system"
+        and owner.get("repository_path") == SYSTEM_REPOSITORY
+        and owner.get("contract_path") == SYSTEM_OPENAPI
+        and generator == AGENT_SYSTEM_GENERATOR
+    )
+    agent_storage = (
+        edge_id == AGENT_STORAGE_EDGE
+        and edge.get("caller") == "Agent"
+        and edge.get("protocol") == "connect-proto"
+        and isinstance(owner, dict)
+        and owner.get("name") == "kokoro-storage"
+        and owner.get("repository_path") == STORAGE_REPOSITORY
+        and owner.get("contract_path") == f"contract/proto/{STORAGE_PROTO}"
+        and owner.get("contract_version") == "kokoro.storage.v3"
+    )
+    if edge_id == AGENT_STORAGE_EDGE and not agent_storage:
+        errors.append(f"{edge_id}: assertion requires the scoped Agent Storage v3 edge")
+    agent_platform = (
+        edge_id == AGENT_PLATFORM_EDGE
+        and edge.get("caller") == "Agent"
+        and edge.get("protocol") == "connect-proto"
+        and isinstance(owner, dict)
+        and owner.get("name") == "kokoro-capability"
+        and owner.get("repository_path") == CAPABILITY_REPOSITORY
+        and owner.get("contract_path") == f"contract/proto/{PLATFORM_PROTO}"
+        and owner.get("contract_version") == "kokoro.platform.v1"
+    )
+    if edge_id == AGENT_PLATFORM_EDGE and not agent_platform:
+        errors.append(
+            f"{edge_id}: assertion requires the scoped Agent Platform v1 edge"
+        )
+    connect_pin = (
+        AGENT_PLATFORM_PIN
+        if agent_platform
+        else AGENT_STORAGE_PIN
+        if agent_storage
+        else None
+    )
+    browser_exempt = (
         edge_id == "EDGE-BROWSER-WEB"
         and edge.get("protocol") == "same-origin-http"
         and generator == "not-applicable:same-origin-route"
     )
     if isinstance(generator, str) and generator.startswith("not-applicable:"):
-        if not generator_exempt:
+        if not (agent_system or browser_exempt):
             errors.append(f"{edge_id}: generator exemption is not allowed")
     else:
         required.add("code_generator_version")
+    if edge_id == AGENT_SYSTEM_EDGE and not agent_system:
+        errors.append(
+            f"{edge_id}: requires the scoped Agent System generator exemption"
+        )
+    if agent_system:
+        _verify_agent_system_receipt(root, edge, errors)
     asserted: set[str] = set()
     for index, raw_assertion in enumerate(assertions):
         label = f"{edge_id}: version_assertions[{index}]"
@@ -466,6 +1237,80 @@ def _verify_version_assertions(
             errors.append(
                 f"{label}: declared version {declared_value!r} != {edge.get(field)!r}"
             )
+        manifest_kind = raw_assertion.get("manifest_kind")
+        if agent_system and (
+            field != "runtime_package_version"
+            or manifest_kind != "uv-lock"
+            or raw_assertion.get("repository_path") != AGENT_REPOSITORY
+            or raw_assertion.get("path") != "uv.lock"
+            or raw_assertion.get("package_name") != "httpx"
+        ):
+            errors.append(
+                f"{label}: requires Agent uv.lock and direct httpx runtime evidence"
+            )
+            continue
+        if connect_pin is not None:
+            expected_kind, expected_path, expected_package = (
+                ("agent-connect-codegen", connect_pin, "protoc-gen-connectrpc")
+                if field == "code_generator_version"
+                else ("uv-lock", "uv.lock", "connectrpc")
+            )
+            if (
+                manifest_kind != expected_kind
+                or raw_assertion.get("repository_path") != AGENT_REPOSITORY
+                or raw_assertion.get("path") != expected_path
+                or raw_assertion.get("package_name") != expected_package
+            ):
+                errors.append(
+                    f"{label}: requires Agent {expected_path} and {expected_package}"
+                )
+                continue
+            if field == "code_generator_version":
+                _verify_agent_connect_codegen(root, label, edge, raw_assertion, errors)
+                continue
+        elif manifest_kind == "agent-connect-codegen":
+            errors.append(
+                f"{label}: codegen assertion is only allowed for Agent Storage or Agent Platform"
+            )
+            continue
+        if not (agent_system or connect_pin is not None) and manifest_kind == "uv-lock":
+            errors.append(
+                f"{label}: uv.lock assertion is only allowed for Agent System, Storage or Platform"
+            )
+            continue
+        if capability_iam:
+            if field == "runtime_package_version":
+                if (
+                    manifest_kind != "npm-file-archive"
+                    or raw_assertion.get("repository_path") != CAPABILITY_REPOSITORY
+                    or raw_assertion.get("path") != "package.json"
+                    or raw_assertion.get("package_name") != IAM_SDK_PACKAGE
+                    or raw_assertion.get("declared_value")
+                    != f"{IAM_SDK_PACKAGE}@{raw_assertion.get('version')}"
+                ):
+                    errors.append(
+                        f"{label}: requires the pinned Capability IAM SDK archive"
+                    )
+                    continue
+                _verify_capability_iam_archive(root, edge, raw_assertion, errors)
+                continue
+            if (
+                manifest_kind != "npm-package-json"
+                or raw_assertion.get("repository_path") != IAM_REPOSITORY
+                or raw_assertion.get("repository_commit")
+                != owner.get("repository_commit")
+                or raw_assertion.get("path") != IAM_SDK_MANIFEST
+                or raw_assertion.get("package_name") != IAM_SDK_GENERATOR
+            ):
+                errors.append(
+                    f"{label}: generator must be pinned to the IAM owner SDK manifest"
+                )
+                continue
+        elif manifest_kind == "npm-file-archive":
+            errors.append(
+                f"{label}: archive assertion is only allowed for {CAPABILITY_IAM_EDGE}"
+            )
+            continue
         _verify_version_assertion(root, label, raw_assertion, field, errors)
     for field in sorted(required - asserted):
         errors.append(f"{edge_id}: missing version assertion for {field}")

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Audit the non-negotiable V1 engineering rules across ten child repositories.
+"""Audit structural engineering rules across the twelve active child repositories.
 
-This structural gate complements, rather than replaces, each repository's own
-lint, typecheck, test, build, schema and runtime verification. A non-zero result
-is the work queue until every repository converges; it is never converted into
-a false green baseline.
+This bounded preflight complements owner lint, typecheck, test, build, schema and
+runtime gates. Diagnostics are evidence to review, not a count of confirmed
+product defects. Unsupported contracts remain blocking and explicitly unverified;
+they do not establish that an owner contract is absent. The historical CLI name
+is retained for callers.
 """
 
 from __future__ import annotations
@@ -40,8 +41,8 @@ def collect_audit() -> tuple[list[Failure], list[Failure]]:
         check_typescript(repository, failures, unverified)
     check_web(failures)
     check_bff(failures)
-    check_agent(failures)
-    check_scheduler(failures)
+    check_agent(failures, unverified)
+    check_scheduler(failures, unverified)
 
     def key(item: Failure) -> tuple[str, str, str]:
         return item.repository, item.rule, item.detail
@@ -70,6 +71,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     failures, unverified = collect_audit()
     failed = bool(failures or (args.require_installed_tools and unverified))
+    # Unsupported contracts are blocking even when installed-tool checks are optional.
+    blocking_unknown = any(
+        item.rule in {"openapi-parsing", "snapshot-provenance"} for item in unverified
+    )
     status = "FAIL" if failed else "UNVERIFIED" if unverified else "PASS"
     if args.format == "json":
         print(
@@ -93,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
         for label, items in (("violation", failures), ("unverified", unverified)):
             for item in items:
                 print(f"- [{item.repository}] {label} {item.rule}: {item.detail}")
-    return 1 if failed else 0
+    return 1 if failed or blocking_unknown else 0
 
 
 if __name__ == "__main__":

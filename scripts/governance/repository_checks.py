@@ -254,7 +254,9 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
             )
 
 
-def check_scheduler(failures: list[Failure]) -> None:
+def check_scheduler(
+    failures: list[Failure], unverified: list[Failure] | None = None
+) -> None:
     repository_name = "kokoro-scheduler"
     repository = ROOT / REPOSITORY_PATHS[repository_name]
     for layer in REQUIRED_SCHEDULER_LAYERS:
@@ -287,7 +289,7 @@ def check_scheduler(failures: list[Failure]) -> None:
             "canonical scheduler OpenAPI is missing",
         )
     for specification in openapi_contract_candidates(repository):
-        check_openapi_contract(repository_name, specification, failures)
+        check_openapi_contract(repository_name, specification, failures, unverified)
 
 
 def check_docs(failures: list[Failure]) -> None:

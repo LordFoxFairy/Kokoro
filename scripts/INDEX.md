@@ -9,33 +9,37 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 
 - `python3 scripts/verify-backend-design.py --manifest-only` verifies Root architecture documentation and Agent boundary markers.
 - `python3 scripts/verify-repository-topology.py --allow-uninitialized` verifies active/archived repository topology and Phase 1 composition.
-- `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the six owner repositories. It emits stable
-  text by default and machine-readable diagnostics with `--format json`; a non-zero result remains the explicit work queue until
-  every repository converges.
+- `python3 scripts/verify-ten-repository-standard.py` audits the twelve active child repositories, including Mori, Admin
+  and `libs/kokoro-web-shared`; the historical command name is retained. Profiles distinguish services, web adapters and the
+  source-only library. It emits text or `--format json`; structural records require review and are not confirmed bug counts.
+  Unsupported syntax or unavailable publisher objects remain blocking `unverified`, without a false missing-owner
+  cascade; missing valid pins and known tampering are violations. Missing installed TypeScript tools are separately unverified (`--require-installed-tools` makes them blocking).
 - `python3 -m pytest scripts/tests/test_contract_compatibility.py scripts/tests/test_contract_checkpoint.py -q` exercises the
   frozen inventory parser and fail-closed gitlink, commit-blob digest, topology, package-version and checkpoint checks. Exit `0`
   means the focused verifier tests pass.
 - `python3 scripts/verify-contract-compatibility.py --inventory verification/contracts/consumer-inventory.json` checks every
   approved call edge and recorded violation against the Root index and child commit blobs. Exit `0` means all edges are active
-  with no violations; current `w1e-platform-code-release` baseline remains intentionally red with exactly twelve declared broken edges
-  and no illegal edge, with no schema, gitlink, digest, evidence or version drift.
-- `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1e-platform-code-release.json` compares the
+  with no violations. The current Task A checkpoint records fifteen active edges and zero violations; historical
+  `w1e-platform-code-release` outcomes are retained only as frozen regression fixtures.
+- `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/task-a-agent-web-runs.json` compares the
   complete active/broken/illegal edge ID sets with a frozen checkpoint and runs the compatibility verifier. Exit `0` accepts
   only the checkpoint's declared broken and illegal outcomes; count-preserving ID swaps and any schema, gitlink, digest,
   evidence or version drift fail.
-- `python3 scripts/verify-iam-relay-policy.py` verifies the BFF browser-private IAM relay policy against the frozen IAM/BFF
-  gitlink commit blobs. It checks owner commit and allowlist/snapshot digests, TS-to-JSON policy drift, and the narrower
-  route/method subset without copying IAM-owned protocol source into BFF. Exit `0` proves provenance, not a successful
-  OAuth browser flow; the latter requires a separate real HTTP composition smoke.
+- `python3 scripts/verify-iam-relay-policy.py` verifies the BFF browser-private IAM relay policy against exact Root
+  gitlinks. Policy 2.1 retains its historical IAM/BFF source checks. Native policy 3.0 verifies IAM/BFF/App, BFF's published
+  route and transport matrix, and the App generator pin and generated copies. The IAM publication anchor must match
+  current owner evidence; the only recognized OpenAPI difference is the approved 0.20→0.21 workload introspection
+  retirement. Exit `0` proves provenance, not a successful native browser flow.
 - `python3 scripts/e2e/run_system_owner_smoke.py --help` is the isolated System/BFF/Agent HTTP acceptance entry.
   It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
   Redis prefix, and removes only resources registered by this invocation. BFF user models use an explicit fixed-token IAM
   wire stub; server-only runtime manifest remains bound to configured tenant. It does not perform provider inference.
-- `python3 scripts/e2e/run_bff_iam_session_smoke.py --help` is the real IAM Nest/PKCE fixture HTTP to BFF source-process
-  admission entry. It pins clean IAM/BFF commits and Root gitlinks, creates only its own BFF database, asks the IAM test-owned
-  host to manage IAM facts, exercises seven allow/deny/revocation/outage cases, and verifies owned-resource cleanup.
+- `python3 scripts/e2e/run_web_native_session_smoke.py --help` is the current native Cookie/Origin acceptance entry.
+  Its HTTP journey checks Project writes, PostgreSQL ownership and receipts, actor isolation, revocation and IAM outage.
+  The historical `run_bff_iam_session_smoke.py` CLI is retired; the module still supplies shared IAM fixture helpers
+  and the Admin Model Routing smoke's existing header helper.
 - `python3 scripts/e2e/run_bff_iam_oidc_smoke.py --help` exercises the IAM→BFF native Code+S256 interaction chain;
-  it does not prove Web RP login. `bff_owner_schema.py` gives all five Root BFF smokes an application URL fixed to
+  it does not prove Web RP login. `bff_owner_schema.py` gives the current Root BFF smokes an application URL fixed to
   `kokoro_bff`; `psql` observations retain the original libpq URL and explicitly qualify owner SQL.
 - `bff_iam_admission_stub.py` is only a strict fixed-token wire fixture for unrelated owner smoke regressions; it is not
   evidence of a real IAM dependency. Real IAM evidence comes from the preceding runner.
@@ -67,18 +71,16 @@ those local checks with a generated cross-repository mirror.
 The E2E runners start each independent checkout through its own documented entrypoint. They communicate over loopback HTTP
 and disposable infrastructure; they do not import child source, share a database or derive a contract from another repository.
 
-The old `verify-ten-repository-full.sh` and `e2e/run_stage2_owner_health.py` entries are paused: their unsafe shared-state
-implementations were removed, leaving only an explicit `VERIFICATION_ENTRY_PAUSED` diagnostic and exit 2. They never
-access infrastructure, and old skip/cleanup options no longer apply. Root owns rebuilding an isolated all-repository
-orchestrator; execute each child repository's documented gates in the meantime. The System smoke is not an all-repository gate.
+The one-time `verify-main-only.py` script is retired: a valid pinned submodule can be detached and other owners may retain active topic branches. Use the exact topology check and only clean branches belonging to your delivered PR; do not restore a global remote-branch deletion requirement.
 
-## Current Stage 2 HTTP closure
+The retired full-repository shell/owner-health placeholders and `run_stage2_bff_mock.py` were removed. The first two
+only printed a paused diagnostic; the mock runner targeted an absent Root-level BFF path and a runtime mode the current
+BFF explicitly rejects. No active CI, ops or helper import consumed them. Their source remains in Git history, not as
+an alternate acceptance path or a request to rebuild a universal orchestrator.
 
-- `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` builds the independent `kokoro-bff` child repository, starts its real HTTP process in deterministic mock mode, and exercises the current Web-facing Business API v1 across auth, projects, GitHub skills, MCP, scheduler, Agent setup, billing, Chat/SSE, sharing and deletion.
-- The Stage 2 E2E runner is intentionally transport-only: Root does not import BFF source, copy its store, or share its database. It proves the current cross-repository boundary over loopback HTTP; child repositories remain responsible for their own unit, integration, type, build and CI gates.
-- The new System owner smoke tests published configuration selection and tenant isolation through System and BFF,
-  then calls System from the Agent's actual HTTP client and model factory mapping. Runtime acceptance remains pending
-  until the System production entry is switched and this command succeeds; unit test success is not live evidence.
+Run the affected owner's documented gates and an appropriate isolated composition runner when the changed behavior
+requires it. The System HTTP smoke is not an all-repository or real provider-inference acceptance gate. Do not restore
+retired shared-state cleanup or a mock runtime to make an obsolete script executable.
 
 ## Archived historical fixtures
 

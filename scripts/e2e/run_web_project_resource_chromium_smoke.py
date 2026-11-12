@@ -592,23 +592,19 @@ def _durable_owner_facts(
 def _login_boundary(
     browser: dict[str, object],
     sources: dict[str, dict[str, object]],
-    *,
-    owner_only: bool,
 ) -> dict[str, object]:
     login = browser["login"]
     if not isinstance(login, dict):
         raise SmokeError("browser IAM login proof malformed")
-    boundary = {
+    return {
         "source_tuple": {
             name: source["sha"]
             for name, source in sources.items()
             if name in {"web", "bff", "iam"}
         },
         "owner": login["owner"],
+        "member": login["member"],
     }
-    if not owner_only:
-        boundary["member"] = login["member"]
-    return boundary
 
 
 def _run_smoke(
@@ -616,16 +612,9 @@ def _run_smoke(
     config: dict[str, str],
     *,
     live_scenario: Callable[..., dict[str, object]] | None = None,
-    gc_scenario: Callable[..., dict[str, object]] | None = None,
     real_model_scenario: Callable[..., dict[str, object]] | None = None,
 ) -> dict[str, object]:
-    if (
-        sum(
-            item is not None
-            for item in (live_scenario, gc_scenario, real_model_scenario)
-        )
-        > 1
-    ):
+    if live_scenario is not None and real_model_scenario is not None:
         raise SmokeError("scenario callbacks must be exclusive")
     iam_node = _node_path(args.iam_node_bin, "iam-node-bin")
     node22 = _node_path(args.node22_bin, "node22-bin")
@@ -1021,34 +1010,16 @@ def _run_smoke(
                         raise SmokeError("isolated Next HTTPS origin not ready")
                     time.sleep(0.1)
 
-                if any(
-                    item is not None
-                    for item in (live_scenario, gc_scenario, real_model_scenario)
-                ):
+                if live_scenario is not None or real_model_scenario is not None:
                     stage = (
                         "browser real System and model worker"
                         if real_model_scenario is not None
-                        else "browser real owner GC and cursor recovery"
-                        if gc_scenario is not None
                         else "browser subscribed live Chat Artifact delivery"
                     )
-                    screenshot = directory / (
-                        "chat-gc.png"
-                        if gc_scenario is not None
-                        else "chat-delivery.png"
-                    )
-                    scenario = real_model_scenario or gc_scenario or live_scenario
+                    screenshot = directory / "chat-delivery.png"
+                    scenario = real_model_scenario or live_scenario
                     assert scenario is not None
-                    scenario_extra = (
-                        {
-                            "bff_root": bff_root,
-                            "bff_db_url": bff_db_url,
-                            "bff_redis_url": bff_redis,
-                            "tenant_id": ready.tenant_id,
-                        }
-                        if gc_scenario is not None
-                        else {}
-                    )
+                    scenario_extra = {}
                     if real_model_scenario is not None:
                         scenario_extra = {
                             "infra": infra,
@@ -1338,15 +1309,11 @@ def _run_smoke(
         "flow": (
             "real IAM Chromium Product → standard Agent worker → real System → actual local Ollama → durable Chat/Storage Artifact"
             if real_model_scenario is not None
-            else "real IAM Chromium two Product/Agent/Storage deliveries → BFF owner GC → original browser SSE410 → snapshot/new-watermark continuation"
-            if gc_scenario is not None
             else "real IAM Chromium Product POST202 → subscribed SSE200 → Agent pending Run/lease → Storage CLEAN Artifact → BFF live Chat Delivery/Canvas/download/reload/private"
             if live_scenario is not None
             else "real IAM Product dispatch → Agent claimed Runs/CLEAN Artifacts → Chromium Library and Chat snapshot/Canvas native downloads/private; Project and personal file regression → Storage S3/ClamAV"
         ),
-        "login_boundary": _login_boundary(
-            browser, sources, owner_only=gc_scenario is not None
-        ),
+        "login_boundary": _login_boundary(browser, sources),
         "browser": browser,
         "owned_postgres_databases_remaining": 0,
         "owned_redis_keys_remaining": 0,

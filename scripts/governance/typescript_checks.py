@@ -225,7 +225,12 @@ def check_nest_runtime(
     if not isinstance(dependencies, dict) or not all(
         name in dependencies for name in ("@nestjs/core", "@nestjs/common")
     ):
-        add(failures, repository_name, "nestjs-runtime", "NestJS core/common runtime dependencies are required")
+        add(
+            failures,
+            repository_name,
+            "nestjs-runtime",
+            "NestJS core/common runtime dependencies are required",
+        )
     source_root = (repository / "src").resolve()
     pending = [source_root / "main.ts"]
     visited: set[Path] = set()
@@ -237,7 +242,8 @@ def check_nest_runtime(
         visited.add(path)
         source = read_text(path)
         if re.search(r"from\s+[\"']@nestjs/core[\"']", source) and re.search(
-            r"\bNestFactory\.(?:create|createApplicationContext)(?:<[^;]*?>)?\s*\(", source
+            r"\bNestFactory\.(?:create|createApplicationContext)(?:<[^;]*?>)?\s*\(",
+            source,
         ):
             native_bootstrap = True
             break
@@ -250,7 +256,12 @@ def check_nest_runtime(
             if target.is_file():
                 pending.append(target)
     if not native_bootstrap:
-        add(failures, repository_name, "nestjs-runtime", "src/main.ts must reach a native NestJS application or worker bootstrap")
+        add(
+            failures,
+            repository_name,
+            "nestjs-runtime",
+            "src/main.ts must reach a native NestJS application or worker bootstrap",
+        )
 
 
 def check_typescript(
@@ -391,51 +402,57 @@ def check_typescript(
                 f"package.json script {script_name!r} still invokes migration tooling",
             )
 
-    try:
-        compiler_options = effective_ts_compiler_options(repository / "tsconfig.json")
-    except TypeScriptConfigError as error:
-        if unverified is not None:
-            add(unverified, repository_name, "typescript-configuration", str(error))
-        compiler_options = None
-    if compiler_options is not None:
-        for option in REQUIRED_TS_COMPILER_OPTIONS:
-            if compiler_options.get(option) is not True:
+    for project in profile.compiler_projects:
+        try:
+            compiler_options = effective_ts_compiler_options(repository / project)
+        except TypeScriptConfigError as error:
+            if unverified is not None:
+                add(
+                    unverified,
+                    repository_name,
+                    "typescript-configuration",
+                    f"{project}: {error}",
+                )
+            compiler_options = None
+        if compiler_options is not None:
+            for option in REQUIRED_TS_COMPILER_OPTIONS:
+                if compiler_options.get(option) is not True:
+                    add(
+                        failures,
+                        repository_name,
+                        "typescript-strictness",
+                        f"{project}: effective tsconfig option {option!r} must be true",
+                    )
+            if compiler_options.get("skipLibCheck") is True:
                 add(
                     failures,
                     repository_name,
                     "typescript-strictness",
-                    f"effective tsconfig option {option!r} must be true",
+                    f"{project}: skipLibCheck must not hide dependency type errors",
                 )
-        if compiler_options.get("skipLibCheck") is True:
-            add(
-                failures,
-                repository_name,
-                "typescript-strictness",
-                "skipLibCheck must not hide dependency type errors",
-            )
-        if profile.kind == "typescript-service":
-            expected_options = {
-                "module": "nodenext",
-                "moduleResolution": "nodenext",
-                "moduleDetection": "force",
-                "target": "es2024",
-                "verbatimModuleSyntax": True,
-            }
-            for option, expected in expected_options.items():
-                if compiler_options.get(option) != expected:
+            if profile.kind == "typescript-service":
+                expected_options = {
+                    "module": "nodenext",
+                    "moduleResolution": "nodenext",
+                    "moduleDetection": "force",
+                    "target": "es2024",
+                    "verbatimModuleSyntax": True,
+                }
+                for option, expected in expected_options.items():
+                    if compiler_options.get(option) != expected:
+                        add(
+                            failures,
+                            repository_name,
+                            "typescript-modules",
+                            f"effective {option} must be {expected!r}",
+                        )
+                if compiler_options.get("lib") != ["es2024"]:
                     add(
                         failures,
                         repository_name,
                         "typescript-modules",
-                        f"effective {option} must be {expected!r}",
+                        "backend lib must be ES2024 without browser DOM globals",
                     )
-            if compiler_options.get("lib") != ["es2024"]:
-                add(
-                    failures,
-                    repository_name,
-                    "typescript-modules",
-                    "backend lib must be ES2024 without browser DOM globals",
-                )
     if profile.kind == "typescript-service" and package.get("type") != "module":
         add(
             failures,
@@ -451,7 +468,11 @@ def check_typescript(
     http_sources: list[Path] = []
     for path in source_files(repository):
         relative_path = path.relative_to(repository).as_posix()
-        relative_parts = path.relative_to(repository / "src").parts
+        relative_parts = (
+            path.relative_to(repository / "src").parts
+            if path.is_relative_to(repository / "src")
+            else path.relative_to(repository).parts
+        )
         if is_profile_read_only_generated_source(repository_name, relative_path):
             continue
         line_count = len(read_text(path).splitlines())
@@ -632,8 +653,13 @@ def check_typescript(
                     r"/[a-z][a-z0-9_.]*\.v[0-9]+\.[A-Za-z][A-Za-z0-9_]*/[A-Za-z][A-Za-z0-9_]*",
                     route,
                 )
+                normalized_route = re.sub(r":([A-Za-z_][A-Za-z0-9_]*)", r"{\1}", route)
+                approved_private = normalized_route in profile.private_http_paths
+                approved_native = (relative_path, route) in profile.native_source_routes
                 if (
-                    route.startswith(("/v1/", "/internal/v1/", "/.well-known/"))
+                    approved_private
+                    or approved_native
+                    or route.startswith(("/v1/", "/internal/v1/", "/.well-known/"))
                     or route
                     in {
                         "/",
@@ -656,17 +682,22 @@ def check_typescript(
                     )
 
     confirmed_openapi = [
-        check_openapi_contract(repository_name, specification, failures)
+        check_openapi_contract(repository_name, specification, failures, unverified)
         for specification in openapi_contract_candidates(repository)
     ]
-    if http_sources and not any(confirmed_openapi):
+    if http_sources and not any(confirmed_openapi) and None not in confirmed_openapi:
         add(
             failures,
             repository_name,
             "contract-owner",
             "HTTP surface exists but contract/ has no owned published or generated OpenAPI specification",
         )
-    for workflow_name in ("ci.yml", "release-image.yml"):
+    workflow_names = (
+        ("ci.yml",)
+        if profile.kind == "typescript-library"
+        else ("ci.yml", "release-image.yml")
+    )
+    for workflow_name in workflow_names:
         workflow = repository / ".github" / "workflows" / workflow_name
         if not workflow.is_file():
             add(
@@ -704,7 +735,13 @@ def check_typescript(
             if profile.kind == "web"
             else r"test:integration|runtime-real|smoke:infra|^vitest run(?: --no-file-parallelism)?$"
         )
-        if not re.search(integration_pattern, gate_commands, re.MULTILINE):
+        requires_runtime_integration = (
+            profile.kind == "typescript-service"
+            or "test:e2e" in required_quality_scripts(repository_name)
+        )
+        if requires_runtime_integration and not re.search(
+            integration_pattern, gate_commands, re.MULTILINE
+        ):
             add(
                 failures,
                 repository_name,

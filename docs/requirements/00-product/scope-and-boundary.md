@@ -56,5 +56,5 @@ refs:
 ## 引用
 
 - 原型=spec 决策:[ADR-007](../../decisions/ADR-007-prototype-and-production-stack.md)
-- 仓边界与归属:[ADR-009](../../decisions/ADR-009-repository-boundaries-and-ownership.md) · [docs/product/04-architecture/repository-boundaries.md](../../product/04-architecture/repository-boundaries.md)
+- 仓边界与归属:[ADR-009](../../decisions/ADR-009-repository-boundaries-and-ownership.md) · [docs/product/04-architecture/repository-boundaries.md](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/product/04-architecture/repository-boundaries.md)
 - 扩展架构:[capability-extension-design](../../superpowers/specs/2026-06-12-capability-extension-design.md)

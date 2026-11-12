@@ -125,14 +125,24 @@ def _sql_literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
-def _database_url(admin_url: str, name: str) -> str:
+def _database_url(admin_url: str, name: str, *, schema: str | None) -> str:
     parts = urlsplit(admin_url)
     netloc = parts.netloc
     if parts.username is None and parts.hostname is not None:
         host = f"[{parts.hostname}]" if ":" in parts.hostname else parts.hostname
         netloc = f"{quote(getpass.getuser(), safe='')}@{host}{'' if parts.port is None else f':{parts.port}'}"
+    # Scheduler owns its namespace selector and derives the driver search path
+    # and UTC timezone itself.  Keep the installer/runtime input to the
+    # canonical `schema=` selector; `options`, `search_path`, and `timezone`
+    # are intentionally rejected by the Scheduler parser.
     query = dict(parse_qsl(parts.query, keep_blank_values=True))
-    query["options"] = "-csearch_path=public,pg_catalog -ctimezone=UTC"
+    query.pop("options", None)
+    query.pop("search_path", None)
+    query.pop("timezone", None)
+    if schema is None:
+        query.pop("schema", None)
+    else:
+        query["schema"] = schema
     return urlunsplit((parts.scheme, netloc, f"/{name}", urlencode(query), ""))
 
 
@@ -233,7 +243,11 @@ class OwnedResources:
                 self.database_reconciliation.add(name)
             raise
         self.created_databases.append(name)
-        return _database_url(self.postgres_admin_url, name)
+        return _database_url(
+            self.postgres_admin_url,
+            name,
+            schema="kokoro_scheduler" if owner == "scheduler" else None,
+        )
 
     def claim_harness_prefix(self) -> None:
         key = self.redis_prefix + "ownership"
@@ -302,14 +316,16 @@ class OwnedResources:
 
     def register_native_keys(self, scheduler_database_url: str, tenant_id: str) -> None:
         query = (
-            "SELECT occurrence_id::text FROM scheduler_dispatch_outbox WHERE tenant_id = "
+            "SELECT occurrence_id::text FROM kokoro_scheduler.scheduler_dispatch_outbox WHERE tenant_id = "
             + _sql_literal(tenant_id)
             + " ORDER BY occurrence_id"
         )
+        parsed = urlsplit(scheduler_database_url)
+        diagnostic_url = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
         rows = self._run(
             [
                 "psql",
-                scheduler_database_url,
+                diagnostic_url,
                 "-X",
                 "-v",
                 "ON_ERROR_STOP=1",

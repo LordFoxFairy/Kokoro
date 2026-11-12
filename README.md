@@ -31,9 +31,10 @@ cd Kokoro
 git submodule update --init --recursive
 
 python3 scripts/verify-repository-topology.py
-python3 scripts/verify-main-only.py
 python3 -m pytest scripts/tests
 ```
+
+子仓按精确gitlink检出时处于detached HEAD是正常状态；`main`是集成基线，不要求其他人的远端topic分支消失。只在自己的PR合并且无后继工作后清理对应分支，不以清理为由改变组合SHA。
 
 每个子仓都有自己的依赖锁、CI、测试、构建、发布和文档。进入目标目录后按该仓 README/ACCEPTANCE 执行，例如：
 
@@ -55,7 +56,7 @@ cd ../kokoro-scheduler && go test ./...
 | 实际子仓 | 正常开发命令 | 工具链 | `.env.local` 读取 |
 | --- | --- | --- | --- |
 | `apps/kokoro-app` | `pnpm dev` | Node 22 / pnpm 11.25.0 | Next 原生加载 |
-| `apps/kokoro-bff` | `pnpm dev` | Node 22 / pnpm 11.25.0 | 启动 shell / IDE 显式导入 |
+| `apps/kokoro-bff` | `pnpm dev` | Node 24.20.0 / pnpm 11.25.0 | 启动 shell / IDE 显式导入 |
 | `apps/kokoro-agent` | `uv run kokoro-agent-http`、`uv run kokoro-agent-worker` | Python >=3.11，其余以 uv.lock 为准 | 两个进程分别显式导入同一份配置 |
 | `apps/kokoro-iam` | `pnpm dev` | Node 24 / pnpm 12.3.4 | 仅 dev 命令原生加载 |
 | `apps/kokoro-system` | `pnpm dev` | Node 24 / pnpm 12.3.4 | 启动 shell / IDE 显式导入 |
@@ -95,10 +96,9 @@ Root 的本地进程收据和私有日志只放已忽略的 `var/dev/`，不作�
 真实模型凭据继续只保存在 owner 私有配置/凭据文件，不放命令行、Git 或公开模型目录；
 隔离测试的外部 provider credential-file 参数及互斥规则以该脚本帮助和测试任务为准，不静默回退。
 
-隔离设置验收可显式增加 `--billing-node-bin "$BILLING_NODE_BIN"`，使用 Billing owner 固定的 Node 24.20.0。
-launcher 只检查并启动选中的精确 owner；Billing 经正式 build、fresh owner installer、唯一 dist 入口及 readiness
-接到现有 BFF 本人余额/流水读取。不为此 fixture 开户、充值或 seed 资金；真实缺账户仍返回 404。
-可与 `--chat` 组合，沿用同一 Root 自有 BFF 内部身份，Billing 的服务 Bearer 与 operator credential 仍独立。
+既有隔离 Billing fixture 的 `--billing-node-bin "$BILLING_NODE_BIN"` 使用 owner 固定的 Node 24.20.0。
+默认 HTTP 与 `--chat` 模式仍使用旧登录探针，不作为当前原生登录验收入口。Billing fixture 保留正式 build、fresh owner installer、
+唯一 dist 入口及 readiness；服务 Bearer 与 operator credential 独立。不为 fixture 开户、充值或 seed 资金；真实缺账户仍返回 404。
 关闭按消费者→Billing→其余 owner 逆序进行；无法确认停止则保留依赖、数据库与私有证据，不声称清理完成。
 这不是日常站点的持久 Billing 配置；运行前仍须固定已审 Billing artifact，业务与浏览器验收另计。
 
@@ -115,16 +115,17 @@ Browser → kokoro-app same-origin adapter → kokoro-bff → owner services
 
 ## Git 与发布政策
 
-1. Root 和每个子仓 local/`origin` 只保留 `main`。
+1. 开发使用短期分支和正常 PR；合并后仅清理已交付、无后继改动的自有分支。不能为“只留 main”删除他人的工作或未合并依赖。
 2. 子仓先在自身完成 commit、验证与 push；Root 再提升精确 gitlink SHA。
 3. `.gitmodules` 的 `branch = main` 仅提示开发更新；组合发布由 gitlink SHA 锁定。
 4. 禁止把 `git submodule update --remote` 的浮动结果作为发布组合。
 
 ## 文档入口
 
-1. [当前状态](docs/CURRENT.md)
-2. [仓库组合状态](docs/REPOSITORY_STATUS.md)
-3. [代码地图](docs/CODEBASE_MAP.md)
-4. [Root 文档索引](docs/INDEX.md)
-5. [ADR-032：Submodule 组合与仓标识](docs/kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)
-6. [工程执行规则](AGENTS.md)
+1. [产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/product/index.md)与[当前技术总览](docs/kokoro-handbook/technical/00-system-overview.md)
+2. [当前状态](docs/CURRENT.md)
+3. [仓库组合状态](docs/REPOSITORY_STATUS.md)
+4. [代码地图](docs/CODEBASE_MAP.md)
+5. [Root 文档索引](docs/INDEX.md)
+6. [ADR-032：Submodule 组合与仓标识](docs/kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)
+7. [工程执行规则](AGENTS.md)

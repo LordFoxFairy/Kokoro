@@ -507,6 +507,89 @@ def test_process_cleanup_handles_dead_leader_and_escalates(monkeypatch) -> None:
     assert sent == [signal.SIGTERM, signal.SIGKILL]
 
 
+@pytest.mark.parametrize("denied_signal", [signal.SIGTERM, signal.SIGKILL])
+def test_process_cleanup_observes_quiescence_after_permission_denial(
+    monkeypatch, denied_signal
+) -> None:
+    now = [0.0]
+    sent: list[int] = []
+    disappeared_at = 0.1 if denied_signal == signal.SIGTERM else 15.1
+
+    def send(_pid, sig):
+        sent.append(sig)
+        if sig == denied_signal:
+            raise PermissionError("private-process-canary")
+
+    monkeypatch.setattr(runtime.os, "killpg", send)
+    monkeypatch.setattr(runtime.time, "monotonic", lambda: now[0])
+    monkeypatch.setattr(
+        runtime.time, "sleep", lambda seconds: now.__setitem__(0, now[0] + seconds)
+    )
+    monkeypatch.setattr(
+        runtime, "process_group_exists", lambda _pid: now[0] < disappeared_at
+    )
+    runtime.stop_owned_process(SimpleNamespace(pid=123, poll=lambda: 0))
+    assert now[0] >= disappeared_at
+    assert now[0] < disappeared_at + 0.1
+    assert sent == (
+        [signal.SIGTERM]
+        if denied_signal == signal.SIGTERM
+        else [signal.SIGTERM, signal.SIGKILL]
+    )
+
+
+@pytest.mark.parametrize("denied_signal", [signal.SIGTERM, signal.SIGKILL])
+def test_process_cleanup_persistent_permission_denial_uses_only_existing_phase_budget(
+    monkeypatch, denied_signal
+) -> None:
+    now = [0.0]
+    sent: list[int] = []
+
+    def send(_pid, sig):
+        sent.append(sig)
+        if sig == denied_signal:
+            raise PermissionError("private-process-canary")
+
+    monkeypatch.setattr(runtime.os, "killpg", send)
+    monkeypatch.setattr(runtime.time, "monotonic", lambda: now[0])
+    monkeypatch.setattr(
+        runtime.time, "sleep", lambda seconds: now.__setitem__(0, now[0] + seconds)
+    )
+    monkeypatch.setattr(runtime, "process_group_exists", lambda _pid: True)
+    with pytest.raises(runtime.SmokeError, match="termination was denied") as caught:
+        runtime.stop_owned_process(SimpleNamespace(pid=123, poll=lambda: 0))
+    assert "private-process-canary" not in str(caught.value)
+    assert now[0] == pytest.approx(
+        15.0 if denied_signal == signal.SIGTERM else 20.0, abs=0.1
+    )
+    assert sent == (
+        [signal.SIGTERM]
+        if denied_signal == signal.SIGTERM
+        else [signal.SIGTERM, signal.SIGKILL]
+    )
+
+
+def test_process_cleanup_inventory_failure_after_permission_denial_is_not_quiescence(
+    monkeypatch,
+) -> None:
+    checks = []
+
+    def exists(_pid):
+        checks.append(True)
+        if len(checks) == 1:
+            return True
+        raise runtime.SmokeError("Owned process inventory failed")
+
+    def denied(_pid, _sig):
+        raise PermissionError("private-process-canary")
+
+    monkeypatch.setattr(runtime, "process_group_exists", exists)
+    monkeypatch.setattr(runtime.os, "killpg", denied)
+    with pytest.raises(runtime.SmokeError, match="Owned process inventory failed"):
+        runtime.stop_owned_process(SimpleNamespace(pid=123, poll=lambda: 0))
+    assert checks == [True, True]
+
+
 def test_process_cleanup_stops_child_after_leader_exits() -> None:
     leader = subprocess.Popen(
         [

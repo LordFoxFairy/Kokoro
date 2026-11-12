@@ -1,4 +1,4 @@
-"""Source driver boundaries run without Agent packages or shared services."""
+"""Source driver boundaries and native components without shared services."""
 
 import importlib.util
 import json
@@ -152,12 +152,94 @@ class SourceBoundaries(unittest.TestCase):
         with self.assertRaises(source.SourceError):
             source.command_document("tenant-1", "Unknown", {})
 
+    def test_launch_submits_one_native_message_and_requires_correlated_receipt(self):
+        from email.message import Message
+        from types import SimpleNamespace
+        from uuid import UUID
+
+        driver = source.AgentSourceDriver(
+            Path("/tmp"), "db", "redis://localhost/15", "native-launch"
+        )
+        ready = SimpleNamespace(
+            bff_origin="http://127.0.0.1:4321",
+            bff_web_secret="owned-web-secret",
+            cookie="owned.session_token=fixture",
+            origin="https://web.example.test",
+        )
+        conversation = UUID("7c36edcf-f621-40fc-9044-e6e67d01a930")
+        session_id = f"conv_{conversation}"
+        request_id = "source-native-launch"
+        suffix = "a" * 64
+        run_id = f"run_bff_{suffix}"
+        user_message_id = f"msg_bff_{suffix}_user"
+        for valid in (True, False):
+            with (
+                self.subTest(valid=valid),
+                patch.object(source, "uuid4", return_value=conversation),
+                patch.object(source.http.client, "HTTPConnection") as connect,
+            ):
+                conn = connect.return_value
+                response = conn.getresponse.return_value
+                response.status = 202
+                response.headers = Message()
+                response.headers["x-request-id"] = request_id
+                response.headers["cache-control"] = "no-store"
+                response.read.return_value = json.dumps(
+                    {
+                        "data": {
+                            "run_id": run_id,
+                            "user_message_id": user_message_id,
+                            "assistant_message_id": f"msg_bff_{suffix}_assistant"
+                            if valid
+                            else "another-message",
+                        },
+                        "meta": {"request_id": request_id},
+                    }
+                ).encode()
+                if valid:
+                    self.assertEqual(
+                        driver._launch(ready, "skill:owned"),
+                        (session_id, run_id, user_message_id),
+                    )
+                else:
+                    with self.assertRaisesRegex(
+                        source.SourceError, "Message receipt invalid"
+                    ):
+                        driver._launch(ready, "skill:owned")
+                connect.assert_called_once_with("127.0.0.1", 4321, timeout=10)
+                conn.request.assert_called_once()
+                method, path, body = conn.request.call_args.args
+                self.assertEqual(
+                    (method, path), ("POST", f"/v1/sessions/{session_id}/messages")
+                )
+                self.assertEqual(
+                    json.loads(body),
+                    {
+                        "selected_skill_source_refs": ["skill:owned"],
+                        "content": "Read selected Skill source.",
+                    },
+                )
+                self.assertEqual(
+                    conn.request.call_args.kwargs["headers"],
+                    {
+                        "cookie": ready.cookie,
+                        "origin": ready.origin,
+                        "content-type": "application/json",
+                        "x-kokoro-service": "web-bff",
+                        "x-kokoro-internal-secret": ready.bff_web_secret,
+                        "x-kokoro-request-id": request_id,
+                        "idempotency-key": request_id,
+                    },
+                )
+                conn.close.assert_called_once_with()
+
     def test_revoke_exact_protocol(self):
-        record = {"kind": "result", "command": "revoke-agent-execution", "status": "ok"}
+        record = {"kind": "result", "command": "remove_member", "status": "ok"}
         source.require_revoke_result(record)
         for invalid in (
             {**record, "extra": True},
             {**record, "command": "revoke-user-session"},
+            {**record, "command": "revoke-agent-execution"},
             {**record, "status": "failed"},
             None,
         ):
@@ -772,10 +854,9 @@ class SourceNativeComponentTests(unittest.TestCase):
                         if not enabled
                         else "installation re-enable"
                     )
+                    credential = AsyncMock(return_value="CREDENTIAL_SENTINEL")
                     driver.runtime = SimpleNamespace(
-                        tokens=SimpleNamespace(
-                            token=AsyncMock(return_value="TOKEN_SENTINEL")
-                        ),
+                        credentials=SimpleNamespace(credential=credential),
                         lease_reader=object(),
                         signer=object(),
                     )
@@ -783,7 +864,7 @@ class SourceNativeComponentTests(unittest.TestCase):
                         code,
                         "IAM execution authorization failed"
                         if enabled
-                        else "PRIVATE_MESSAGE TOKEN_SENTINEL PROOF_SENTINEL",
+                        else "PRIVATE_MESSAGE CREDENTIAL_SENTINEL PROOF_SENTINEL",
                     )
                     error.__cause__ = cause
                     rpc = AsyncMock(side_effect=error)
@@ -825,16 +906,155 @@ class SourceNativeComponentTests(unittest.TestCase):
                         f"category={'iam_execution' if enabled else 'unclassified'})",
                     )
                     self.assertIsNone(captured.exception.__context__)
+                    credential.assert_awaited_once_with("tenant-1")
                     rpc.assert_awaited_once()
                     self.assertEqual(
                         rpc.await_args.kwargs["headers"],
-                        {"authorization": "Bearer TOKEN_SENTINEL"},
+                        {"authorization": "Bearer CREDENTIAL_SENTINEL"},
                     )
                     self.assertEqual(rpc.await_args.kwargs["timeout_ms"], 10_000)
                     self.assertEqual(request.execution_proof, "PROOF_SENTINEL")
                     self.assertEqual(request.enabled, enabled)
                     self.assertNotIn("SENTINEL", str(captured.exception))
                     self.assertNotIn("PRIVATE", str(captured.exception))
+
+    def test_pending_dispatch_cannot_be_claimed_before_bff_owner_ack(self):
+        import asyncio
+        from types import SimpleNamespace
+        from unittest.mock import AsyncMock
+        from kokoro_agent.protocol import (
+            ExecutionIdentity,
+            IdentityRef,
+            RunInput,
+            RunRequest,
+        )
+
+        class ClaimReached(Exception):
+            pass
+
+        async def run():
+            tenant_id, user_id = "tenant-fixture", "user-fixture"
+            run_id = "run_bff_" + "a" * 64
+            message_id = "msg_bff_" + "a" * 64 + "_user"
+            session_id = "conv_7c36edcf-f621-40fc-9044-e6e67d01a930"
+            request_id = "source-admission-fixture"
+            selected = "skill:owned-fixture"
+            principal = IdentityRef(kind="user", opaque_ref=user_id)
+            request = RunRequest(
+                kind="run.request",
+                request_id=request_id,
+                run_id=run_id,
+                session_id=session_id,
+                feature_key="chat",
+                project_ref=None,
+                selected_skill_source_refs=(selected,),
+                execution_identity=ExecutionIdentity(
+                    tenant_ref=tenant_id,
+                    actor=principal,
+                    subject=principal,
+                    identity_assertion_ref="bff:" + "a" * 64,
+                ),
+                input=RunInput(
+                    message_id=message_id, content="Read selected Skill source."
+                ),
+            )
+            first_barrier = asyncio.Event()
+            release_owner_ack = asyncio.Event()
+            events = []
+
+            async def observe(*scope):
+                self.assertEqual(
+                    scope, (tenant_id, run_id, session_id, request_id, message_id)
+                )
+                events.append("observe")
+                if events.count("observe") == 1:
+                    return False  # Agent persists pending before returning 202.
+                first_barrier.set()
+                await release_owner_ack.wait()
+                return True
+
+            async def pending(run):
+                self.assertEqual(run, run_id)
+                events.append("pending")
+                return request
+
+            async def claim(actual, consumer):
+                self.assertTrue(
+                    release_owner_ack.is_set(),
+                    "pending alone allowed manual claim before owner ACK",
+                )
+                self.assertIs(actual, request)
+                self.assertEqual(consumer, "source-smoke")
+                events.append("claim")
+                raise ClaimReached
+
+            ready = SimpleNamespace(
+                tenant_id=tenant_id,
+                subject_id=user_id,
+                observe_bff_dispatch_admitted=observe,
+            )
+            driver = source.AgentSourceDriver(
+                Path("/tmp"), "db", "redis://localhost/15", "admission-fixture"
+            )
+            driver.repository = SimpleNamespace(
+                get_pending_dispatch=pending, claim_dispatch=claim
+            )
+
+            async def blocking_call(name, operation, *args):
+                if name == "Agent readiness":
+                    self.assertEqual((operation, args), (driver._require_ready, ()))
+                    events.append("ready")
+                    return None
+                self.assertEqual(
+                    (name, operation, args),
+                    ("launch", driver._launch, (ready, selected)),
+                )
+                events.append("message")
+                return session_id, run_id, message_id
+
+            with (
+                patch.object(driver, "_prepare", AsyncMock()),
+                patch.object(driver, "_blocking_call", blocking_call),
+            ):
+                task = asyncio.create_task(
+                    driver._exercise(
+                        ready,
+                        "platform",
+                        "storage",
+                        "owned-fixture",
+                        1,
+                        b"fixture",
+                        lambda: None,
+                    )
+                )
+                barrier = asyncio.create_task(first_barrier.wait())
+                try:
+                    done, _ = await asyncio.wait(
+                        (task, barrier), timeout=2, return_when=asyncio.FIRST_COMPLETED
+                    )
+                    self.assertTrue(
+                        done,
+                        "admission did not reach the observation or claim boundary",
+                    )
+                    if task in done:
+                        task.result()  # Preserve the exact semantic failure, not a timeout.
+                    self.assertEqual(
+                        events, ["ready", "message", "pending", "observe", "observe"]
+                    )
+                    release_owner_ack.set()
+                    with self.assertRaises(ClaimReached):
+                        await asyncio.wait_for(task, timeout=2)
+                    self.assertEqual(
+                        events,
+                        ["ready", "message", "pending", "observe", "observe", "claim"],
+                    )
+                finally:
+                    for item in (task, barrier):
+                        if not item.done():
+                            item.cancel()
+                    await asyncio.gather(task, barrier, return_exceptions=True)
+
+        asyncio.run(run())
 
     def test_real_native_metadata_and_original_bytes_without_services(self):
         import asyncio
