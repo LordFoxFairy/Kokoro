@@ -1734,3 +1734,10 @@ App两提交已推原Draft49并核精确remote head；Root仅更新App gitlink�
 - Root ae480fb9固定App候选并从真实已提交blobs重算inventory，拓扑／15 edges 0 violations／原checkpoint通过。正常3310受控切换；隔离依赖复用曾误改正常workspace链接造成Build Error，已恢复并改独立offline frozen安装，正常浏览器确认恢复；持久数据未改。
 - 主控native真实API创建201→fresh exact详情→刷新保持；JSON双导入201→明确选择B→fresh Connector/Server200→取消未保存编辑→刷新原值通过。只保存配置，未连接/Prepare/执行或声称供应商成功，秘密未回显。3项唯一命名测试配置待删除确认，原Context7未改；原始脱敏metadata／截图／receipt保本地ignored。
 - 本片真实观察：bootstrap空models被误投影ready-empty，MCP English详情/配置/JSON编辑有硬编码中文与局部缺译。composer_ui_audit仅在隔离App最小修正，复用现字典/测试，不动auth、机器契约/正常源；主控停写后验收。BFF原#17收敛和Agent精确消费者四字段配对并行，Goal保持active。
+
+
+### 2026-11-12 B-T1a正式消费者配对与受控恢复
+
+Agent281bde49（PR #48）仅4行顶层Platform pin／常量／断言配对Capability573a8f00（原#12），四Proto、generated、独立历史发行锚不变。主控正常3.14.3复验四contract文件129 PASS／contract-check，四SHA与隔离archive fixture核等；正规generator／Ruff／Pyright／wheel安装smoke通过，初次3.11 TypedDict收集失败保留。managed worktree工具两次未返回且未生成目录，独立验证用ignored源码archive，不掩称managed工作树成功。
+
+52 Run均终态、Agent dispatch与BFF相关pending0后，主控SIGTERM原HTTP／Worker／Platform，应用已验补丁并恢复正式入口；两owner health／ready200、Worker消费，原持久数据和两笔未知财务恢复记录保持。staged Root精确gitlink与按76真实Git blobs重算93引用的inventory已通过拓扑／15边0违例／原checkpoint。首轮未stage导致gitlink不一致失败保留，随后补齐真实gitlink通过；未弱化规则。源码／本地候选组合通过不冒PR已合、供应商授权或整个Task B完成。App局部多语言片16路径停写／独审CLEAR，主控验收中；BFF认证metadata按owner发行单独推进。

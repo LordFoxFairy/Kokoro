@@ -2,16 +2,15 @@
 
 ## 当前任务：Task B 已移交本主控（2026-11-12）
 
-用户2026-11-12明确要求设置目标，机器Goal已创建为active；目标是Task B剩余功能、各仓PR/main及精确组合闭环，不以局部通过结束。按最新指令接手技能／连接器／账户协作全链路，原Task A／UI批次的“Task B不动”保留为历史范围，不再约束此次任务。唯一执行清单是[TODO](../todo.md)，功能范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)，进展／设计复用既有production-closure计划。
+机器Goal为active：完成Task B剩余功能、各仓PR/main及精确组合出口，不以局部通过结束。唯一执行清单[TODO](../todo.md)，范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)和既有production-closure计划；已交付Task A及未交接WIP保留，不重开无边界扫描。
 
-原Root #67 head477562a4与当前main1092d99b分叉；主控先非递归fetch并合入当前main，原Task B14个提交／468行记录全部保留。所有12个gitlink仍固定当前已验main组合，无业务源／正常服务变化；初始自动merge保留的旧Scheduler/System指针已在本地发布前纠正，最终逐一核等，不以清冲突代替组合验收。Capability pin24094960与PR#12 e068fcaa源码树相同，功能不是待重做；App#49／BFF#17则已落后main，需要保双方成果的实际集成，不盲切旧分支运行。
+原Root #67已保14个原提交／468行记录合入accepted main。App原#49候选 `a0512901` 普通合入双方历史，保Public28.35及Task A成果；完整lint／非增量TS／build／22生成检查通过，最终rail295 PASS。完整默认6753 PASS/2 FAIL，两处旧oracle修正后两文件48 PASS，未重跑全默认、不冒全绿。隔离依赖复用曾误改正常workspace链接造成短暂Build Error，已恢复且改独立frozen安装，正常3310已受控恢复该候选；未改持久数据。
 
-首片R-07已沿Capability原#12推送 `c040dda8`：主控8例／真实check／类型／相关lint与格式通过，803输入SHA／mtime／mode保持，独审CLEAR。只读check与显式generate各司其职；完整PR／Task B仍未验收。候选仍留原#12待组合；尝试推进Root时现Agent Connect发布pin24094960使组合门正确拒绝不配对，因此保留原12个已验gitlink，与B-01消费者窗口一并切换，不放宽门禁或仅为工具片改动runtime。后继R-14操作级DNS pin，再按B-01／B-02补缺失旅程；账户／Skills／后台同时先只读核当前证据。多agents分区，主控唯一台账／Git／资源与验收。原支付关闭和完整云E2B暂存边界保持；不部署／清卷，不删除未交接worktree。
+Capability原#12 R07／R14候选 `573a8f00` 已完成Agent精确消费者配对 `281bde49`（新原需求PR #48）。R07只读check真实803输入SHA／mtime／mode不变；R14操作级DNS pin保同操作拒漂移、IP/Host/SNI及原取消，不新增框架。Agent仅4行顶层pin及常量／断言，生成物与独立历史发行锚保持；主控正常Python3.14.3四contract文件129 PASS、contract-check、四SHA核等，fixture正规生成／静态／wheel检查通过。初次Python3.11既存TypedDict收集失败保留，不混同静态3.13与最终运行3.14.3阶段。
 
-R-14候选现已沿原#12推送 `573a8f00`：主控两直接unit17例／完整types／scope格式与lint通过、五输入核等、独审CLEAR；writer相关7unit共63例通过，未拼作全默认。App原#49已在保留原HEAD远端引用的clean隔离worktree并入main；机器侧只保现28.35并正规生成，native／scheduled executions等按current保双方功能，旧未发行metadata／reauthorize／picture／RSS不激活。主控重建隔离旧Next types后完整非增量TS、lint／build／22生成检查通过。最终rail295 PASS；完整默认6753 PASS/2 FAIL，修正两处旧oracle后原两文件48 PASS，未冒全默认绿。候选a0512901沿原#49推送，Root ae480fb9精确组合门通过，正常3310已受控切到该候选。隔离初期复用node_modules导致两个workspace依赖链接被改写、短暂Build Error；已恢复正常链接并为隔离安装独立frozen依赖，真实页恢复，未改持久数据。
+主控确认52个Run全终态／pending0后SIGTERM相关HTTP／Worker／Platform，再配对源码并恢复；两owner health／ready均200，官方Worker消费。原数据／卷与2笔历史未知财务记录保持。Root候选inventory按76个真实提交blobs重算93引用，staged精确gitlink拓扑／15 edges 0 violations／原checkpoint通过；最初未stage时gitlink不一致失败如实保留，未改门禁。原PR与完整功能仍待出口验收，不以readiness冒真实供应商授权。
 
-
-真实native-auth已补API创建→fresh exact详情→刷新，以及JSON双配置导入→明确选B→fresh Connector/Server→取消未保存修改→刷新原值；分别真实POST201，读取200，未Connect／Prepare，不冒真实供应商授权或整个B-01/02完成。3项临时配置登记于私有receipt，等待用户删除确认，原Context7保持。正常页面又发现bootstrap未读目录误报空态及English MCP配置硬编码中文，已交composer_ui_audit仅在隔离App最小修复；主控验收后再切正常源，不新增框架／请求。BFF原PR差异与Agent四字段精确pin配对并行收敛，机器Goal持续active。
+真实native浏览器已补API创建201→fresh exact详情→刷新，JSON双配置导入201→明确选B→fresh Connector/Server200→取消未保存编辑→刷新原值；只保存配置，未Connect／Prepare，秘密未回显。3项登记测试配置待用户删除确认，原Context7未改。页面又发现bootstrap未读目录误报空态及English MCP硬编码中文，16路径修复已停写、独审CLEAR；主控冻结回归／build与正常浏览器补验中。BFF原#17差异已分类，基于main仅先正规发布认证metadata与文档纠偏，保匿名／独立Bearer例外，不恢复旧层或新增内部OAuth。Share GET／private reauthorize／其它原范围仍沿TODO推进。主控唯一Git／台账／资源／最终验收，多agents分区；不部署／清卷，不删除归属未明worktree。
 
 ## 上批已交付：Composer菜单与首页无用请求（2026-11-12）
 
