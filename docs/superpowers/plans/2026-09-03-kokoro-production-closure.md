@@ -1757,3 +1757,28 @@ App8208882d四文件443 PASS／build、后继34c51204七字典十默认key与原
 用户明确批准后，仅删除本轮API与JSON A/B三唯一配置，三DELETE200，硬刷新仅余原Context7，未改它；恢复en与视口，原收据／截图留ignored。Agent#48正常merge mainb7867212，树核等281bde49，topic本地远程均清；4个CI红annotation明确账户账单/额度未启动，未绕保护。Root db28020c精确配对Agent main／App34c51204／Capability573a8f00，131真实blobs／150引用重算，拓扑／15边0违例／原checkpoint通过。
 
 BFF3007c16仅本地metadata已验未push，后继Share GET19路径停写待真实PG、MCP独立writer进行；原PR17最终保历史集成后统一发行消费者。Skills只读核验已证多数原功能和真实旅程在现源码祖先，剩余现三入口一致性、后台/管理员撤权与跨tenant边界，复用真实Skill运行，不把旧待领取或旧候选独有提交机械扩成新Task B范围。Goal active，主控继续收口独立已验片而非只汇报。
+
+
+### 2026-11-12 BFF联合实测与原PR历史收口
+
+主控0a2c98ae联合候选337相关PASS／0SKIP、build/types/lint／216semantic／两正规check与114输入核等；独立Share/MCP/Team/退役补口审查CLEAR。真实ChatModule/Nest＋独立PG7 PASS（IAM准入double、无Redis），含Project owner单独变化404／恢复200、GET事实和receipt值/xmin不变。首次URL漏schema、次轮deleted seed漏deleted_at失败均保留，只改接线/fixture，所有3个自有库DROP。未跑全默认／新模型／真实Provider，不以数量冒Task B完成。
+
+原BFF#17普通merge旧1e6765b3到已验0a2，82冲突及自动混入260路径由两只读owner分组审查、主控具名路径逐组处理；保当前完整Schema/Execution/verified spool/native credit与已移植Share/MCP/enum，删除旧层/重复186行MCP测试/未发行29.3及旧vendor/CLI/RSS旁路，B08意图另保留。最终609b0e93有双方历史且完整源树等已验0a2，快进推送原#17，无force/no新BFF PR，仍Draft。App composer_ui_audit正从固定0a2正规消费两profile；正常服务未抢切。Storage原#2由api_perf_audit独立非runtime工具片推进，base maina8edebf8树等231bb663，fresh→FINAL资格不得凭猜hash或改成功断言收口。Goal active、唯一TODO持续推进。
+
+
+### 2026-11-12 App消费交付与Storage实证纠偏
+
+App原#49已提交推送ebc36617：固定BFF0a2两profile，主控23生成检查、60文件1216 PASS／build；独审发现3真实缺口（tenant暂缺下原未知命令保留、provider_key与server身份一致、Shared SDK path.id生成）修后主控185 PASS／types／SDK check／build，110路径冻结核等，两独审CLEAR。未重跑完整默认或模型、不拼全门绿色；正常源仍34c51204／BFF05a1074，下一步受控配对只补native缺口。
+
+Storage旧fresh1d60→0f480说法经当前真实PG完整目录推导未复现：0f91535 fresh实际94839，精确删除3 enum定义为legacy bdf6；既有FINAL DDL到809d并与独立993aede定义全等，既有workspace DDL到13a347并与独立当前f8145定义全等。四owner search_path均一致，public反解仅schema前缀差异；无旧0f480全定义收据，不据mock hash添加兼容。撤回未提交假设补丁，生产工具/canonical保持。
+
+原6例先4 PASS/2 FAIL仅因历史FINAL测试误读当前Schema及遗漏workspace_output；固定同发布工具/helper/993aede与测试URL GUC后主控真实6 PASS，原行/no-op/ArtifactsStore断言不弱化，格式／ESLint／types／独审CLEAR，2输入SHA核等。三注册probe库和fixture自有库均回收，正常库/卷未改。47bf19d两文件修复；原#2普通保add2历史集成31a7c89，完整树核等已验47bf19d，沿原PR交付，不带未证实兼容。早期探测主控输错摘要与后继未复现假设的失败保留，不归咎生产实现。Goal持续active，唯一TODO已纠偏。
+
+
+### 2026-11-12 受控消费者组合与真实native补验
+
+Storage原#2正常合main7155093c（树等31a7c89/47bf19d），仅两test/doc差异；本轮local/remote topic已清，其他旧工作树保留。CI annotation明确账户账单／额度导致任务未启动，未绕保护。
+
+52 Run全终态／相关pending0后，只SIGTERM本方BFF/App，正常源码切609b0e93/ebc36617、原配置启动，health/页面200、原生会话刷新恢复。真实浏览器Share打开只GET200、未创建公开链接；自建无密钥MCP QA Disconnect→显式reauthorize200→不同connector pending/disabled/version1→exact Connector与Server GET200→硬刷新保持未连接，完整操作阶段trace仅1个reauthorize POST，无自动Prepare/OAuth/enable，Context7未改。刷新后再取旧response body已evict，保留实际早先ACK/状态/完整阶段trace，不冒重取得body。新1项测试配置待用户单项删除确认；原3项批准删除此前已完成，不能挪用其授权。
+
+当前staged精确组合由326真实已提交Git blobs更新398引用，拓扑／15边0违例／原checkpoint通过；初次遗漏inventory owner版本更新而FAIL，按实际28.37纠偏后通过，未改规则。Skills现本人structured-report安装详情/真实SKILL.md读取200及返回已验，但当前账号Project为空，不冒广场/Project/作者history三入口全验，也不为验收复制旧账号数据。Goal仍active，完整Task B/原Draft PR出口未完，下一步仍只补当前TODO缺失。

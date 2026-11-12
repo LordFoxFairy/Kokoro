@@ -4,15 +4,17 @@
 
 机器Goal **active**；唯一执行清单[TODO](../todo.md)，范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)及既有production-closure计划。原Root #67已保Task B14提交／468行记录合入accepted main，Task A与未交接WIP不重开；旧“Task B不动”只描述历史批次。
 
-**当前实际组合：Root `db28020c`**，App `34c51204`（原#49）、Agent main `b7867212`（#48已合）、Capability `573a8f00`（原#12），其余owner维持已验源。131个真实Git blobs／150引用重算，拓扑／15边0违例／原checkpoint通过。Agent merge树等已验281bde49，topic本地／远程已清；四CI红因GitHub账户账单／额度未启动，未绕保护。
+**当前候选组合已验，待Root提交：** App `ebc36617`（原#49）、BFF `609b0e93`（原#17）、Storage main `7155093c`（原#2已合）、Agent main `b7867212`（#48已合）、Capability `573a8f00`（原#12），其余owner不变。326个真实Git blobs／398引用重算，staged拓扑／15边0违例／原checkpoint通过；初次inventory漏同步owner版本28.35→28.37失败保留，修正真实metadata后通过，未放宽门禁。上一Root db28020c组合保留历史。Agent merge树等已验281bde49，topic本地／远程已清；四CI红因GitHub账户账单／额度未启动，未绕保护。
 
 **App配置与UI本片已验。** 原#49普通合入双方历史，保现Public28.35及Task A，不激活旧未发行29.3。完整lint／非增量TS／22生成检查／build已过；初始完整默认6753 PASS/2 FAIL，两旧oracle修正后原两文件48 PASS，未重跑全默认、不拼绿。后继MCP本地化／bootstrap主控443相关例及build、默认词条补口117例及build／冻结／独审通过。正常English详情→JSON安全错误→取消回焦／390px、最终French320默认表单内收通过，恢复en与视口。此前隔离依赖复用误改正常workspace链接造成短暂Build Error已恢复，隔离现独立frozen安装。全站缺译及其它面板仍随B-14承接，不冒九语言全部视觉QA。
 
 **R07／R14与Agent配对本地闭合。** Capability只读check保803输入SHA／mtime／mode，OAuth DNS pin限一次操作；真实Provider末端不冒通过。Agent仅4行顶层pin／常量／断言，生成物及独立历史锚不变；正常3.14.3主控四contract文件129 PASS／contract-check、四SHA核等，fixture正规生成／静态／wheel检查已过；初次3.11既存TypedDict收集失败保留。52 Run全终态／pending0后受控SIGTERM并恢复正式HTTP／Worker／Platform，两owner health／ready200、Worker消费，原数据／卷和两笔未知财务记录保持。最初未stage的Root gitlink不一致失败亦保留，未弱化门禁。
 
-**BFF下一业务片进行中。** Metadata28.36／215项与README/INDEX旧清库指导纠偏本地已提交 `3007c16`（99 contract／215semantic／1135输入核等／独审通过），未push／未切正常或原#17。Share GET28.37／216项同一有界只读owner SELECT，真实PG fixture仅编写、唯一空测试库已登记待主控验；MCP显式reauthorize正规消费573a8f00、双CAS／新pending身份／原ACK重放，不自动Prepare/OAuth。新private profile旧Bearer声明正按真实native边界纠偏；同一未发行28.37只补当前IAM已支持的delete_series枚举，不新造权限／运行层／版本。两独立writer停写后主控统一build／定向回归／真实PG，再保原PR历史集成与消费者发行。
+**BFF与App本片源码已验，待正常组合验收。** 联合候选0a2c98ae包含Share GET28.37／216项、现IAM既有delete_series闭集纠偏与MCP显式重新授权；主控337相关例／build/types/lint／semantic／两正规check、114输入核等／独审通过。真实Nest+PG7 PASS，IAM准入double、无Redis；首次URL漏schema及次轮deleted seed漏deleted_at失败保留，修接线/fixture后通过，三测试库均已DROP。new private profile已改native metadata，退役采样4 RED→GREEN，已发Session仍原timeout边界保持。原#17经82冲突与非冲突旧链逐组审查，普通保历史集成609b0e93，源树核等已验0a2且已快进推送；不恢复旧层/重复测试/未发行RSS或8.11 wire，B08原意仍待核。App已提交推送ebc36617，从固定0a2正规消费两profile；主控23检查／1216相关PASS／build，独审3补口后185 PASS／types／SDK check／build，110输入核等、独审CLEAR。正常BFF609／Appebc已按空闲52终态、pending0受控恢复，原环境／其他owner进程不变。真实native刷新后Share只GET200不创建；独立MCP空配置断开→显式新授权200→新connector pending/disabled/version1→exact双鲜读200→硬刷新未连接已验，仅一个reauthorize POST，无自动Prepare/OAuth，原Context7不动；后继响应body已evict，不冒重复取得body。尚未冒完整供应商末端／整PR完成。
 
-**复用证据、清理已完成。** Skills已有真实导入／安装／版本恢复／删除、作者/同团队权限及任务真使用收据在当前祖先，不重跑模型；剩余现三入口一致性和后台／跨tenant缺口。用户批准的本轮三配置已真实DELETE200，硬刷新仅余原Context7、未改原配置；原始证据仅ignored。后继空表单只打开取消，网络缓冲eviction不冒完整零写证明。主控唯一Git／台账／资源／最终验收，多agents分区，不部署、不清卷、不删除归属未明worktree；Task B整体与原PR出口仍未完成。
+**Storage测试来源已纠偏，原PR已合main。** 真实PG完整目录核对未复现旧fresh1d60→0f480，已撤回假设性兼容片，不新增生产配对。只修FINAL冻结工具/helper/993aede Schema、当前workspace_output oracle和测试URL GUC隔离；原行/no-op/ArtifactsStore断言保持。主控真实6 PASS／格式／ESLint／types／独审CLEAR；三注册probe库与fixture自有库回收，正常DB不变。47bf19d两文件提交，原#2普通历史集成31a7c89，树等已验47bf19d；原#2正常合main7155093c、树等已验源，本轮local／remote topic已清，其他工作树保留；CI因账户账单／额度未启动，未绕保护。本次正常Schema／runtime源码不变。
+
+**复用证据、清理已完成。** Skills已有真实导入／安装／版本恢复／删除、作者/同团队权限及任务真使用收据在当前祖先，不重跑模型；剩余现三入口一致性和后台／跨tenant缺口。用户批准的本轮三配置已真实DELETE200，硬刷新仅余原Context7、未改原配置；原始证据仅ignored。本次另建1项无密钥MCP QA仅验新授权身份，已登记并等待单项删除确认，不影响其余推进。后继空表单只打开取消，网络缓冲eviction不冒完整零写证明。主控唯一Git／台账／资源／最终验收，多agents分区，不部署、不清卷、不删除归属未明worktree；Task B整体与原PR出口仍未完成。
 
 ## 上批已交付：Composer菜单与首页无用请求（2026-11-12）
 
