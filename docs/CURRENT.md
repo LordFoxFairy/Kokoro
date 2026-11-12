@@ -1,3 +1,9 @@
+## 2026-11-12 B-08 后端已发行与正常激活，native补验继续
+
+原BFF#17已推143ade1（含1d9ab9e现三设计门），只接现本人设置→原Chat私有launch；不新owner/协议/Schema/认证/记忆服务，Agent固定7bfb/8.17 artifact不换。主控68相关PASS/types/正规generator check；writer build/lint通过，最终12输入冻结核等、两独审CLEAR；现Agent owner两文件21 PASS。真实PG最终4子旅程+parent5 PASS/0 SKIP，覆盖旧key零读取、regen原快照/省略、可信actor与租户、读失败/真实snapshot后取消/UTF8超1MiB/101项零业务副作用，并以同current head合法interrupt正控排除无效目标。首轮fixture漏abort/无有效stream头FAIL保留，随后只修PG文件；三个自有库均DROP，生产11路径未变，不重跑原68/build。
+
+正常52 Run均终态/pending0后只SIGTERM本方BFF，原env切143并恢复正式入口，health200；App仍0c6078e3，其他owner及两笔未知财务记录不动。Root staged从232真实Git blobs更新290引用，拓扑/15边0违例/原checkpointPASS。正常个性化页已可读，未写入资料/知识或调用模型；设置→新消息实际生效仍是下一步，未冒native完整验收。公开产品说明由composer_ui_audit在原门户分层整理，不把内部工程术语混入。
+
 ## 2026-11-12 本轮推进：Custom API 补证、Skills语言、B-08接线
 
 Goal保持active。Custom API现Capability573真实PG单文件4 PASS（执行准入double、自有库回收），Agentb786 Python3.14.3三文件＋一个Factory接缝107 PASS（sandbox/model doubles），BFF609独立已构建checkout单文件7 PASS；只补材料冲突/身份/撤权状态/取消/秘密出口缺口，不重跑Docker成功或旧模型。源码聚焦未发现Acquire明文的新具体出口，不冒任意编码/外网通用DLP或全存量日志扫描。

@@ -1793,3 +1793,12 @@ App正常英文Skills两radio回退中文、日期固定zh已修，5source/test�
 B08不换当前Agent8.17已发行pin；三设计实施门本地1d9ab9e，唯一writer app_merge_gate在隔离BFF推进同owner快照→原Chat outbox→私有材料。无profile/usage省略，关闭保revision，原key/regen原输入；consumer按canonical补闭集/knowledge条件/ID唯一性，不另造schema。主控Agent当前两相关文件21 PASS，待writer停写后独立真实PG；正常BFF609保持。
 
 Admin原正常3320监听缺失，主控校原9bed/私有配置与Product origin一致后恢复正式Next dev；无代码/角色/凭据/Schema变更。匿名直入/Web入口307，当前浏览器/manage回/app且无管理菜单，只作当前用户拒绝边界，正管理员/撤权/跨tenant未验。原三QA已清；新增1MCP QA待单项删除确认，Goal仍active。
+
+
+### 2026-11-12 B-08源码、真实PG与受控激活
+
+原#17已推143ade1，现三设计门1d9ab9e。最终12输入manifest SHA1509e05272cc2c25eb65f2e9e3dbe180a099b678aa0441a96b9f9351abe328ef；主控68 related/types/正规Agent check，writer build/lint通过，两独审CLEAR。当前Agent固定7bfb/8.17原artifact不换；个人子图闭集/usage条件/ID唯一性从owner生成，不加平行schema。Agent当前owner两文件21 PASS，未改源码。
+
+真实PG初轮前三旅程PASS，第4因fixture漏abort和缺current stream头FAIL；未改生产，仅同PG文件接真实SELECT完成后abort及合法活动头。修后5PASS，再同旅程末尾增加合法小snapshot interrupt正控，最终5PASS，原read故障/取消/1MiB/101项完整Message/outbox/cancel零effects断言保持。三自有库均DROP，正常DB/Redis不变；生产11输入持续原SHA，未重跑68/build去刷绿。
+
+正常52终态/相关pending0后仅BFF受控SIGTERM并以原env源码143恢复health200，App0c不动、原两未知财务记录保留。Root232真实blobs/290引用配对，staged拓扑/15边0违例/原checkpointPASS。正常Profile当前只读，未改资料/知识、未发模型；native设置→新消息生效/恢复与公开产品指南仍继续，不关闭B08或整体Goal。
