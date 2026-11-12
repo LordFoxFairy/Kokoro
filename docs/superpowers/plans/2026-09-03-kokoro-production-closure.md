@@ -1876,3 +1876,11 @@ Root仅固定该Admin新gitlink，owner传输/契约/生成物与09e1完全相�
 当前role撤销后原挂载目录刷新实际403，私有成员行立即清退；显式重核回/app，原工作会话仍可用。最后临时platform_admin恢复false/v6，三次临时窗口共六CAS成功audit old/new版本核等，新Session全部正式退出/自有Cookie清除，locale=en及viewport恢复。无业务写/新模型/资金操作；正常Admin已恢复3320，原核心owner和数据保持。
 
 主控最终两SHA/11 focused/独审CLEAR，writer最终相关lint/types/build/post-types；前序九SHA/主控35与writer355等按阶段保留，不拼成最终全量测试全绿。原PR7保持Draft；只读成员目录此片关闭，广义User360、其它后台管理/政策与TaskB原剩余项仍OPEN。Root只配DocOnly后继gitlink；传输输入与已验09e1相同，沿原合同门，补本轮拓扑，不重复模型/PG/默认。Goal持续active。
+
+### 2026-11-12 PERF-03发行及下一native隔离旅程
+
+BFF原PR17已推aad81e7，4生产路径/2原测试完成模型目录一次共同deadline与本方取消，删除本GET无用幂等Map。主控六SHA停写核等、同两文件34 PASS/0 SKIP、完整types；独审原六文件CLEAR，主控另补零预算503缺x-request-id的真实RED/最小header修复并复核，余四SHA不变。writer最终build/scoped lint通过；测试原文件基线也有format告警，只新段格式通过，不冒整文件格式绿。无contract/Schema/依赖/新认证/cache/retry变化。
+
+正常BFF在空闲检查后同原配置受控切aad，healthz200，前后53Run终态/pending0，旧两财务未知保持。Root按232个真实已提交BFF blobs重算290引用，本轮暂存组合拓扑PASS、兼容15边/0违例、原checkpoint PASS；均为本组合实际结果，不用旧门冒新组合。原正常模型读/浏览器菜单仅补必要回读，无新模型或资金操作。
+
+当前另有私有native模型/计价隔离driver正在接线：真实IAM/App/Admin/BFF/System/Billing，正常tenant/配置不动；只允许独立源码/输出/临时数据库及精确localhost开发态fixture接缝，尚未启动或验证，不冒已闭环。stdio echo包已在本地由锁定SDK生成声明并经Agent/Platform两owner结构验证，未创建Provider/上传/发布/启动进程，等待原动作确认。Project ACL产品边界同样待用户选择；这些局部前置不暂停整个Goal。

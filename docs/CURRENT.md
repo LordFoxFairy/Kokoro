@@ -1,3 +1,15 @@
+## 2026-11-12 PERF-03发行与正常激活
+
+BFF原PR17已推aad81e7，4生产路径/2原测试完成模型目录一次共同deadline与本方取消，删除本GET无用幂等Map。主控六SHA停写核等、同两文件34 PASS/0 SKIP、完整types；独审原六文件CLEAR，主控另补零预算503缺x-request-id的真实RED/最小header修复并复核，余四SHA不变。writer最终build/scoped lint通过；测试原文件基线也有format告警，只新段格式通过，不冒整文件格式绿。无contract/Schema/依赖/新认证/cache/retry变化。
+
+正常BFF在空闲检查后同原配置受控切aad，healthz200，前后53Run终态/pending0，旧两财务未知保持。Root按232个真实已提交BFF blobs重算290引用，本轮暂存组合拓扑PASS、兼容15边/0违例、原checkpoint PASS；均为本组合实际结果，不用旧门冒新组合。原正常模型读/浏览器菜单仅补必要回读，无新模型或资金操作。
+
+当前另有私有native模型/计价隔离driver正在接线：真实IAM/App/Admin/BFF/System/Billing，正常tenant/配置不动；只允许独立源码/输出/临时数据库及精确localhost开发态fixture接缝，尚未启动或验证，不冒已闭环。stdio echo包已在本地由锁定SDK生成声明并经Agent/Platform两owner结构验证，未创建Provider/上传/发布/启动进程，等待原动作确认。Project ACL产品边界同样待用户选择；这些局部前置不暂停整个Goal。
+
+## 2026-11-12 下一实施：PERF-03与Project ACL设计差额
+
+原模型目录GET取消/期限缺口在当前9cc源码再次确认，具名api_perf_audit只写隔离BFF四生产路径及两现peer测试，既定报告已补生命周期门；不改协议/Schema/认证/配置，不跑模型/PG/全默认、不动正常实例。主控管冻结/独审/验收/Git。B10原计划明确真实读取/编辑/撤权，Project只复制URL不是ACL；受众及共同上下文/私有任务的继承边界未有唯一裁决，已向用户提交必要产品选择，未擅自按现owner-only缩范围或写Schema。托管MCP动作确认待答，期间只准备本地测试材料、不创建启用配置；这些局部依赖不阻塞独立修复，Goal active。
+
 ## 2026-11-12 B13当前成员目录读取片最终验收
 
 绑定Root5d9a1760/Admin4241c2f正常源码（后继e7f2f79仅README，九源码/设计输入冻结核等）。正式当前tenant成员GET200/3项、Users/Teams同事实、当前页筛选和清空、中英UTC均已实测；首轮10bc390标题/说明单行截断FAIL保留。最终4241在390px中英h1/说明自然完整换行，标题与说明client/scroll均310、documentWidth390，表格仅内部横滚；保截图对照，不冒全站/全部语言Manus等同。
