@@ -1,6 +1,6 @@
 # Kokoro · 当前维护 TODO
 
-核对日期：2026-11-11（America/New_York）。本轮起点Root `fbbd77b1`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
+核对日期：2026-11-11（America/New_York）。本轮起点Root `823aaf8c`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
 
 ## 当前盘点
 
@@ -10,6 +10,10 @@
 
 ## 当前推进：主工作台／BFF／IAM认证与旧代码清理
 
+- [x] **Web→后台链路设计对齐**：保留 App 同源入口与 BFF 产品后端；普通内部服务使用专用服务身份＋可信 actor，不重复 OAuth；Agent 执行与 AG-UI／AI SDK 展示职责不变。现状与批准目标见[技术总览](docs/kokoro-handbook/technical/00-system-overview.md#web-与后台的职责边界)。本项是设计对齐，不是代码重构完成。
+- [x] **独立代码切片静态核验**：`r07_storage_check` 核 App session／IAM adapter，协议职责不同，不为微小重复单独抽层；`r09_governance_calibration` 核 Library body 阶段，保留已批准的分阶段预算，不静态宣称缺少全局期限。主控核源码；无业务代码变更。
+- [x] **Library超限响应修复**：自有BFF PR #24已合main，源码c2bae90d；真实Nest未结束Content-Length／chunked两例先RED（503而非413），修后完整413／EOF且零新增receipt／Storage请求。仅本地入口读取，公共reader／原上传恢复断言不变；主控相关80项、build／lint／types／格式通过，独审CLEAR。详见[报告§19](docs/reports/2026-11-11-typescript-auth-admin-audit.md#19-web与后台链路优化设计门)。
+- [ ] **管理链路回环与 Hub 职责收敛**：先交 Task B owner 对齐；不直接改其 Admin／Hub 写区，不新增服务或路由事实源。仍属目标，未声称减少延迟。
 - [x] **BFF认证状态请求生命周期**：自有PR #23已合main，源码6346f623；原handler内的请求作用域统一期限／取消／清理，活连接超时仍原503，断连／迟到结果不写。主控51项相关回归及build／lint／types／format通过，原5测试块保留；无新认证框架／协议。
 - **设计准则**：先用职责、状态和不变量证明问题，再选合适模式；可以替换旧实现并同步删除，但不为模式增加空类／层。IAM账户事务／具名Repository及原生会话边界本轮复核合理，不强行重写，不重开R-01／R-02／R-04。
 - [x] App R-11／R-15已通过自有PR #55合main：Node22类型对齐，保22项生成检查，本地／CI／release验证默认测试只跑一次，独立入口和覆盖不减。主控一次完整check通过；Task B实际hunk与共享CURRENT未动。

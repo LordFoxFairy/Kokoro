@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)和[最新设计收口§18](#18-认证状态请求作用域)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
+- 当前执行状态先读[唯一TODO](../../todo.md)、[认证修复§18](#18-认证状态请求作用域)和[链路设计§19](#19-web与后台链路优化设计门)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -601,3 +601,34 @@ R-05按原报告的adapter欠账范围收口，编号变为10收口／6遗留（
 - Wire／published artifacts／SDK／IAM与其它feature字节不变；未跑全默认、真实IAM／PG／Redis、浏览器或全产品，不把受控非合作admission测试称真实文件系统故障。正常会话状态、匿名／资格／限流／refresh与多Cookie正控沿用现有覆盖，没有新错误或兼容轨道。
 
 Root290项BFF引用按232个真实提交Git blobs重核，不机械换摘要；实际拓扑PASS、15条边／0违例、原Task A checkpoint PASS；本Root PR只交付该精确组合、设计取舍与唯一TODO。原4项Task B／原owner队列不借本片勾掉，Mori及其它产品不扩展，既存WIP与产品暂存义务保留。
+
+## 19. Web与后台链路优化设计门
+
+### 已批准的范围与取舍
+
+基线Root `823aaf8c`；用户确认保留主业务Browser→App同源adapter→BFF→业务owner。BFF同时拥有工作台产品事实，不为“纯BFF”另拆Product Service；内部直接服务认证沿ADR-035，AG-UI／AI SDK沿原事实链。实际调用与文件控制面／数据面例外见[技术总览](../kokoro-handbook/technical/00-system-overview.md#web-与后台的职责边界)。本轮不变更owner、公开契约、数据模型、依赖或部署。
+
+比较后不选：把BFF并入Next、另建Admin BFF、合并IAM与业务万能proxy、按行数切Hub。这些做法要么扩大运行／认证边界，要么隐藏现有协议差异，未证明收益。部分Admin API回经Product App和Hub多职责是真实后继优化面，但先交Task B owner对齐，不直接改其PR／写区，不虚报延迟收益。
+
+### 静态核验与最小代码候选
+
+- `r07_storage_check`只读核App session与IAM入口：业务envelope／SSE与有界原生Cookie／redirect协议不同，保留两类adapter。session重复一次Cookie解析是微清理，不为它另建抽象或单独开片。
+- `r09_governance_calibration`只读核BFF Library：准入10秒、body读取、上传45秒是不同阶段；不将已批准策略或未知Node传输行为当成新缺陷。
+- 更具体的候选是超过1MiB的Library上传：`http/request.ts::readBody`先抛普通Error，早于`personal-file-input.ts`的正式413；默认iterator退出还可能销毁请求。静态阶段只列可能reset、终止或503，不预填结论；后续实际结果见下方回执。
+
+本片只允许在BFF `src/modules/account/library.middleware.ts`与现`test/personal-file-upload.test.mjs`处理这一现有413行为。公共reader与其它路由不动；如复现成立，由Library局部有界读取保留响应通道，超限不继续buffer、不进入receipt／Storage，完整返回既有413后关闭未读连接。正常上传仍走原唯一handler、幂等和恢复。无需新增服务、通用reader框架或兼容分支。
+
+### 执行与验收
+
+1. 复用现Nest真实HTTP夹具，分别用Content-Length与未结束的chunked传输跨1MiB；要求完整413 JSON／EOF而非reset，并核零receipt／Storage副作用。旧正常上传／恢复／撤权断言保留，先记录RED。
+2. 仅在缺陷复现后实施局部修复，主控复跑上述入口与相关上传／列表／下载测试、build／lint／types／格式；不需要真实PG／Redis或全产品浏览器重验。
+3. 独立审查冻结diff，子仓自有PR先交付，Root再锁精确源码并检查组合；Task B、Mori、原四项owner队列不动。台账只有[TODO](../../todo.md)，本节记录设计和证据，不复制任务状态中心。
+
+### 实际验收与交付
+
+- 正规build后的原始正常HTTP旅程先通过。复用同一Nest夹具新增两个子case，不结束请求体，Content-Length声明2MiB／实际发送1MiB+1，另一例由Node使用chunked；旧实现两例均实际503而非413，父test随之失败，不将父级计数当第三种缺陷。
+- 局部private reader使用原生iterator的`destroyOnReturn:false`，超限chunk不入buffer，完整发送既有413 JSON／content-length／request-id，标记Connection:close交Node关闭未读连接；返回null停止原handler。未新增类层／公共helper，也未改公共reader或其它路由。修后两例均完整EOF、response.complete，零owner HTTP及receipt变化；原正常上传、未知Complete恢复与重新准入断言逐字保留。
+- 主控停写验收：`pnpm build`、`pnpm lint`、`pnpm typecheck`、两文件正式Prettier及diff-check通过；`node --test --test-concurrency=1`执行personal-file-upload／library-file-list／personal-file-download／project-resource-upload／nest-feature-architecture五文件，80 PASS／0 FAIL／0 SKIP。独立冻结diff审查CLEAR，源SHA256 `229c4cdbeb7e51eeb4cd19eaeb1315fa41df4a3e73b29eaa677aec705f768c51`、测试`92189dea30e31933c366542bbc6c5a67166192cbb75d1c110acb88fa2b5917cf`。只说明本入口／相关行为，未跑全默认、真实PG／Redis、生产Storage或浏览器全链。
+- 自有BFF [PR #24](https://github.com/LordFoxFairy/kokoro-bff/pull/24)已正常合main；已验源码`c2bae90df45c8c09abbce356c226081e41a0aafe`，merge`9a82a98ca817f57a88e3da6e2087f5decf7261c8`树等于源，自有本地／远程topic已清。Root固定已验源而非浮动更新，不处理Task B PR或部署。
+
+Root本片更新精确BFF gitlink；290项引用按232个真实已提交Git blobs逐项重核，非机械替换摘要。实际拓扑PASS、15条契约边／0违例、原checkpoint PASS；四篇文档本地链接目标68项及新增两节锚点核验通过，diff-check通过。Root自有PR承接该组合与设计／TODO，最终main同步与分支清理以Git回执为准；原编号遗留不随本片勾掉。
