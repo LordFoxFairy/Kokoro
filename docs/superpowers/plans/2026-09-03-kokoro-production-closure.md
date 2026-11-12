@@ -1868,3 +1868,11 @@ Admin10bc264正常native验证当前tenant3成员、正式GET200、两入口一�
 后继Admin4241c2f只改组件标题结构与原两个公开语义断言：正式pageHeaderRender=false、语义h1和独立自然换行说明，不改读取/状态机/文案/表格。主控两SHA/11 focused、独审CLEAR；writer相关lint/types/build/post-types通过，不重复355/后端/模型。原临时role已恢复false/version4、新Session/cookie已清、原浏览器回/app；再由主控停自启Admin修候选。新源正常390最终复验仍待，原PR7保持Draft。
 
 Root仅固定该Admin新gitlink，owner传输/契约/生成物与09e1完全相同，沿此前合同门证据，不重跑不变输入；本轮只补新gitlink拓扑。Goal active，全部TaskB及后台更广合同需求仍OPEN。
+
+### 2026-11-12 B13目录读取片最终native验收
+
+绑定Root5d9a1760/Admin4241c2f正常源码（后继e7f2f79仅README，九源码/设计输入冻结核等）。正式当前tenant成员GET200/3项、Users/Teams同事实、当前页筛选和清空、中英UTC均已实测；首轮10bc390标题/说明单行截断FAIL保留。最终4241在390px中英h1/说明自然完整换行，标题与说明client/scroll均310、documentWidth390，表格仅内部横滚；保截图对照，不冒全站/全部语言Manus等同。
+
+当前role撤销后原挂载目录刷新实际403，私有成员行立即清退；显式重核回/app，原工作会话仍可用。最后临时platform_admin恢复false/v6，三次临时窗口共六CAS成功audit old/new版本核等，新Session全部正式退出/自有Cookie清除，locale=en及viewport恢复。无业务写/新模型/资金操作；正常Admin已恢复3320，原核心owner和数据保持。
+
+主控最终两SHA/11 focused/独审CLEAR，writer最终相关lint/types/build/post-types；前序九SHA/主控35与writer355等按阶段保留，不拼成最终全量测试全绿。原PR7保持Draft；只读成员目录此片关闭，广义User360、其它后台管理/政策与TaskB原剩余项仍OPEN。Root只配DocOnly后继gitlink；传输输入与已验09e1相同，沿原合同门，补本轮拓扑，不重复模型/PG/默认。Goal持续active。
