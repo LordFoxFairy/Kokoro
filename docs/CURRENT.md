@@ -1,3 +1,15 @@
+## 2026-11-12 修复Billing启动器陈旧readiness并补当前政策事实
+
+第四隔离run正常构建/IAM/System已走通，Billing真实/readyz持续200却等待超时，outcome FAIL/cleanup PASS。主控比对Billing canonical/controller/生成ReadyResponse：正式Root helper仍要求早已退役的data.module，故不是Billing/PG不健康。api_perf_audit仅删此旧期望，现原测试用独立canonical body替代复制被测READY；真实RED两项→本文件41 PASS/0 SKIP，主控同41/两SHA/格式检查复验。status=ready/PG=ok/绝对期限/停止等原行为不变；既有sys.path后import E402保留，不冒全lint/全Root门绿。仅修Root test接线，Billing生产源码/协议不改；新冻结组合后再补同一次缺失native后台旅程，不重跑模型/资金。
+
+另主控对正常Billing以单owner只读repeatable-read/DB时钟补证：当前活动rate v3、policy v2，均与latest一致且非未来；rate计数/profile配对、已验模型exact revision/digest当前覆盖与币种一致。选择按正式owner先tenant revision后过滤model，不把latest或历史冻结快照当今天政策；仅此时点/该模型，不冒全部模型、后台发布或新费用。原价/资金/历史快照保持，当前报告时间规范化UTC。
+
+## 2026-11-12 B13原范围校正与隔离接线进度
+
+主控复核原交接B13（功能表）及有效计划B13条目，composer_ui_audit只读交叉核验：必交为具名Skills审核、Provider/MCP/API/模型、用户团队权限、积分计价/流水和对应操作审计；任意User360、全局画像/退款、跨owner统一日志平台并非原文具体旅程。唯一TODO将笼统“广义User360未完”改成这些有限原范围，不借此取消真实权限/审计或Custom API管理的owner设计缺口。已验非现金发放与同Run账本不重复。
+
+后台native模型/计价接线首run仅source阶段FAIL：Admin archive不跟踪Next生成的next-env.d.ts，而旧隔离helper要求其存在。未启动DB/服务、cleanup PASS；私有driver补标准两reference bootstrap及原helper输入检查，不改生产源。后继冻结Root2d1a074f/六owner提交并审查exact localhost三处test-only fixture diff：第二轮System安装遇macOS Unix socket临时路径过长，cleanup PASS；短路径修正后第三轮iam_native报告SmokeError、cleanup PASS；源码定位现凭据根落在已注册短tmp，却仍传旧run-directory，推断是归属guard不匹配，后继待实际证实。现仅修注册短tmp与既有helper凭据根的接线，不放宽生产/auth校验；尚无浏览器写旅程成功证据。仅回收已终态B-T1a独立验证venv，保源/补丁/收据；正常venv/数据/进程不动，实际释放量不据逻辑214MiB推断。原managed worktree工具确认返回超时，Git只见既有Admin checkout；不重启创建操作。
+
 ## 2026-11-12 PERF-03正常native补读与可选icon观察收口
 
 Root0b725116/BFFaad正常认证目录GET200、两现有模型选项/Default原选中态和Esc回焦已验；network189事件未截断，未发任务/模型或资金操作。精确组合拓扑PASS、兼容15边0违例、原checkpoint PASS已提交推送原#67，BFF原#17描述同步；两PR继续Draft、整体TaskB未完。
