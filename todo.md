@@ -14,7 +14,7 @@
 - [ ] PERF-03后继：模型BFF请求取消／绝对期限传递，需独立HTTP peer回归，不冒已修。
 - [ ] 观察项：Settings既有MCP icon404；owner待核，不冒三目录读取失败或本批已修，不越界Task B。
 
-App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)已正常合main `59d412c9`，树核等已验源 `179b6412`；本轮App local／remote topic已清（远端引用另核）。本次CI annotation确认账户账单／额度导致任务未启动，不冒测试绿；未调整付费或绕保护。Root精确组合拓扑／兼容15边0违例／原checkpoint通过；Root本批PR负责交付，最终出口核对MERGED／main clean及本轮topic已清，不以文档先行勾选代替。
+App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)已正常合main `59d412c9`，树核等已验源 `179b6412`；本轮App local／remote topic已清（远端引用另核）。本次CI annotation确认账户账单／额度导致任务未启动，不冒测试绿；未调整付费或绕保护。Root精确组合拓扑／兼容15边0违例／原checkpoint通过；Root自有 [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)负责交付，最终出口核对MERGED／main clean及本轮topic已清，不以文档先行勾选代替。
 
 Task B／Mori／后台／部署不动。GUI与API问题一起列明完成边界，不用大量旧测试或假成功页面代替收口。
 

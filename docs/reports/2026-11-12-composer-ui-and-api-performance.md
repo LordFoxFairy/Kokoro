@@ -47,4 +47,4 @@
 
 App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)正常合main `59d412c9`，树核等已验 `179b6412`；实际CI annotation是账户账单／额度导致任务未启动，不冒测试绿、不付费或绕保护。Root只更新该精确gitlink，并从85个已提交Git blobs重算93个App声明引用，其他owner不动。
 
-Root最终暂存组合的拓扑／兼容15边0违例／原checkpoint全部PASS。初次调用尚未暂存新gitlink导致旧index与新inventory不配对；暂存唯一App gitlink后原命令重跑通过，没有改验证规则或其他owner。Root PR负责最终main出口与topic清理，实际状态以MERGED／clean核验为准。
+Root最终暂存组合的拓扑／兼容15边0违例／原checkpoint全部PASS。初次调用尚未暂存新gitlink导致旧index与新inventory不配对；暂存唯一App gitlink后原命令重跑通过，没有改验证规则或其他owner。Root自有 [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)负责最终main出口与topic清理，实际状态以MERGED／clean核验为准。

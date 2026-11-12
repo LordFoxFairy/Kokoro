@@ -6,7 +6,7 @@
 
 正常native-auth后继实测菜单232×88、行36px／checked600、anchor对齐／约8px上间距和Escape回焦；成功空目录、锁定缺席不冒另一个默认模型。真实对照17→raw15含独立session1，同口径页面读14；只移除三次未使用目录读，首次Settings三目录200、关闭重开现scope复用。既有icon404、pins重复准入及model目录取消后继各自列TODO，不称全站UI或性能完成／p95达标。未重跑完整默认／全E2E／新模型／资源门，API／Schema／依赖不变。
 
-App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)已正常合main `59d412c9`，树等已验源 `179b6412`；本次远端CI因账户账单／额度未启动，未绕保护。Root已从85个App实际提交blobs重算93引用，拓扑／兼容15边0违例／原checkpoint通过；本批Root PR交付该组合，最终出口核对MERGED与main clean。仅TODO跟踪后继，机器Goal查询为空，未创建重复目标。正常Web已恢复；Task B／Mori／其他owner／部署不动。历史已交付事实如下。
+App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)已正常合main `59d412c9`，树等已验源 `179b6412`；本次远端CI因账户账单／额度未启动，未绕保护。Root已从85个App实际提交blobs重算93引用，拓扑／兼容15边0违例／原checkpoint通过；本批Root [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)交付该组合，最终出口核对MERGED与main clean。仅TODO跟踪后继，机器Goal查询为空，未创建重复目标。正常Web已恢复；Task B／Mori／其他owner／部署不动。历史已交付事实如下。
 
 ## 当前批次：Skills 同类布局问题已验收（2026-11-12）
 
