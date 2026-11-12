@@ -1,27 +1,22 @@
 # Kokoro · 当前维护 TODO
 
-核对日期：2026-11-12（America/New_York）。本轮基线Root `b24b6146`；本文件是唯一执行清单，历史实施与证据见[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。不重新扫描源码凑问题，不重开已交付Task A。
+核对日期：2026-11-12（America/New_York）。本轮基线 Root `6a61e1bf`；本文件是唯一执行清单。只推进已批准的 A-15 观察与对外文档收拢，不重新扫描凑问题、不重开已交付 Task A。机器 Goal 当前查询为空，以下是本轮执行目标，不冒称另有 active／blocked Goal。
 
-## 本轮 Goal：既有遗留收口与 R-06 独立分片
+## 本轮目标：当前性能证据与可读的公开文档
 
-机器Goal动态状态以工具为准；本批只收口现有队列归属、WIP与可独立交付分片，不以此宣布R-06整体迁移完成。主控负责设计取舍、验收、Git与本台账，不动Task B／Mori／部署／共享数据。
+主控负责取舍、写入、验收、Git 与本台账；只读代理 `r09_governance_calibration` 复核 A-15 证据，`a03_read` 复核公开文档与真实认证边界。Task B／Mori／部署不动。
 
-- [x] 核上轮出口：App #56、BFF #26、Root #83均已MERGED；Root main `b24b6146`，12子仓clean／精确配对。不是“等待上轮合并”。
-- [x] 核原未完成项的真实文件与分支依赖，按“可独立／原owner／已接受暂存”分类；只读角色分别为`a03_read`（归档WIP）、`r09_governance_calibration`（R-06／R-07／R-14）。
-- [x] 归档WIP对照完成：原生登录失败页意图早已进入main；不恢复旧补丁，保留私有归档。
-- [x] R-06前置核验：web-core／i18n源码与入口等价，无Task B实际hunk；正式包发行方式尚未确定，tsconfig也非等价副本。
-- [x] **R-06最小方案已收敛**：未使用web-core不必先发行，直接退役App副本；在用i18n沿既定私有包／精确版本／lock目标，需shared发行owner提供可核验版本与读取权限后再迁。裸sibling bridge不满足现单仓CI／Docker；不新建registry／产物平台，不自动发布。
-- [x] **独立代码分片已交付**：App #57源码c3b09e4b已合main并清理topic，删未用web-core依赖／三文件副本／Docker COPY，保shared／Mori／i18n／tsconfig。offline frozen安装、相关67项／lint／types／build及独审通过；无sibling仅验证frozen锁解析、Docker仅静态COPY检查，不冒镜像或完整独立安装。Root本PR配对精确源并核组合；最终Goal只在合入与clean出口后结束。
+- [x] A-15旧证据重新定性：约303～306ms是已有登录态新context的页面可用耗时，不是单API／进程冷启动或生产p95；不据此先改认证缓存。
+- [x] 当前精确组合真实Project两对采样：Root6a61／Appc3b09／BFF7c503／IAM40cda；冷306／296ms、热15／14ms，native/browser/cleanup通过。关键GET在+193／183ms发起，headers+237／234ms；缺精确request-id不硬归因BFF/IAM。非关键owner未配置503明确保留。
+- [x] 文档最小片实现并验收：App源码818141e9；产品功能目录保留，外部skill.list与第一方任务参考分开；改旧Bearer／上传响应／未声明control；生成资源目录与操作深链，保209操作／446schemas。门户check及真实浏览器／窄屏／浅深代码对比度通过，独审CLEAR。
+- [ ] A-15仅补观测缺口：在同一个私有runner补Navigation／Resource Timing和rAF UI-ready时间，保原业务oracle与精确source gate；不重复完整产品旅程，不在未定位前改生产源码。
+- [ ] 正常合入我们自己的App／Root PR，精确组合与来源验证后清理本轮topic／预览进程。未merge之前不写已交付。
 
-本轮分类与依据见[报告§22](docs/reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)。R-06现为部分完成，在用i18n余项交发行owner，不在本Goal中无条件发布；不重复创建Goal或为暂存项标blocked。
+本轮证据与范围见[报告§23](docs/reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。100ms冷态目标尚未达成，不因脚本PASS冒称性能闭环。文档与owner契约认证声明纠正是两项事实，不伪装全部接入已经统一。
 
-## 我们可独立推进
+## 本轮外已交付
 
-| 项目 | 状态／下一动作 |
-| --- | --- |
-| R-06无消费者分片 | **已交付**。App #57移除未使用web-core；未切在用i18n，未扩运行边界。正式发行余项见下方owner门 |
-| 登录失败页归档WIP核实 | **已完成**。目标`src/app/auth/sign-in/failed/page.tsx`；de40f9c3已落地，后继dead1843／bfb749c3完成native-only与canonical消费，均为当前App祖先；保留归档，不恢复旧fallback |
-| 上轮最终回执／本轮台账整理 | **已核实**。当前队列去除过期“待合并／待核实”，完成记录收至报告；Root #84承接分类，当前Root PR配对App #57精确源码与来源 |
+R-06未使用web-core分片（App #57／Root #85）已交付；归档登录失败页WIP已由main祖先承接，不恢复旧补丁。原审计分类依据见[报告§22](docs/reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)，不重复完整验证。
 
 ## 需原 owner 承接，不进入本轮写区
 
@@ -31,7 +26,7 @@
 | R-03 Admin菜单／旧页面正式接线 | Task B Admin owner；沿原后台PR完成真实业务，不接管、不造成功页 |
 | R-07 Capability contract-check写副作用余项 | Capability owner／Task B #12；normalizer与现组合生成物相连，需在该组合做只读check。Storage部分已完成，不重复修 |
 | R-14 MCP OAuth DNS pin生命周期 | Capability owner／Task B #12；client无直接hunk不代表composition无依赖，不从独立main小补丁冒称Root组合已修 |
-| BFF README／INDEX首读清理 | Task B BFF owner／#17；过期当前态／旧版本／清库指导有实际重叠hunk，随原PR收敛，不按旧文字操作数据 |
+| BFF canonical认证metadata／README／INDEX清理 | Task B BFF owner／#17；普通产品security仍是旧Bearer，与native Cookie／Origin运行不符；版本行及部分文档有实际重叠hunk，交原PR版本化纠正。本轮门户显式披露，不手改生成security，不按旧清库指导操作数据 |
 | Admin回环／Hub职责收敛 | Task B App／BFF／Admin owner；需统一共享登录、管理权限和路由映射，不加Admin BFF或万能proxy |
 
 Capability Root pin `24094960`来自已交付#13，已合入#12头`e068fcaa`但未合main；比main多37提交。仅看同名文件或零patch都不足以判定可独立交付；本轮不动其PR／分支／工作树，也不把Task B带入main。
@@ -45,7 +40,7 @@ Capability Root pin `24094960`来自已交付#13，已合入#12头`e068fcaa`但�
 | A-13真实外部渠道 | 渠道owner；Telegram／LINE／Slack真实账号授权、收发、撤权条件齐备后验收，当前本地协议证据不冒真实供应商 |
 | A-14本人语音 | 用户＋App owner；用户方便时主动口述、编辑并显式发送，沿此前“稍后验收”，不保留录音／原文 |
 | 可选完整E2B生命周期 | Agent／运行环境owner；实际采用云或完整自托管时补创建／重连／独立回收，既有官方envd Docker证据不重跑 |
-| A-15体验余量 | App／BFF／IAM owner；下一轮产品性能范围明确后处理冷态约303～306ms与100ms目标差距，不先改缓存／架构 |
+| A-15体验余量 | App owner；本轮当前两对冷306／296、热15／14ms，正补浏览器阶段观测；100ms冷目标未达，未证明需要改IAM／缓存／架构 |
 | IAM共享源IP额度／非合作写入取消 | 原owner容量与运行语义边界；代表性负载核验另定，不随意抬限流，不宣称HTTP取消等于事务硬回滚 |
 
 真实支付关闭，未部署；上述不作为本轮独立代码故障或新增阻塞。

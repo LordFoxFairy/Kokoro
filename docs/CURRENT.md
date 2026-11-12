@@ -1,5 +1,11 @@
 # Current Facts
 
+## 当前批次：A-15证据与公开文档（2026-11-12）
+
+当前执行清单是[TODO](../todo.md)，不再沿用上一轮R-06 Goal。机器Goal查询为空，未擅自创建重复目标。App818141e9仅改公开门户与必要内部记录：外部skill.list／第一方任务参考分离，旧Bearer与上传／control错误说明纠正，资源目录与操作锚点保留全部生成字段。门户check、真实浏览器导航／搜索／键盘／390px侧栏、浅深代码对比度及独审通过。App／Root自有PR尚待正常合入，Task B与部署不动。
+
+A-15当前Root6a61组合已实跑最小Project两对，冷306／296、热15／14ms，cleanup通过；尚未达冷100ms，不称生产p95或归咎内部OAuth。只补document／真实UI-ready观测，不先改缓存与生产架构。BFF机器认证metadata旧声明交原owner版本化修正，门户已显式披露。证据与未验范围见[报告§23](reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。
+
 ## 当前剩余队列：归属收口与R-06独立退役（2026-11-12）
 
 只复核现有TODO，未新增源码扫描。本轮机器Goal承接既有独立项，动态阶段与owner只维护[TODO](../todo.md)，证据见[报告§22](reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)。本轮可独立收口归档WIP与旧台账事实；登录失败页原意图已有main祖先承接，无需恢复旧补丁，私有归档继续保留。上轮Root #83／App #56／BFF #26均已实际合入，Root b24b6146及12子仓clean／精确配对，不再写成等待合并。
