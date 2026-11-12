@@ -1,5 +1,13 @@
 # Current Facts
 
+## 当前批次：Skills 同类布局问题已验收（2026-11-12）
+
+正常登录页复现Browse skills文字85.45px溢出72px按钮。现101.45px完整内收；清除动作固定宽度及两行32px约束，让搜索／动作／范围筛选按容器排版。独审发现旧手机column会将200px宽度basis变成空白高度，已删除并补高度断言；法语筛选也不再因强制等宽硬拆Personnel。无新组件、共享Button／业务hook／协议或Task B改动。
+
+App #61已合main `46ea8bc3`，树等已验 `0501f81d`。最终Skills中英法桌面／320六例、相关UI101、相关ESLint、完整非增量TS与build通过，两个生产／测试输入SHA冻结核等；前序原Connector六例亦通过，其代码／断言不变未随Skills最终补口重复跑。正常英文及Web恢复后另复测，preview不冒backend／九语言完整词条QA。对应INDEX／局部设计／唯一TODO已同步，非全站UI完工。
+
+Root仅配对精确App与真实提交blobs，其余owner／Task B不动。远端CI红色如实列PR，未调整账户／绕保护；不跑模型／资金／沙箱或全部默认套件。
+
 ## 当前批次：设置截图缺陷与多语言适配（2026-11-12）
 
 正常登录浏览器已复现：Browse文字126.74px溢出86px固定按钮、Import memory底栏90px且白底与面板不符。现按钮内容定宽／容器换行、搜索保可用宽度；底栏桌面58px并复用Settings背景，保sticky／正常流／末字段／焦点行为。删除相邻失效class和样式，不加基础组件、业务层、依赖或协议。
