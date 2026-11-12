@@ -1,10 +1,12 @@
 # Current Facts
 
-## 当前剩余队列：归属收口与R-06前置（2026-11-12）
+## 当前剩余队列：归属收口与R-06独立退役（2026-11-12）
 
-只复核现有TODO，未新增源码扫描。下一轮机器Goal已active，阶段与owner只维护[TODO](../todo.md)，证据见[报告§22](reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)。本轮可独立收口归档WIP与旧台账事实；登录失败页原意图已有main祖先承接，无需恢复旧补丁，私有归档继续保留。上轮Root #83／App #56／BFF #26均已实际合入，Root b24b6146及12子仓clean／精确配对，不再写成等待合并。
+只复核现有TODO，未新增源码扫描。本轮机器Goal承接既有独立项，动态阶段与owner只维护[TODO](../todo.md)，证据见[报告§22](reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)。本轮可独立收口归档WIP与旧台账事实；登录失败页原意图已有main祖先承接，无需恢复旧补丁，私有归档继续保留。上轮Root #83／App #56／BFF #26均已实际合入，Root b24b6146及12子仓clean／精确配对，不再写成等待合并。
 
-R-06可独立推进最小包交付设计，但发行方式尚未确定，不能直接改依赖／删副本；只考虑web-core／i18n并保App六项额外严格编译检查。R-07／R-14因Capability未main组合交原owner，Admin／README／Hub沿Task B原PR，不将其带main或抢写。已接受产品暂存不重开；本轮只改Root文档，无源码／gitlink变化，不跑业务测试／浏览器／服务或部署。
+R-06方案按实际caller分流：App未使用web-core先退役，App #57已合main、源码c3b09e4b／merge26cf44fb树相同，自有topic已清；去掉依赖、三文件副本和Docker COPY，shared／Mori／在用i18n与App编译门保持。主控offline frozen安装、67项相关测试／lint／types／build与停写独审通过；无sibling仅锁解析、Docker仅COPY静态核验，未运行镜像／6522全默认或产品浏览器。Root本PR配对精确源及来源，不把准备状态当最终Git出口。
+
+i18n仍双writer，正式迁移需shared发行owner的固定包版本／scope权限及独立安装前置，沿现registry／semver／lock约定，不新增registry／bundle平台或发布。R-06仍部分完成；R-07／R-14因Capability未main组合交原owner，Admin／README／Hub沿Task B原PR。现有未完成项均列owner和下一动作，WIP已核实、暂存未重开；本Goal只在Root合入／clean核对后收口，不冒称全部R项完成。
 
 ## 统一维护批次：App／BFF／IAM（2026-11-12）
 

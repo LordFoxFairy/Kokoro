@@ -730,3 +730,25 @@ Root本PR配对两个精确子仓源：App93项引用／85个真实Git blobs，B
 本轮仅Root维护文档与台账，无业务源码／gitlink／契约／Schema／依赖变化；不运行检查生成器、全量测试、业务服务、浏览器或共享资源操作。文档检查与Root交付回执在停写后补记；Goal继续承接R-06方案前置，未将整理完成冒称其代码闭环。
 
 主控独立核验补记：archive／stash／base与两摘要一致；补齐node:crypto的randomUUID导入并调整调用后，归档字节与de40f9c3精确相同，三项后继均为当前App祖先。最初“只允许import行差异”的窄断言未涵盖调用名称调整而失败，检查真实两处差异后精确重建通过；这不是产品测试失败，也未应用补丁。R-06每包1个src文件与公共入口对照通过，六项额外严格选项逐项核实。三篇文档62个本地链接目标／新§22锚点与diff-check通过；仅维护Root文档，不运行任何业务门。Root自有PR承接台账，Goal保持active继续R-06方案门；不以本PR整理完成替代其实现交付。
+
+### R-06方案收敛与首个独立代码切片
+
+在限定R-06的引用核验中，主控与具名代理确认App `@kokoro/web-core`没有生产／测试／脚本导入或配置alias消费者，只有manifest／lock／Docker COPY与历史文档；通配TS include检查该文件不是业务依赖。i18n仍由`src/i18n/resolve.ts`实际调用。因此不为两份小包先建设发行机制：本轮只退役App未消费的web-core副本，保持shared canonical、Mori、在用i18n、App tsconfig完全不动，属于无消费者局部清理，不改owner／API／数据或新建ADR。
+
+精确App写区7路径：删除根manifest的web-core依赖、正规同步lock、删除Docker的一项COPY、纠正packages/README当前清单，删除本地web-core的package.json／tsconfig.json／src/index.ts。Task B #49实际hunk复核：根manifest仅scripts，依赖区不重叠；其余六路径无hunk。不因同文件名阻断独立删除，也不从Task B分支实施。
+
+验证取最低充分层级：Root组合下与无sibling的独立临时App清单均frozen锁解析；App现有i18n／相关架构测试、受影响lint／types／build；检查Docker COPY仍指向本仓有效文件，不把静态核验称镜像启动。删除无调用代码不新建空测试套件、不重复上轮6522全默认／产品浏览器。源码停写后独审、App自有PR合main，再Root精确版本／来源检查。i18n正式迁移仍按已有registry＋精确版本＋lock目标，当前没有经核验的@kokoro发行出口及授权；不自动发布、扩Root Docker context或引入通用bundlepipeline。这一分片不关闭R-06整体。
+
+
+### R-06独立分片实际验收与交付
+
+- 本轮方案以真实消费者收敛，不再预设两个包都要发布：无caller的App web-core先删；有caller的i18n保现workspace，正式切换沿已有私有registry／精确版本／lock目标。shared无本轮可核验的@kokoro正式发行版本、scope/读取身份和发布授权；GitHub release／artifact空也不证明任何npm registry绝无包。后继由shared发行owner提供精确产物，再由App consumer owner原子切manifest／lock／Docker，验独立安装构建后删i18n副本；失败整组回退，已发行版本不覆盖。当前不自动发布或引入新的registry／bundle框架。
+- 主控Node22.23.4／pnpm11.25正规offline生成lock并offline frozen安装通过，根web-core不再resolve。lock仅剔除目标依赖／importer，另有工具从缓存带入的既有@smithy/core弃用公告，未擦公告或升级依赖；明确忽略该元数据做逆向核验，原版本／resolver／SRI全文不变。最初严格全字节逆向断言捕获新增公告，核实该唯一差异后验证通过，不伪称最初无差异。
+- 临时无sibling App清单的offline frozen **lock-only解析**通过，目录finally已删；这不是第二次完整安装／build。Docker本仓COPY源存在且退役项已删，context仍App；未执行Docker build或镜像smoke，不用静态检查冒充。实际Root工作区frozen安装及App lint／typecheck／Next build均通过。
+- 现i18n库测试、App i18n解析与相关治理三文件67 PASS；不新增空套件、不删除测试，不重复6522全默认或产品浏览器。i18n源码／manifest与App tsconfig完整字节保持，六项strict门不降；canonical shared／Mori完全不动，R-06在用i18n余项仍OPEN。7路径冻结独审CLEAR；Docker SHA2569fedc0d4914c9e025191817f1743571eff2b80aa890b5e7d1b5259ec90365a23，manifest26b4d540061c7fe69fc3e8ef6566c0360409248e88fca744e046fb95c7b8f157，lockbcf468cf7dd02e0c379d94bb34804c55548ee5085222b5e84943fdd7bb87a83b，README9e54df7146ccf06ced526f83539360d1ec130953bc97b94de16824481f7d500d。
+- App自有[PR #57](https://github.com/LordFoxFairy/kokoro-app/pull/57)已正常合main，已验源`c3b09e4b0ce043113a4173584ebde5623be5dc1f`，merge`26cf44fb91544b75e65a7800465a92f5a28ae0cc`树等于源，自有本地／远程topic已清。Task B #49头与287路径actualhunk再核：7路径仅manifest脚本区同名，当前依赖删除不重叠，其余6无hunk；其PR／分支／工作树未操作。
+
+本Goal的原始范围是既有队列归属／WIP／可独立交付项，而不是无条件完成所有owner项或搭包平台。Root #84已交归属整理，本片再交独立代码及最小方案；剩余R-03、R-06在用i18n、R-07余项、R-14与文档／链路交接均保具名owner和恢复前置，产品暂存不变。完成审计须核Root精确源／Git出口／台账一致后才结束Goal，不把R-06部分清理写成完整迁移。
+
+
+Root本片93项App来源按85个真实已提交Git blobs重核；实际拓扑PASS、15条契约边／0违例、原checkpoint PASS。维护文档62个本地链接目标与diff-check通过。完成审计已逐项核：原队列owner／下一动作齐备，WIP只核实不恢复，独立web-core分片App #57已交，i18n发行门与其它owner／产品暂存明确保留；不以原编号R-06未清零冒Goal停滞，也不以Goal收口冒其完整迁移。独立文档审唯一当前态修正是将TODO内#84“无gitlink变更”的旧阶段描述改成当前#57配对事实，已修。待本Root实际合main、自有topic清理、12子仓clean／精确配对及Task B头不变复核后，才结束本轮Goal。
