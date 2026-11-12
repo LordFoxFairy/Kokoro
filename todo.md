@@ -1,6 +1,6 @@
 # Kokoro · 当前维护 TODO
 
-核对日期：2026-11-11（America/New_York）。本轮起点Root `823aaf8c`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
+核对日期：2026-11-11（America/New_York）。本轮起点Root `8567416b`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
 
 ## 当前盘点
 
@@ -10,6 +10,7 @@
 
 ## 当前推进：主工作台／BFF／IAM认证与旧代码清理
 
+- [x] **本轮上传入口收敛**：自有BFF PR #25已合main，源码84ed5a2e；Project两真实HTTP超限例先RED503、修后完整413且回执／Storage调用不变。Library／Project共用一个窄reader，旧局部实现已删；主控相关96项、build／lint／types／格式通过，冻结独审CLEAR。正式Nest短命探针另证两413／小非法体400。BFF README／INDEX与Task B实际hunk重叠，交原owner，本轮未改。证据与排除项见[报告§20](docs/reports/2026-11-11-typescript-auth-admin-audit.md#20-上传入口收敛与工程首读核查)。
 - [x] **Web→后台链路设计对齐**：保留 App 同源入口与 BFF 产品后端；普通内部服务使用专用服务身份＋可信 actor，不重复 OAuth；Agent 执行与 AG-UI／AI SDK 展示职责不变。现状与批准目标见[技术总览](docs/kokoro-handbook/technical/00-system-overview.md#web-与后台的职责边界)。本项是设计对齐，不是代码重构完成。
 - [x] **独立代码切片静态核验**：`r07_storage_check` 核 App session／IAM adapter，协议职责不同，不为微小重复单独抽层；`r09_governance_calibration` 核 Library body 阶段，保留已批准的分阶段预算，不静态宣称缺少全局期限。主控核源码；无业务代码变更。
 - [x] **Library超限响应修复**：自有BFF PR #24已合main，源码c2bae90d；真实Nest未结束Content-Length／chunked两例先RED（503而非413），修后完整413／EOF且零新增receipt／Storage请求。仅本地入口读取，公共reader／原上传恢复断言不变；主控相关80项、build／lint／types／格式通过，独审CLEAR。详见[报告§19](docs/reports/2026-11-11-typescript-auth-admin-audit.md#19-web与后台链路优化设计门)。
