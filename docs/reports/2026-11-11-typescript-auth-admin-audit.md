@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)和[最新主线§17](#17-主线范围纠偏与最小清理)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
+- 当前执行状态先读[唯一TODO](../../todo.md)和[最新设计收口§18](#18-认证状态请求作用域)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -580,3 +580,24 @@ R-05按原报告的adapter欠账范围收口，编号变为10收口／6遗留（
 - **安装失败边界：** lock更新初次workspace-root保护拒绝，随后显式-w；offline frozen因供应链元数据缓存不全失败，并非类型或业务失败。保留原供应链策略，在线frozen29.3秒通过，实际Node类型22.20.1；registry额外deprecated元数据噪声已去除，原caret声明风格保留、lock精确固定。不禁策略、不借机刷新运行依赖，所有原失败保留。
 
 三个子仓自有本地／远程topic清理前均核精确tip、源为main祖先及合并树相等，checkout保留已验精确源。主线15项现为11收口／4遗留（R-03／R-06／R-14待原owner，R-07部分完成），旧BFF候选另已清理，不新增编号凑数。Task B PR和分支未操作，既存App WIP及产品暂存原样保留；Mori不计本轮进度。Root387项来源按320个真实提交Git blobs重新核摘要，原发行锚／consumer机器字节不机械换新；本次Root PR只承接精确组合与现台账。
+
+## 18. 认证状态请求作用域
+
+日期：2026-11-11；起点Root fbbd77b1，BFF从main545b1fd3开始（树等原pin22943ec3）。用户要求认真设计并允许替换不合理实现，偏好设计模式思想。本轮只聚焦BFF一个已证机制，不为模式或扫描数量制造新任务；IAM账户资料的事务脚本／具名Repository／同事务审计，以及原生账户会话的独立guard与官方adapter职责合理，保留，不统一为万能Guard或重开已验R-01／R-02／R-04。
+
+**问题与证据边界：** auth-session.http的5秒计时器只abort，仍直接await authenticateBrowserRequest，finally依赖其settle。正式SessionAdmissionClient会等待服务凭据的fs open／stat／read／close，信号检查只在这些await之间；非合作I/O未返回时，网络transport预算无法保证外层HTTP及时返回。现handler也未检查已断开状态，异常分支仍尝试响应。这里只证明等待机制与故障条件，未实测真实文件系统挂起、不称已发生线上事故。现account-profile已有active／race与关闭保护，可复用思想而非另造认证框架。
+
+**局部设计：** 在原handler内引入请求本地Resource Scope，让同一作用域拥有deadline、AbortSignal、断连监听与幂等清理；等待admission时有界竞争，超时只回现503。预断开不调用admission；断开／退休后不再写响应或迟到Cookie，结束释放监听和timer。删除旧散落生命周期实现，不保留双轨。保留现匿名200、资格403、限流429、依赖503、refresh／多Cookie、Math.min配置与5秒预算、原DTO和契约；不宣称HTTP退休能硬终止底层文件I/O或回滚提交，不自动重试。
+
+**取舍与范围：** 单一真实消费者先在原文件用私有对象／闭包实现，不加公共目录、Nest DI层、全局基类或策略／状态机框架。设计模式用于维护生命周期不变量，不等于增加类数量。唯一生产写区auth/auth-session.http.ts，回归仅扩现test/native-session-admission.test.ts；Task B #17完整598路径核过均不包含这两文件，user-admission／iam-admission-client等已有Task B改动的测试不抢写。主控只补挂起／预断开／迟到结果与清理的独有反例，复用原成功／拒绝正控；正规build后定向验证及相关lint／types／format，不重跑全产品、IAM真实资源或发布消费者。Git／台账由主控，另一代理最终只读审查。
+
+上述为实施前局部决定；实际RED／GREEN及最终交付另补，不借此扩大剩余4项Task B／原owner队列。
+
+### 停写验收与交付
+
+- 自有BFF [#23](https://github.com/LordFoxFairy/kokoro-bff/pull/23)正常合main，已验源码`6346f6235ab0594a21f1f672bfe1cb1879d2b6f5`、merge`eb4d736246295e29288a1b38a12fe756087cad36`；合并树相等、源为main祖先，自有本地／远程topic已清，Root锁精确源。
+- 生产只在原文件的私有闭包／对象集中资源，不增公共抽象或类层：retired区分预算终止、disconnected记close先于destroyed的传输退役、disposed保证释放幂等。canWrite和active分开，保证活连接超时仍原503而断连零写；退休Promise以sentinel完成，避免预断开未race就产生unhandled rejection，race观察迟到拒绝。作用域不拥有IAM操作的硬取消或事务回滚。
+- 原5个native行为测试完整尾部逐字相同，仅新增4个独有生命周期case。先正规build旧代码RED3失败／1通过，覆盖挂起、预断开、断连与正常／坏query清理；中间实现仅依赖destroyed会在close后写1次的缺口另有RED并修正，不删负控。修后writer正规build＋native／contract12通过，主控独立build／lint／types／正式no-semi160格式及native／contract／policy／transport／user-admission五文件51通过／0失败／0跳过；1134个输入摘要前后不变，独立冻结实现审CLEAR。
+- Wire／published artifacts／SDK／IAM与其它feature字节不变；未跑全默认、真实IAM／PG／Redis、浏览器或全产品，不把受控非合作admission测试称真实文件系统故障。正常会话状态、匿名／资格／限流／refresh与多Cookie正控沿用现有覆盖，没有新错误或兼容轨道。
+
+Root290项BFF引用按232个真实提交Git blobs重核，不机械换摘要；实际拓扑PASS、15条边／0违例、原Task A checkpoint PASS；本Root PR只交付该精确组合、设计取舍与唯一TODO。原4项Task B／原owner队列不借本片勾掉，Mori及其它产品不扩展，既存WIP与产品暂存义务保留。

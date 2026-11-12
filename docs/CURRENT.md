@@ -1,6 +1,14 @@
 # Current Facts
 
-## 当前主线：主工作台／BFF／IAM清理交付（2026-11-11）
+## 当前设计改进：认证状态请求作用域（2026-11-11，已验收）
+
+采用设计模式思想而不强加类／层：BFF原handler内的私有Resource Scope拥有同一deadline、AbortSignal、断连监听和幂等清理，修正非合作admission拖住HTTP／finally。活连接超时仍原503，预断开不准入，断连或迟到结果不再写Cookie／响应；保原DTO、错误、refresh与5秒上限。IAM账户事务／具名Repository和独立原生生命周期复核合理，未为模式重写。无新目录、DI、SDK、token或全局框架。
+
+BFF自有[#23](https://github.com/LordFoxFairy/kokoro-bff/pull/23)已正常合main，已验源码6346f623，merge eb4d7362树等于源，自有topic已清。新4独有case旧行为RED3失败／1通过；close事件先于destroyed的中间缺口另被捕获并修正。主控独立build／lint／类型／正式格式及5相关文件51通过／0跳过，1134输入摘要无漂移，原5测试块尾部逐字保留，独审CLEAR。底层真实fs挂起未实测，不声称硬取消I/O／回滚副作用，也未重复全默认／真实IAM资源。
+
+Root本PR锁精确BFF源并按232个真实Git blobs重核290项来源；实际拓扑／15条边0违例／原checkpoint通过。证据见[报告§18](reports/2026-11-11-typescript-auth-admin-audit.md#18-认证状态请求作用域)与[TODO](../todo.md)，原编号队列仍4项交原owner，Task B及其它产品不动。
+
+## 上批主线：主工作台／BFF／IAM清理交付（2026-11-11）
 
 按用户最新要求保持主线范围，Mori及其产品待办退出本轮、不计完成度；旧合并只保留历史事实，不擅自回滚。原16编号排除范围外R-05后，主线15项现为11收口／4遗留（R-03／R-06／R-14待原owner，R-07部分完成）。唯一状态见[TODO](../todo.md)，具体证据见[报告§17](reports/2026-11-11-typescript-auth-admin-audit.md#17-主线范围纠偏与最小清理)。
 
