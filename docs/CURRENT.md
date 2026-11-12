@@ -1,12 +1,14 @@
 # Current Facts
 
-## R-05 Mori adapter 验收（2026-11-11）
+## 当前主线：主工作台／BFF／IAM清理交付（2026-11-11）
 
-R-05原adapter欠账已通过自有[Mori #3](https://github.com/LordFoxFairy/kokoro-mori/pull/3)合main，源码3a4400e3、merge6d98924e，合并树与已验源一致，自有topic已清。复用Product已建立会话、标准三配置／公开Host与Origin，删除旧Cookie／namespace／principal和loopback默认；普通／唯一音频上传／GET媒体SSE按实际seam有界传输并贯穿取消，不增加登录、OAuth、预算框架或业务owner。
+按用户最新要求保持主线范围，Mori及其产品待办退出本轮、不计完成度；旧合并只保留历史事实，不擅自回滚。原16编号排除范围外R-05后，主线15项现为11收口／4遗留（R-03／R-06／R-14待原owner，R-07部分完成）。唯一状态见[TODO](../todo.md)，具体证据见[报告§17](reports/2026-11-11-typescript-auth-admin-audit.md#17-主线范围纠偏与最小清理)。
 
-主控一次Node22.23.4／pnpm11.2.2的owner check通过（lint／类型／739测试／build），270个输入摘要前后不变；独审18路径CLEAR。亲建生产Next HTTP→现BFF Music入口接线通过原生Cookie／固定Origin、多Set-Cookie、fresh撤权401且owner不再被调、跨源／旧Cookie零准入；IAM admission及Music owner明确替身，所有亲建进程／socket已关闭。首403因Node fetch没发送指定公开Host，修验收脚本为http.request后通过，失败保留、生产Host校验未放宽。
+三仓自有PR已合main并清理自有topic，合并树等于已验源：BFF #22锁22943ec3，仅删除不可达Admin IAM旧允许表，Web原生登录／Admin业务／外部OAuth保留；主控build／lint／types、44项相关回归通过，1134输入摘要不变。IAM #8锁40cda8e3，只纠正两篇认证／0.21消费说明，现役OAuth配置不删；主控22链接与机器版本／digest事实通过，未跑业务套件。
 
-Root本PR只锁精确Mori源码及台账，实际拓扑／15条边0违例／原checkpoint通过；无Mori既有inventory引用，不新造空边。现编号10收口／6遗留（4待处理、R-07／R-11部分完成），唯一状态见[TODO](../todo.md)及[报告§16](reports/2026-11-11-typescript-auth-admin-audit.md#16-r-05-mori同源adapter修复)。Mori继续preview，独立冷登录／Product挂载和Music owner上传／媒体等未接能力列产品暂存，不冒真实音乐链验收、不重开Task A；Task B及部署不动。
+App #55锁906f9c01，Node22类型对齐；聚合和两条CI验证编排保22生成检查、默认测试一次，独立入口／覆盖不减。全lock逆归一逐字相等，运行resolver不变；主控一次完整check的生成检查／lint／类型／6519测试／build通过，1558输入摘要不变，独审CLEAR。供应链offline缓存缺口原失败保留，原策略在线frozen后成功；未改共享CURRENT／Task B实际hunk、未创建tag或部署，不以数量声称性能收益。
+
+Root本PR锁三精确源码，387项来源按320个真实Git blobs重核；实际拓扑／15条边0违例／原checkpoint通过。App／BFF／IAM之外源码不扩展，Task B PR／分支／工作树及既存App WIP／产品暂存保留，不重跑全产品或共享基础设施。
 
 ## 上批 R-07 Storage／R-09治理校准（2026-11-11，Root #77已交付）
 
