@@ -1,5 +1,13 @@
 # Current Facts
 
+## 当前批次：Composer菜单与首页无用请求（2026-11-12）
+
+用户已确认优先定位／间距／选中态／长名称，同时关注接口性能。本批按[报告](reports/2026-11-12-composer-ui-and-api-performance.md)的最小方案完成局部菜单与读取职责优化，不删模型／改默认或增加缓存／认证层。主控focused411、完整lint／非增量TS／build、原预览runner中英1000／320 fine/coarse八例通过；17个源码／测试输入冻结核等，两个独立writer交叉审查CLEAR。首轮键盘驱动异步焦点失败与修正如实保留。
+
+正常native-auth后继实测菜单232×88、行36px／checked600、anchor对齐／约8px上间距和Escape回焦；成功空目录、锁定缺席不冒另一个默认模型。真实对照17→raw15含独立session1，同口径页面读14；只移除三次未使用目录读，首次Settings三目录200、关闭重开现scope复用。既有icon404、pins重复准入及model目录取消后继各自列TODO，不称全站UI或性能完成／p95达标。未重跑完整默认／全E2E／新模型／资源门，API／Schema／依赖不变。
+
+App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)已正常合main `59d412c9`，树等已验源 `179b6412`；本次远端CI因账户账单／额度未启动，未绕保护。Root已从85个App实际提交blobs重算93引用，拓扑／兼容15边0违例／原checkpoint通过；本批Root [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)交付该组合，最终出口核对MERGED与main clean。仅TODO跟踪后继，机器Goal查询为空，未创建重复目标。正常Web已恢复；Task B／Mori／其他owner／部署不动。历史已交付事实如下。
+
 ## 当前批次：Skills 同类布局问题已验收（2026-11-12）
 
 正常登录页复现Browse skills文字85.45px溢出72px按钮。现101.45px完整内收；清除动作固定宽度及两行32px约束，让搜索／动作／范围筛选按容器排版。独审发现旧手机column会将200px宽度basis变成空白高度，已删除并补高度断言；法语筛选也不再因强制等宽硬拆Personnel。无新组件、共享Button／业务hook／协议或Task B改动。

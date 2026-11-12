@@ -1,8 +1,24 @@
 # Kokoro · 当前执行 TODO
 
-更新：2026-11-12。唯一执行清单；当前批次基线Root `1eb7a427`，不重开已交付Task A，不重复扫描凑问题。
+更新：2026-11-12。唯一执行清单；当前批次基线Root `4d6c29f4`，不重开已交付Task A，不重复扫描凑问题。
 
-## 当前批次：Skills 操作区内容适配
+## 当前批次：Composer体验＋页面请求性能
+
+[诊断与最小方案](docs/reports/2026-11-12-composer-ui-and-api-performance.md)。主控先真实采样再修根因，不把单截图通过冒全站UI完善；不为“性能”增加cache／新认证层。
+
+- [x] UI-05：模型菜单定位／间距／checked／长名称；composer_ui_audit负责独立Composer写区。
+- [x] UI-06：成功空目录与锁定选择缺席时不误标另一个默认模型；同一writer，保草稿／选择／命令。
+- [x] PERF-01：删除未打开Settings/目录的无用connector预热，保现Composer/default/restore/chips；api_perf_audit负责独立overlay与相关测试。
+- [x] 主控验收：停写后相关回归、正常读路径对照、首次打开/重开与菜单浏览器验收；文档与精确组合已验。本地已验：focused411／完整lint、非增量TS、build／预览E2E8通过；正常页17→raw15（含独立session1），可比页面读14，三次无用目录读消除。首次Settings三目录200、重开复用，原菜单／Esc通过；自有PR／main清理以本批Root PR最终出口核验为准。不把最初截断片段或单样本当p95。
+- [ ] PERF-02交Task B原owner：pins GET重复准入（源码3次／6 IAM），实际hunk交叉，本批不写。
+- [ ] PERF-03后继：模型BFF请求取消／绝对期限传递，需独立HTTP peer回归，不冒已修。
+- [ ] 观察项：Settings既有MCP icon404；owner待核，不冒三目录读取失败或本批已修，不越界Task B。
+
+App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)已正常合main `59d412c9`，树核等已验源 `179b6412`；本轮App local／remote topic已清（远端引用另核）。本次CI annotation确认账户账单／额度导致任务未启动，不冒测试绿；未调整付费或绕保护。Root精确组合拓扑／兼容15边0违例／原checkpoint通过；Root自有 [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)负责交付，最终出口核对MERGED／main clean及本轮topic已清，不以文档先行勾选代替。
+
+Task B／Mori／后台／部署不动。GUI与API问题一起列明完成边界，不用大量旧测试或假成功页面代替收口。
+
+## 上批已交付：Skills 操作区内容适配
 
 Root基线 `1eb7a427`／App `a2bb4a4d`。正常登录设置页复现：Browse skills文字85.45px溢出pointer:fine下72px按钮；Create另有84／116px反复覆盖，嵌入工具栏锁两行32px。仅改Skills局部布局，清除固定尺寸／冲突覆盖，搜索与操作、筛选按容器自然换行；共享Button、业务hook／权限／创建／导入协议、Task B不动。
 
