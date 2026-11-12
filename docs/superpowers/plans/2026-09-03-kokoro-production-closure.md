@@ -1840,3 +1840,9 @@ Skills正常浏览器只读：同structured-report安装、作者current history
 Root3389/Appbf8/BFF9cc不改源码。正常浏览器两个同主体设置页：B初始GET revision2，A实际PUT expected_revision2成功200；B同expected2保存409，原B草稿保留。显式Reload显示权威A，再Use server profile，硬刷新仍A。随后按最新revision3将原四个空字段恢复PUT200，原标签硬刷新确认四空；另独立新原生Session走正式CSRF表单登录，profile GET200/revision4全空，再仅退出新Session并删除自有Cookie。没有模型/工具/资金/知识开关调用，也没有版本回滚；当前工作浏览器Session未退出。
 
 三个写入阶段request/response事件完整无truncated/hasMore；首A GET未捕获、后续旧response body lookup已evict均记录，不能声称全程trace完整；A outgoing expected2和B GET2、UI冲突/权威选择/刷新与新登录GET是独立实际证据。只补关闭B07此缺口，B06、Project ACL、后台完整CRUD及整个TaskB不因此完成。截图/收据仅ignored，不重跑默认/模型或旧已验分支。
+
+### 2026-11-12 B06接线定位/B13具名实施
+
+主控新建独立原生Session经正式CSRF登录与本人auth读成功，随后 `/api/account/sessions?limit=25` 实际503 `account_sessions_unavailable`，尚未撤销任何会话。只读定位normal BFF未设置既有 `KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE`，IAM亦缺 `IAM_BFF_ACCOUNT_SESSION_CREDENTIAL_FILE`，普通登录专用user_context凭据不能当该生命周期profile复用；未因此改协议/加OAuth/token/SDK。自有本次Session已正式退出、自有Cookie删除，原工作Session不变。下一步只核登记的专用文件/正式格式，再由主控纯配置配对、按空闲受控重启并补两个真实缺口。
+
+B13成员目录设计门已记同一有效计划。唯一writer api_perf_audit复用现干净Admin checkout，先由主控停止自己启动的3320，再从已fetch main08365f3（merge树等原normal9bed）建本轮codex/task-b-admin-directory；候选验收前不重开服务。写区仅users/teams、一个两消费方成员组件、直接测试、现中英词典和三短文档；无新owner/wire/Schema/认证层，较广后台CRUD/任意User360仍OPEN。受管worktree工具请求g53:1383仍pending并可poll，未宣称terminal/未重复创建；复用已有checkout继续实质推进，普通App/BFF/其它owner不变。
