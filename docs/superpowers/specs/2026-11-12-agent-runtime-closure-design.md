@@ -114,3 +114,14 @@ Task B App #49 的 client.ts Share实际hunk与conversation-thread props存在�
 - 最低验证：现invoke/client用例；复用原真实PG budget_authorizer fixture证明单reserve、recover miss、并发、取消／失租、denial原子封口与重复稳定；保原financial unknown负控。只用本片独有证据，不重新跑所有子仓。
 
 该门经agent_runtime_closure只读审计并由主控收敛；主控唯一writer和验收。当前实施／验证状态仍以[TODO](../../../todo.md)为准。
+
+## 13. G3：实时正文与终态展示的最小收敛
+
+正常模型/真实 Skill、MCP、Docker、Storage 旅程已产生实际产物；这不把当前 Web live 的手工拼字升级为“已经 AI SDK 单轨”。本片沿现 AG-UI transport，不新增 owner、网络协议、提交入口或 Schema。
+
+- **唯一正文装配**：保留 decoder/mapper 的同一 frame；将已有 `uiMessageChunks` 接入现 SDK reader。engine 继续拥有命令、opaque cursor、重连和取消；reducer 只采用 SDK 产生的绝对文本快照，删除原实时正文追加，不保留第二条文字累计路径。
+- **顺序与恢复**：同一 stream generation 内串行消费异步 SDK 快照，前序正文完成后再投影 terminal。重连从中段进入时用已确认 prefix 初始化同一文本 slot；history 的 bounded journal 保留可重放原输入，而不是只存缺前缀的快照。owner revision/watermark baseline 到达后，以同一 SDK 装配规则重放严格更新部分，保留当前409、取消、隐藏和 scope 退休保障。
+- **生命周期**：close/hydrate/scope/dispose 同时退休 reader；迟到结果不写新线程。SDK EOF 不推断 Run 终态、不自己推进 cursor；原 transport dedupe/replay 不移到第二个 `useChat` transport。
+- **真实展示缺口**：已观察到旧 `assembly_failed` Run 在成功 Regenerate 后仍显示 `Skill Loading`。复用现 `runTerminalsById`，将 exact Run 终态传到对应 process/Skill row；未完成 activity 在已知终态下显示中性“Run 已结束”，不伪造 Skill Ready/Failed，不用非 live 或超时推断结束。保留旧失败正文与新成功交付。`model_access_denied` 现同时承接余额与权限拒绝，文案覆盖两者，不另加 wire。
+- **写区**：现 `client`/mapper/文本 reader、`execution-adapter`/`machine`、内部 projection/reducer；终态展示限现 conversation/assistant/process/Skill rows 与 i18n。保留 Task B Share 与 failure-code 的实际 hunk；不整体覆盖同名文件。
+- **最低验证**：复用现 transport、parts reader/machine 和 UI 测试，覆盖重复 cursor、中段 prefix、迟到 baseline、terminal 紧随最后 delta、scope/dispose 迟到结果和不同 Run 终态隔离。正常浏览器复用本次真实历史与产物验展示/刷新，不再为同一后端风险重跑模型或全套资源验收。
