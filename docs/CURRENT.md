@@ -6,7 +6,7 @@
 
 原Root #67 head477562a4与当前main1092d99b分叉；主控先非递归fetch并合入当前main，原Task B14个提交／468行记录全部保留。所有12个gitlink仍固定当前已验main组合，无业务源／正常服务变化；初始自动merge保留的旧Scheduler/System指针已在本地发布前纠正，最终逐一核等，不以清冲突代替组合验收。Capability pin24094960与PR#12 e068fcaa源码树相同，功能不是待重做；App#49／BFF#17则已落后main，需要保双方成果的实际集成，不盲切旧分支运行。
 
-首片R-07只读contract check，后继R-14操作级DNS pin，再按B-01／B-02补缺失旅程；账户／Skills／后台同时先只读核当前证据。多agents分区，主控唯一台账／Git／资源与验收。原支付关闭和完整云E2B暂存边界保持；不部署／清卷，不删除未交接worktree。
+首片R-07已沿Capability原#12推送 `c040dda8`：主控8例／真实check／类型／相关lint与格式通过，803输入SHA／mtime／mode保持，独审CLEAR。只读check与显式generate各司其职；完整PR／Task B仍未验收。候选仍留原#12待组合；尝试推进Root时现Agent Connect发布pin24094960使组合门正确拒绝不配对，因此保留原12个已验gitlink，与B-01消费者窗口一并切换，不放宽门禁或仅为工具片改动runtime。后继R-14操作级DNS pin，再按B-01／B-02补缺失旅程；账户／Skills／后台同时先只读核当前证据。多agents分区，主控唯一台账／Git／资源与验收。原支付关闭和完整云E2B暂存边界保持；不部署／清卷，不删除未交接worktree。
 
 ## 上批已交付：Composer菜单与首页无用请求（2026-11-12）
 

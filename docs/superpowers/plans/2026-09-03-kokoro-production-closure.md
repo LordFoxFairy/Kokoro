@@ -6,7 +6,9 @@
 | --- | --- | --- |
 | 原PR与组合 | Root#67原477562a4、App#49 d6dd3cd0、BFF#17 1e6765b3、Capability#12 e068fcaa；主控先合入Rootmain1092d99b，保原14提交／468行记录和12个已验gitlink，不直接激活旧指针。App/BFF有明显主线分叉，须按功能保双方成果 | 主控唯一Git／Root台账／资源；不强推或删除旧worktree |
 | Capability已包含成果 | Root pin24094960与#12 e068fcaa源码树相同，后者仅多merge提交；MCP新授权、API隔离和Skills旧“待提交”叙述不能当当前缺功能 | api_perf_audit先只读核验；不重造owner |
-| R-07首片 | check仍先generate并改写生成文件。沿现脚本生成到自有临时目录、比较完整集合和字节，显式generate继续写；失败保持原输入并回收自有临时目录。无wire、数据模型或业务运行变化 | api_perf_audit单writer：package／现normalizer与直接contract check／相关测试；主控交接精确写区后实施 |
+| App/BFF承接门 | 原App独有37提交包含MCP/API、账户、Skills和契约；原29.3有201 ops而现28.35有215 ops，另同名operation/schema有实质差异。不得整份旧generated/pin激活；先承接无新契约依赖的API／JSON创建后精确详情，后续由BFF统一发行再生成 | composer_ui_audit只读盘点完成；主控后继集成，不恢复已删除首页预热 |
+| Storage#2 | add2da6的fresh成对升级未在现main231bb663承接；现FINAL后继脚本导入旧target常量，不能机械换hash。沿原bootstrap冻结旧工具／旧canonical，核后继parent并补定向PG | app_merge_gate只读盘点完成；原PR保留，主控另交精确写区，不做正常DDL |
+| R-07首片 | check仍先generate并改写生成文件。沿现脚本生成到自有临时目录、比较完整集合和字节，显式generate继续写；失败保持原输入并回收自有临时目录。无wire、数据模型或业务运行变化 | api_perf_audit单writer：package／现normalizer与直接contract check／相关测试；已沿原#12推送c040dda8；主控8例／真实check／类型与scope lint/format通过，803输入SHA/mtime/mode不变、四输入冻结核等，独审CLEAR；仅工具片源码已验待合并，不冒全PR验收；候选推进触发Agent发布pin精确配对缺口，Root暂保原12个已验gitlink，不放宽门禁，与B-01消费者窗口一并切换 |
 | R-14后继 | singleton client永久origin DNS pin限制合法独立操作轮换。只把pin约束到一次有界OAuth操作，保同操作漂移拒绝／公网验证／实际IP连接／Host／SNI／取消；不清共享Map处理并发 | 同owner后继，先在现技术设计写局部生命周期结论；不改协议／Schema |
 | B-01／B-02 | 先固定消费版本／实际加载源；只补新授权刷新删除、冲突／撤权／迟到／秘密边界。已有Docker执行／清理／刷新收据复用，不跑新模型凑证据 | owner→BFF→App按依赖；原PR内交付 |
 | 其余功能域 | Skills作者版本／安装使用、账户／Team／Share／模型积分与对应Admin按现收据盘点，仅实现当前缺口；视觉／多语言／性能／文档随片收尾 | composer_ui_audit先只读；主控验收和写区裁决 |

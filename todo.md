@@ -7,9 +7,11 @@
 用户已把 Task B 移交本主控，历史“Task B 不动”仅约束当时 Task A／UI 批次，不再排除本任务。沿[原功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)和[既有有效计划](docs/superpowers/plans/2026-09-03-kokoro-production-closure.md)推进，不重开已交付 Task A、不另起任务中心。以下是接管后的真实剩余队列，不把原15个功能域当15个新故障。
 
 - [x] B-T0 接管：确认原 Root #67、App #49、BFF #17、Capability #12 及当前 main；主控保原PR历史、全部12个已验 main gitlink和正常运行源，不盲激活旧组合。Root原分支已合入当前main；原468行Task B记录保留。
-- [ ] B-T1／R-07（进行中，api_perf_audit）：Capability contract check 改为只读；显式generate仍能写。临时生成后完整集合／字节比较，覆盖漂移与异常回收；不改 wire、Schema、生成器算法或正常服务。
+- [x] B-T1／R-07（writer api_perf_audit；主控验收，独审 app_merge_gate）：Capability contract check 改为只读；显式generate仍能写。临时生成后完整集合／字节比较，覆盖漂移与异常回收；不改 wire、Schema、生成器算法或正常服务。已沿原Capability #12提交推送 `c040dda8`；主控8 PASS／真实contract check、类型／相关lint／格式通过，803个输入SHA／mtime／mode不变，四实现测试输入冻结核等。本片源码已验收待合并／组合，不冒整PR／Task B验收或merge。
+- [ ] B-T1a 精确消费者配对：候选c040dda推进Root时，现Agent Connect provenance仍固定24094960，组合门正确拒绝不配对。此为发布pin接线，不改wire；暂保12个已验Root gitlink，候选保留#12，后继与B-01消费者窗口一起正规配对。不放宽门禁、不为工具片制造额外runtime变更。
 - [ ] B-T2／R-14（后继）：OAuth DNS pin 限定一次有界操作，保同操作DNS漂移拒绝、实际IP连接／Host／SNI／取消，不清共享Map冒修复；先补局部生命周期设计。
-- [ ] B-T3（只读盘点中，composer_ui_audit；集成主控）：App/BFF原PR与最新main按真实功能合并，保原 Task B成果和Task A修复；不整树择一、不强推。共享入口／契约先由owner交付。
+- [ ] B-T3（只读盘点已完成，集成主控）：App/BFF原PR与最新main按功能合并，保双方成果、不整树择一或强推。原29.3的201 operations与现28.35的215 operations有实质分叉，不能按版本号直接激活；先承接不依赖新契约的API／JSON创建ACK→安全locator→fresh exact详情，保现唯一发行物和已删除预热。跨契约能力先由BFF owner统一发行。
+- [ ] B-T4／Storage #2：原fresh图标升级配对修复尚未承接；原分支合当前main后，沿现bootstrap冻结旧工具／旧canonical，并核FINAL后继升级依赖的parent常量。不机械换成当前schema摘要，不操作正常数据库来试错。原备份／恢复／图标旅程证据复用，仅补受影响定向真实PG。
 - [ ] B-01／B-02：消费者与当前实际加载源配对后，只补MCP显式断开→新授权→Prepare→刷新／删除，以及Custom API缺失的冲突／撤权／迟到与秘密边界验证。已有真实Docker成功／取消／刷新不重跑；完整云E2B沿已接受边界暂存。
 - [ ] B-03～B-05：核Skills已有作者／版本／安装／使用收据与当前源码，仅补入口一致性、剩余权限及后台缺口，不重新造功能。
 - [ ] B-06～B-13：按原表核账户会话、设置／个性化、团队／分享、模型／积分和对应Admin；复用已有成果，补实际缺口后逐片交付。真实支付继续关闭，不新增内部OAuth／认证层。
