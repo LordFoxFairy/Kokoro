@@ -1,3 +1,11 @@
+## 当前检查点：B-08真实设置到模型已验，Task B继续
+
+Root21e833c4精确Appc044/BFF143在正常原生浏览器完成：资料onBlur保存临时偏好，随后用户消息不含测试标记；实际正常配置模型一次调用回复按私有偏好带标记，Vercel AI SDK单轨展示，硬刷新恢复同一条回复。权威BFF/Agent两owner只读核验：private personal_context逐项完全相等、tenant/user actor匹配，userMessage无标记/trace无原材料，双Message与Run终态，financial ACK存在。原四空字段通过正常UI恢复revision2（不是回滚版本或数据库无写入）；总53 Run终态/pending0，旧两未知财务记录保持。提交阶段network collector无事件，不能据此声称零HTTP；真实owner事实/一次模型/刷新是本片证据。收据截图只在ignored。
+
+B-08已按批准的手工profile/知识范围验收待原PR整体交付；知识启停/删除/重放/regen/跨主体及失败保障由当前真实PG/Agent私有prompt等最低充分层承接，不每分支重复真实模型。自动长期记忆与外部导入从未冒已实现，也不顺手造服务。BFF后继abbfd78、Appbf8ef938仅CURRENT文档，和已验143/c044的业务代码相同；正常checkout保持同步，无额外重启，精确Root门随本次组合记录。
+
+Goal持续active，下一片回到B-01/B-13现有管理入口与托管stdio的正常产品旅程，再按剩余账户/团队等差额推进，不把当前单片标整个TaskB完成。原3项QA已清，新增1MCP QA单项删除确认仍待；本次原生功能检查会话作为本地收据保留登记，不擅自删除其它数据。
+
 ## 2026-11-12 B-08 产品面与native检查点
 
 App原#49 c044c337已推，新增产品“设置/个性化与个人知识”单页，导航/入口/范围一致；API与内部工程文档分开。knowledgeUseHint九语言纠正旧“任务待接通”，只改现key与直接回归。主控18冻结输入核等：47相关PASS、非增量types、门户具名阅读路线1 PASS（其余名称过滤未跑）、正规参考生成/门户build、62 HTML/20513内部链接、App build全exit0，独审CLEAR；原大chunk warning/API changelog旧MD012/mts lint被忽略均披露，不冒完整lint。正常App HMR至c044，英文Knowledge提示已实测，无开关/知识写入；产品资料当前临时回复偏好已通过正常onBlur保存，native新消息验证进行中，验后恢复原四个空字段，未提前标闭环。

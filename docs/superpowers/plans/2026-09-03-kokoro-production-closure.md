@@ -1809,3 +1809,12 @@ Admin原正常3320监听缺失，主控校原9bed/私有配置与Product origin�
 App原#49 c044c337：product/settings/personalization.md及原导航/index/availability/一致性/INDEX六路径，另仅现knowledgeUseHint九语言与直接测试，去掉公共过时Englishfallback。主控18冻结输入：47 related/types/阅读路线具名1/正规参考生成与门户build/62页20513内链/Appbuild全部通过，独审CLEAR；原大chunk/API changelog MD012/mts lint ignored不冒全门。正常AppHMR至c044，Knowledge当前英文提示正确；未改开关/知识。当前Profile四字段原值均空，已由正常UI onBlur保存75字符临时功能marker并显示Saved（非个人信息/秘密），单次新消息实际作用仍进行中，之后正常UI恢复原四字段。不以此Saved替代Run成功。
 
 Appc044/BFF143精确组合staged85真实blobs/93引用重算，拓扑/15边0违例/原checkpointPASS。管理员正式read命令当前仅做预检：原manager authority env无native Session cookie路径，因此未启动CLI/未改权/未重置凭据；不拿历史不同管理员身份/tenant收据冒当前通过。整体Goal继续active。
+
+
+### 2026-11-12 B-08正常native闭环与原值恢复
+
+绑定Root21e833c4（Appc044/BFF143）精确干净已提交组合：UI Profile75字符临时指令onBlur Saved；新消息只含简短问候请求，不含marker。正常配置模型实际1次调用，AI SDK显示TASKB_PERSONAL_APPLIED问候，原资料清空恢复Saved/revision2后硬刷新仍恢复同一条原答复。仅此次新风险1模型调用，不重做旧Skill/MCP/Docker成功旅程。
+
+权威normal BFF/Agent各自只读连接验证私有personal_context完全相同/owner相等、UserMessage不含marker/trace无原材料，双Message完成/Run terminal，model attempt observed/granted、financial ACK存在；53终态/pending0，旧两未知财务候选保持。原native提交network collector当时未观察到事件，明确无HTTP数量/状态断言；刷新重新启用Network后有203事件，未掩盖前段缺口。此前真实PG/owner规则风险组合独立承接知识开关/删除/跨actor/重放/regen，未为每分支重复真实模型。B08当前手工范围验收待原PR整体出口，自动记忆/外部导入仅既有支持范围说明，不扩大目标。
+
+Appbf8ef938/BFFabbfd78只更新CURRENT，代码与已验c044/143逐路径相同；正常checkout同源，无需因纯文档再重启/刷测试。产品指南/9语知识提示、Portal62页20513链接已验。Goal active，后继B01/B13现有Admin→托管stdio实旅程与剩余域；本地新会话留作收据、1MCP QA删除待单项确认，原配置/未知WIP不动。
