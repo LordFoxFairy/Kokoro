@@ -1802,3 +1802,10 @@ Admin原正常3320监听缺失，主控校原9bed/私有配置与Product origin�
 真实PG初轮前三旅程PASS，第4因fixture漏abort和缺current stream头FAIL；未改生产，仅同PG文件接真实SELECT完成后abort及合法活动头。修后5PASS，再同旅程末尾增加合法小snapshot interrupt正控，最终5PASS，原read故障/取消/1MiB/101项完整Message/outbox/cancel零effects断言保持。三自有库均DROP，正常DB/Redis不变；生产11输入持续原SHA，未重跑68/build去刷绿。
 
 正常52终态/相关pending0后仅BFF受控SIGTERM并以原env源码143恢复health200，App0c不动、原两未知财务记录保留。Root232真实blobs/290引用配对，staged拓扑/15边0违例/原checkpointPASS。正常Profile当前只读，未改资料/知识、未发模型；native设置→新消息生效/恢复与公开产品指南仍继续，不关闭B08或整体Goal。
+
+
+### 2026-11-12 B08产品分层说明与native验证开始
+
+App原#49 c044c337：product/settings/personalization.md及原导航/index/availability/一致性/INDEX六路径，另仅现knowledgeUseHint九语言与直接测试，去掉公共过时Englishfallback。主控18冻结输入：47 related/types/阅读路线具名1/正规参考生成与门户build/62页20513内链/Appbuild全部通过，独审CLEAR；原大chunk/API changelog MD012/mts lint ignored不冒全门。正常AppHMR至c044，Knowledge当前英文提示正确；未改开关/知识。当前Profile四字段原值均空，已由正常UI onBlur保存75字符临时功能marker并显示Saved（非个人信息/秘密），单次新消息实际作用仍进行中，之后正常UI恢复原四字段。不以此Saved替代Run成功。
+
+Appc044/BFF143精确组合staged85真实blobs/93引用重算，拓扑/15边0违例/原checkpointPASS。管理员正式read命令当前仅做预检：原manager authority env无native Session cookie路径，因此未启动CLI/未改权/未重置凭据；不拿历史不同管理员身份/tenant收据冒当前通过。整体Goal继续active。

@@ -1,3 +1,9 @@
+## 2026-11-12 B-08 产品面与native检查点
+
+App原#49 c044c337已推，新增产品“设置/个性化与个人知识”单页，导航/入口/范围一致；API与内部工程文档分开。knowledgeUseHint九语言纠正旧“任务待接通”，只改现key与直接回归。主控18冻结输入核等：47相关PASS、非增量types、门户具名阅读路线1 PASS（其余名称过滤未跑）、正规参考生成/门户build、62 HTML/20513内部链接、App build全exit0，独审CLEAR；原大chunk warning/API changelog旧MD012/mts lint被忽略均披露，不冒完整lint。正常App HMR至c044，英文Knowledge提示已实测，无开关/知识写入；产品资料当前临时回复偏好已通过正常onBlur保存，native新消息验证进行中，验后恢复原四个空字段，未提前标闭环。
+
+精确候选Appc044/BFF143、其他owner不变；Root staged85真实blobs/93引用更新、拓扑/15边0违例/原checkpointPASS。当前管理员正例尚未开始：历史manager authority env不含native Session cookie文件，read CLI在配置预检前终止、未调用/改角色；不伪造旧Admin登录或改tenant迁就。Goal active，1个MCP QA删除仍待单项确认，不阻塞其余工作。
+
 ## 2026-11-12 B-08 后端已发行与正常激活，native补验继续
 
 原BFF#17已推143ade1（含1d9ab9e现三设计门），只接现本人设置→原Chat私有launch；不新owner/协议/Schema/认证/记忆服务，Agent固定7bfb/8.17 artifact不换。主控68相关PASS/types/正规generator check；writer build/lint通过，最终12输入冻结核等、两独审CLEAR；现Agent owner两文件21 PASS。真实PG最终4子旅程+parent5 PASS/0 SKIP，覆盖旧key零读取、regen原快照/省略、可信actor与租户、读失败/真实snapshot后取消/UTF8超1MiB/101项零业务副作用，并以同current head合法interrupt正控排除无效目标。首轮fixture漏abort/无有效stream头FAIL保留，随后只修PG文件；三个自有库均DROP，生产11路径未变，不重跑原68/build。
