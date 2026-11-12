@@ -9,11 +9,11 @@
 | App/BFF承接门 | 原App独有37提交包含MCP/API、账户、Skills和契约；原29.3有201 ops而现28.35有215 ops，另同名operation/schema有实质差异。不得整份旧generated/pin激活；先承接无新契约依赖的API／JSON创建后精确详情，后续由BFF统一发行再生成 | composer_ui_audit只读盘点完成；主控后继集成，不恢复已删除首页预热 |
 | Storage#2 | add2da6的fresh成对升级未在现main231bb663承接；现FINAL后继脚本导入旧target常量，不能机械换hash。沿原bootstrap冻结旧工具／旧canonical，核后继parent并补定向PG | app_merge_gate只读盘点完成；原PR保留，主控另交精确写区，不做正常DDL |
 | R-07首片 | check仍先generate并改写生成文件。沿现脚本生成到自有临时目录、比较完整集合和字节，显式generate继续写；失败保持原输入并回收自有临时目录。无wire、数据模型或业务运行变化 | api_perf_audit单writer：package／现normalizer与直接contract check／相关测试；已沿原#12推送c040dda8；主控8例／真实check／类型与scope lint/format通过，803输入SHA/mtime/mode不变、四输入冻结核等，独审CLEAR；仅工具片源码已验待合并，不冒全PR验收；候选推进触发Agent发布pin精确配对缺口，Root暂保原12个已验gitlink，不放宽门禁，与B-01消费者窗口一并切换 |
-| R-14后继 | singleton client永久origin DNS pin限制合法独立操作轮换。只把pin约束到一次有界OAuth操作，保同操作漂移拒绝／公网验证／实际IP连接／Host／SNI／取消；不清共享Map处理并发 | 同owner后继，先在现技术设计写局部生命周期结论；不改协议／Schema |
+| R-14后继 | singleton client永久origin DNS pin限制合法独立操作轮换。只把pin约束到一次有界OAuth操作，保同操作漂移拒绝／公网验证／实际IP连接／Host／SNI／取消；不清共享Map处理并发 | 局部技术设计／2生产factory＋3测试已验，原#12提交573a8f00；主控17例、types/scope lint-format、五输入核等和独审通过。writer63例仅相关unit，非真实Provider／PG／全默认；源码收口、组合待配对，不改协议／Schema |
 | B-01／B-02 | 先固定消费版本／实际加载源；只补新授权刷新删除、冲突／撤权／迟到／秘密边界。已有Docker执行／清理／刷新收据复用，不跑新模型凑证据 | owner→BFF→App按依赖；原PR内交付 |
 | 其余功能域 | Skills作者版本／安装使用、账户／Team／Share／模型积分与对应Admin按现收据盘点，仅实现当前缺口；视觉／多语言／性能／文档随片收尾 | composer_ui_audit先只读；主控验收和写区裁决 |
 
-交付：各仓沿原PR，本地受影响风险和相应owner门通过后正常合main、Root固定精确组合并清本轮分支。不部署、不清卷，不引入内部OAuth、重复认证／缓存／SDK或无用层。真实支付继续关闭、完整云E2B沿已接受边界暂存；外部供应商权限缺口只约束对应末端，不伪造成功、不暂停独立工作。机器Goal当前为空，未隐式另建；TODO与本节承担当前续接。
+交付：各仓沿原PR，本地受影响风险和相应owner门通过后正常合main、Root固定精确组合并清本轮分支。不部署、不清卷，不引入内部OAuth、重复认证／缓存／SDK或无用层。真实支付继续关闭、完整云E2B沿已接受边界暂存；外部供应商权限缺口只约束对应末端，不伪造成功、不暂停独立工作。2026-11-12用户已明确要求设置Goal，机器目标现active；按唯一TODO及本节持续推进，不以局部通过完成整体目标，不自行暂停。
 
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
 

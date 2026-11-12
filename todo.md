@@ -1,6 +1,6 @@
 # Kokoro · 当前执行 TODO
 
-更新：2026-11-12。唯一执行清单；当前批次基线Root `4d6c29f4`，不重开已交付Task A，不重复扫描凑问题。
+更新：2026-11-12。唯一执行清单；Task B接管基线Root `1092d99b`（当前候选沿原#67），不重开已交付Task A，不重复扫描凑问题。
 
 ## 当前任务：Task B 正式接管（2026-11-12）
 
@@ -9,15 +9,15 @@
 - [x] B-T0 接管：确认原 Root #67、App #49、BFF #17、Capability #12 及当前 main；主控保原PR历史、全部12个已验 main gitlink和正常运行源，不盲激活旧组合。Root原分支已合入当前main；原468行Task B记录保留。
 - [x] B-T1／R-07（writer api_perf_audit；主控验收，独审 app_merge_gate）：Capability contract check 改为只读；显式generate仍能写。临时生成后完整集合／字节比较，覆盖漂移与异常回收；不改 wire、Schema、生成器算法或正常服务。已沿原Capability #12提交推送 `c040dda8`；主控8 PASS／真实contract check、类型／相关lint／格式通过，803个输入SHA／mtime／mode不变，四实现测试输入冻结核等。本片源码已验收待合并／组合，不冒整PR／Task B验收或merge。
 - [ ] B-T1a 精确消费者配对：候选c040dda推进Root时，现Agent Connect provenance仍固定24094960，组合门正确拒绝不配对。此为发布pin接线，不改wire；暂保12个已验Root gitlink，候选保留#12，后继与B-01消费者窗口一起正规配对。不放宽门禁、不为工具片制造额外runtime变更。
-- [ ] B-T2／R-14（后继）：OAuth DNS pin 限定一次有界操作，保同操作DNS漂移拒绝、实际IP连接／Host／SNI／取消，不清共享Map冒修复；先补局部生命周期设计。
-- [ ] B-T3（只读盘点已完成，集成主控）：App/BFF原PR与最新main按功能合并，保双方成果、不整树择一或强推。原29.3的201 operations与现28.35的215 operations有实质分叉，不能按版本号直接激活；先承接不依赖新契约的API／JSON创建ACK→安全locator→fresh exact详情，保现唯一发行物和已删除预热。跨契约能力先由BFF owner统一发行。
+- [x] B-T2／R-14（源码已验待组合，api_perf_audit实现／app_merge_gate独审／主控验收）：OAuth DNS pin 限定一次有界操作，保同操作DNS漂移拒绝、实际IP连接／Host／SNI／取消，不清共享Map冒修复；现设计／factory装配已完成，沿原#12提交推送 `573a8f00`；writer相关63例、主控两直接文件17例／完整types／scope lint-format通过，五输入冻结核等、独审CLEAR。HTTPS仅socket替身、取消保真实loopback；未跑真实Provider／PG／全默认。本项源码收口，不冒实际授权／整个PR完成。
+- [ ] B-T3（隔离集成中，composer_ui_audit承接／主控验收）：App/BFF原PR与最新main按功能合并，保双方成果、不整树择一或强推。原29.3的201 operations与现28.35的215 operations有实质分叉，不能按版本号直接激活；先承接不依赖新契约的API／JSON创建ACK→安全locator→fresh exact详情，保现唯一发行物和已删除预热。跨契约能力先由BFF owner统一发行。复用clean隔离worktree `/Users/nako/.codex/worktrees/kokoro-app-rail-test-scope` 普通merge current main；28.35正式生成物已正规重生并与main核等，正常3310源码不动。源码类型在重建旧Next cache后已通过；主控已实测rail 290 PASS/5 FAIL，正按已准入fixture、去预热和新增可见错误恢复语义精准收口，不恢复旧协议或掩盖错误。
 - [ ] B-T4／Storage #2：原fresh图标升级配对修复尚未承接；原分支合当前main后，沿现bootstrap冻结旧工具／旧canonical，并核FINAL后继升级依赖的parent常量。不机械换成当前schema摘要，不操作正常数据库来试错。原备份／恢复／图标旅程证据复用，仅补受影响定向真实PG。
 - [ ] B-01／B-02：消费者与当前实际加载源配对后，只补MCP显式断开→新授权→Prepare→刷新／删除，以及Custom API缺失的冲突／撤权／迟到与秘密边界验证。已有真实Docker成功／取消／刷新不重跑；完整云E2B沿已接受边界暂存。
 - [ ] B-03～B-05：核Skills已有作者／版本／安装／使用收据与当前源码，仅补入口一致性、剩余权限及后台缺口，不重新造功能。
 - [ ] B-06～B-13：按原表核账户会话、设置／个性化、团队／分享、模型／积分和对应Admin；复用已有成果，补实际缺口后逐片交付。真实支付继续关闭，不新增内部OAuth／认证层。
 - [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。原PERF-02 pins重复准入、模型目录取消和icon404纳入当前owner核验，不再以“Task B不动”为由搁置，也不抢跑改未核明的事实。
 
-主控唯一管理Root台账／Git／资源／最终验收；两agents先独立调查，R-07单writer。每仓沿原PR，完整验收后正常合main并清本轮分支；不部署、不清卷、不删除归属未明worktree。机器Goal当前为空，本轮先以唯一TODO推进，未从普通任务隐式创建Goal。
+主控唯一管理Root台账／Git／资源／最终验收；两agents先独立调查，R-07单writer。每仓沿原PR，完整验收后正常合main并清本轮分支；不部署、不清卷、不删除归属未明worktree。用户2026-11-12已明确要求设置目标，机器Goal现为active：完成Task B已批准剩余功能及原PR/main/精确组合出口。按本TODO持续推进，局部依赖只约束对应动作，不自行暂停或误标整体完成。
 
 ## 上批已交付：Composer体验＋页面请求性能
 

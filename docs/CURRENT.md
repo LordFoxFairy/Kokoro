@@ -2,11 +2,13 @@
 
 ## 当前任务：Task B 已移交本主控（2026-11-12）
 
-按用户最新指令接手技能／连接器／账户协作全链路，原Task A／UI批次的“Task B不动”保留为历史范围，不再约束此次任务。唯一执行清单是[TODO](../todo.md)，功能范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)，进展／设计复用既有production-closure计划。
+用户2026-11-12明确要求设置目标，机器Goal已创建为active；目标是Task B剩余功能、各仓PR/main及精确组合闭环，不以局部通过结束。按最新指令接手技能／连接器／账户协作全链路，原Task A／UI批次的“Task B不动”保留为历史范围，不再约束此次任务。唯一执行清单是[TODO](../todo.md)，功能范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)，进展／设计复用既有production-closure计划。
 
 原Root #67 head477562a4与当前main1092d99b分叉；主控先非递归fetch并合入当前main，原Task B14个提交／468行记录全部保留。所有12个gitlink仍固定当前已验main组合，无业务源／正常服务变化；初始自动merge保留的旧Scheduler/System指针已在本地发布前纠正，最终逐一核等，不以清冲突代替组合验收。Capability pin24094960与PR#12 e068fcaa源码树相同，功能不是待重做；App#49／BFF#17则已落后main，需要保双方成果的实际集成，不盲切旧分支运行。
 
 首片R-07已沿Capability原#12推送 `c040dda8`：主控8例／真实check／类型／相关lint与格式通过，803输入SHA／mtime／mode保持，独审CLEAR。只读check与显式generate各司其职；完整PR／Task B仍未验收。候选仍留原#12待组合；尝试推进Root时现Agent Connect发布pin24094960使组合门正确拒绝不配对，因此保留原12个已验gitlink，与B-01消费者窗口一并切换，不放宽门禁或仅为工具片改动runtime。后继R-14操作级DNS pin，再按B-01／B-02补缺失旅程；账户／Skills／后台同时先只读核当前证据。多agents分区，主控唯一台账／Git／资源与验收。原支付关闭和完整云E2B暂存边界保持；不部署／清卷，不删除未交接worktree。
+
+R-14候选现已沿原#12推送 `573a8f00`：主控两直接unit17例／完整types／scope格式与lint通过、五输入核等、独审CLEAR；writer相关7unit共63例通过，未拼作全默认。App原#49已在保留原HEAD远端引用的clean隔离worktree并入main；机器侧只保现28.35并正规生成，native／scheduled executions等按current保双方功能，旧未发行metadata／reauthorize／picture／RSS不激活。主控重建隔离旧Next types后完整非增量TS通过，rail五个合并遗留oracle正在按真实失败证据收口；正常3310与持久资源未改。
 
 ## 上批已交付：Composer菜单与首页无用请求（2026-11-12）
 
