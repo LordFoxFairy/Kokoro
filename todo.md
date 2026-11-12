@@ -21,7 +21,7 @@
 - [ ] B-06／B-07／B-09～B-13（B-08已在上方关闭，不重复盘点）：按原表核账户会话、设置／个性化、团队／分享、模型／积分和对应Admin；复用已有成果，补实际缺口后逐片交付。真实支付继续关闭，不新增内部OAuth／认证层。
 - [x] B-14 Skills语言本片（composer_ui_audit实现／api_perf_audit独审／主控验收）：en两现key补齐、两日期调用显式locale，其他八语言不改。主控5输入冻结41 PASS／types／build；正常英文桌面＋320px文本内收/日期正确、无横溢/长标签自然换行。原#49代码844fbbcb＋文档0c6078e3已推，正常App同源激活，不重跑全默认/九语截图矩阵。
 - [ ] B-13后台缺口：原9bed3d2正常Admin已按原配置恢复3320，Web同源/manage当前用户会回产品、无管理菜单。只证非管理员准入隔离，正管理员/撤权/跨tenant仍待，未改角色/凭据或业务源码。
-- [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。原PERF-02 pins重复准入、模型目录取消和icon404纳入当前owner核验，不再以“Task B不动”为由搁置，也不抢跑改未核明的事实。
+- [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消和icon404仍纳入当前owner核验，不再以“Task B不动”为由搁置，也不抢跑改未核明的事实。
 
 主控唯一管理Root台账／Git／资源／最终验收；两agents先独立调查，R-07单writer。每仓沿原PR，完整验收后正常合main并清本轮分支；不部署、不清卷、不删除归属未明worktree。用户2026-11-12已明确要求设置目标，机器Goal现为active：完成Task B已批准剩余功能及原PR/main/精确组合出口。按本TODO持续推进，局部依赖只约束对应动作，不自行暂停或误标整体完成。
 
@@ -33,7 +33,7 @@
 - [x] UI-06：成功空目录与锁定选择缺席时不误标另一个默认模型；同一writer，保草稿／选择／命令。
 - [x] PERF-01：删除未打开Settings/目录的无用connector预热，保现Composer/default/restore/chips；api_perf_audit负责独立overlay与相关测试。
 - [x] 主控验收：停写后相关回归、正常读路径对照、首次打开/重开与菜单浏览器验收；文档与精确组合已验。本地已验：focused411／完整lint、非增量TS、build／预览E2E8通过；正常页17→raw15（含独立session1），可比页面读14，三次无用目录读消除。首次Settings三目录200、重开复用，原菜单／Esc通过；自有PR／main清理以本批Root PR最终出口核验为准。不把最初截断片段或单样本当p95。
-- [ ] PERF-02当前Task B实施（api_perf_audit唯一BFF writer／主控验收）：现pins GET仍3次verify/6 IAM，沿现报告边界仅GET3→1；保首Session+membership、owner SQL、expiresAt/断连/绝对预算，PUT三校验/unknown不改；无cache/新认证层/会话协议。原报告为当前具名实施门，正常BFFabb源不抢切。
+- [x] PERF-02（源码/正常激活已验，原PR整体交付仍待）：BFF原#17 `9cc7171`，GET完整准入3→1/真实HTTP peer六跳RED→两跳GREEN；保首Session/current_membership、本人tenant SQL及expiresAt/断连/绝对预算，PUT三校验与写后unknown不变，无cache/新认证层/协议/SQL变化。主控四输入冻结核等、51 focused PASS/完整types/diff-check，writer最终build/scoped lint-format通过，独审CLEAR。正常BFF在53 Run终态/pending0后同原配置受控重启，旧两财务记录保持；真实IAM/p95未测，不冒全TaskB/原PR完成。Root精确组合232真实blobs/290引用更新，拓扑/15边0违例/原checkpoint均PASS。
 - [ ] PERF-03后继：模型BFF请求取消／绝对期限传递，需独立HTTP peer回归，不冒已修。
 - [ ] 观察项：Settings既有MCP icon404；owner待核，不冒三目录读取失败或本批已修，不越界Task B。
 

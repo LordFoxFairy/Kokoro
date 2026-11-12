@@ -1,3 +1,9 @@
+## 2026-11-12 PERF-02 pins GET 重复准入收口
+
+BFF原#17已推 `9cc717135255b639b66933ac58e48e813d696a86`：GET入口一次完整原生Session＋current_membership，原六跳变两跳；后续只验本request真实expiresAt/绝对预算/断连，不跨请求缓存。本人tenant/active Project SQL不变，PUT三次准入及写后撤权/unknown保持，无wire/Schema/依赖变化。主控四输入SHA核等、51 focused PASS/0 SKIP、完整types/diff-check，writer最终build/scoped lint/格式通过，独审CLEAR。证据依赖为真实localhost HTTP peer，不冒真实IAM/p95。
+
+正常源同原配置受控切至9cc，前后53 Run均终态/待投递0，旧两未知财务记录保持。首次探测误用/health得404，正式/healthz复核另记录，不当服务故障或隐藏首probe。无PG/模型/全默认重跑。Root仅更新此BFF gitlink及232真实已提交blobs/290引用；拓扑 PASS、兼容 15 edges/0 violations、原 checkpoint PASS。原3QA先前已DELETE200＋刷新验，不重复删除；新增1QA单独待确认。Goal保持active，B01/B13及原表剩余项继续，未完成全TaskB或合原Draft PR。
+
 ## 当前检查点：B-08真实设置到模型已验，Task B继续
 
 Root21e833c4精确Appc044/BFF143在正常原生浏览器完成：资料onBlur保存临时偏好，随后用户消息不含测试标记；实际正常配置模型一次调用回复按私有偏好带标记，Vercel AI SDK单轨展示，硬刷新恢复同一条回复。权威BFF/Agent两owner只读核验：private personal_context逐项完全相等、tenant/user actor匹配，userMessage无标记/trace无原材料，双Message与Run终态，financial ACK存在。原四空字段通过正常UI恢复revision2（不是回滚版本或数据库无写入）；总53 Run终态/pending0，旧两未知财务记录保持。提交阶段network collector无事件，不能据此声称零HTTP；真实owner事实/一次模型/刷新是本片证据。收据截图只在ignored。

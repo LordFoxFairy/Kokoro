@@ -57,3 +57,8 @@ Root最终暂存组合的拓扑／兼容15边0违例／原checkpoint全部PASS�
 仅GET收敛为一次完整准入，原本owner SQL保tenant/本人/未删除Project同谓词，不动分页、cursor或PUT的三次校验/未知ACK。两次额外网络检查替换为本请求的断连、绝对预算与已有Session真实expiresAt检查，接监听后立即采样已退休/零预算，不新增cache/token/SDK/跨服务session引用/认证层。传递expiresAt只属于本次HTTP已准入结果，不跨请求保存；期限或资格格式异常fail closed。符合ADR-035“撤权后下次在线判断拒绝”，不承诺跨owner在途原子撤权，两次附加查询也不能提供该保证。
 
 沿现project-pin-http真实localhost IAM peer＋正式SessionAdmissionClient补最低回归：原成功6跳RED→2跳GREEN、membership无Cookie/Origin；同cookie下一请求撤权拒绝/零store，错身份/租户闭合；首次Session、membership或store延迟时断连/绝对预算/真实Session到期不得迟到返回成功或再开store；PUT原post-write revoke/unknown保障保持。旧“store后更改double即必须拒绝”断言迁移到真正承诺的下次请求撤权，不删除权限风险。只覆盖该GET，不做全站扫描/延长预算或从次数推p95。唯一source writer api_perf_audit，主控管本报告/台账/资源/Git/最终验收，停写后按当前源重跑相关HTTP/IAM client/pin repository及types/build，真实IAM与peer证据分列。
+
+
+### PERF-02 实际交付
+
+BFF原#17源码9cc7171已推，主控四SHA核等，51 focused/完整types通过，writer最终build与scoped lint-format通过、独审CLEAR。HTTP peer实测6→2；PUT三verify及post-write revoke保持，下一请求撤权、expiry/断连/零预算无迟到成功由原路由最低层级回归承接。正常源同原配置受控激活，53终态/无新pending；未测真实IAM或p95，不重复模型/PG/全默认。Root精确组合门记录在唯一TODO/当前事实，不冒整TaskB交付。

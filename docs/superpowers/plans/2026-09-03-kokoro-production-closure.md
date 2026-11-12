@@ -1818,3 +1818,9 @@ Appc044/BFF143精确组合staged85真实blobs/93引用重算，拓扑/15边0违�
 权威normal BFF/Agent各自只读连接验证私有personal_context完全相同/owner相等、UserMessage不含marker/trace无原材料，双Message完成/Run terminal，model attempt observed/granted、financial ACK存在；53终态/pending0，旧两未知财务候选保持。原native提交network collector当时未观察到事件，明确无HTTP数量/状态断言；刷新重新启用Network后有203事件，未掩盖前段缺口。此前真实PG/owner规则风险组合独立承接知识开关/删除/跨actor/重放/regen，未为每分支重复真实模型。B08当前手工范围验收待原PR整体出口，自动记忆/外部导入仅既有支持范围说明，不扩大目标。
 
 Appbf8ef938/BFFabbfd78只更新CURRENT，代码与已验c044/143逐路径相同；正常checkout同源，无需因纯文档再重启/刷测试。产品指南/9语知识提示、Portal62页20513链接已验。Goal active，后继B01/B13现有Admin→托管stdio实旅程与剩余域；本地新会话留作收据、1MCP QA删除待单项确认，原配置/未知WIP不动。
+
+### 2026-11-12 PERF-02 最小收口
+
+BFF原#17已推 `9cc717135255b639b66933ac58e48e813d696a86`：GET入口一次完整原生Session＋current_membership，原六跳变两跳；后续只验本request真实expiresAt/绝对预算/断连，不跨请求缓存。本人tenant/active Project SQL不变，PUT三次准入及写后撤权/unknown保持，无wire/Schema/依赖变化。主控四输入SHA核等、51 focused PASS/0 SKIP、完整types/diff-check，writer最终build/scoped lint/格式通过，独审CLEAR。证据依赖为真实localhost HTTP peer，不冒真实IAM/p95。
+
+正常源同原配置受控切至9cc，前后53 Run均终态/待投递0，旧两未知财务记录保持。首次探测误用/health得404，正式/healthz复核另记录，不当服务故障或隐藏首probe。无PG/模型/全默认重跑。Root仅更新此BFF gitlink及232真实已提交blobs/290引用；拓扑 PASS、兼容 15 edges/0 violations、原 checkpoint PASS。原3QA先前已DELETE200＋刷新验，不重复删除；新增1QA单独待确认。Goal保持active，B01/B13及原表剩余项继续，未完成全TaskB或合原Draft PR。
