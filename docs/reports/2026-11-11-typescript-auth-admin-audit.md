@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)、[统一维护Goal§21](#21-统一维护goal与集中批次)、[认证修复§18](#18-认证状态请求作用域)和[链路设计§19](#19-web与后台链路优化设计门)及[当前入口收敛§20](#20-上传入口收敛与工程首读核查)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
+- 当前执行状态先读[唯一TODO](../../todo.md)、[剩余归属§22](#22-剩余todo归属与下一轮goal)、[统一维护Goal§21](#21-统一维护goal与集中批次)、[认证修复§18](#18-认证状态请求作用域)和[链路设计§19](#19-web与后台链路优化设计门)及[当前入口收敛§20](#20-上传入口收敛与工程首读核查)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -703,3 +703,30 @@ App账户／原生认证、消息结果、草稿迟到与身份scope未确认新
 - 自有App [PR #56](https://github.com/LordFoxFairy/kokoro-app/pull/56)正常合main，已验源码`556dc0f092269ac798fef07fe1fca7913fe3d59e`，merge`50f95f8d79e86d011123488e24292691cb783f04`；BFF [PR #26](https://github.com/LordFoxFairy/kokoro-bff/pull/26)正常合main，已验源码`7c503f08d2013f5cc3ffcf18b9a5d704ecac7b55`，merge`fa3896d4adf8138950f18d692ccc50122986211e`。两合并树均等于已验源，自有本地／远程topic已清；Root锁精确源，不浮动更新。
 
 Root本PR配对两个精确子仓源：App93项引用／85个真实Git blobs，BFF290／232，合383引用／317实际blobs重新核SHA。实际拓扑PASS、15条契约边／0违例、原checkpoint PASS；维护文档核本地链接与新§21锚点。Root合入／clean／分支清理后才将机器Goal complete；此处不以交付准备冒最终Git出口。Task B／Mori／原4编号遗留、README交接、既存WIP和产品暂存均保持，未部署。
+
+
+## 22. 剩余TODO归属与下一轮Goal
+
+日期：2026-11-12（America/New_York），Root基线`b24b6146d6b86a99fe4109e80fcc04b690db3d6b`。本轮按用户要求只核已有未完成队列，不新增全仓扫描或问题编号。机器Goal已active，执行状态只在[TODO](../../todo.md)维护；当前独立下一动作是R-06交付方案门，而非重跑上轮检查。
+
+### 上轮出口与可独立收口
+
+主控只读实查Root #83、App #56、BFF #26均MERGED，Root main为b24b6146，12个子仓clean／精确配对。§21中“本PR合入后”的出口条件已实际满足，上轮已结束，不再列待合并或待验证；本轮不重跑6522／150等旧门。Task B四个PR仍OPEN／Draft且原head保持，未修改其元数据／分支／工作树。
+
+`a03_read`定位原App归档目标`src/app/auth/sign-in/failed/page.tsx`，原基线73b2df451c2604a6d1e9413bf07eb383b95219e9；私有保留stash的首父与该基线相同。完整文件SHA256 `82c7fb611fcb1b9fde6f400cf9f730b88de92112bf66af644fac0a0acb7ddf69`，补丁`1e6e4005f07806dab6d0f3ddeffa20cc7a9c64c51e9375f5bc088f8327a2dd51`，在内存重建与stash／完整文件逐字节一致。主控另核stash内容摘要与de40f9c3／dead1843／bfb749c3均为当前App祖先；归档文件只调整randomUUID导入与调用即与de40f9c3精确相同，后继已native-only且消费canonical状态。**已覆盖，无恢复动作**；保留私有归档，不恢复旧RP／fallback。Task B #49在此路径另有返回目标恢复hunk，不能用历史补丁覆盖它。只关闭本项“未核实”义务，不声称Task B登录改动已验收。
+
+### R-06：可独立推进方案，不宜机械删副本
+
+`r09_governance_calibration`只核本项既有文件与分支，纠正了“App同名manifest就是冲突”的旧判断：#49实际只改package scripts，不改依赖／workspace／lock／packages；App已验源556dc0f0是其当前main50f95f8d的祖先，仅差merge，shared pin0c4e87即main。web-core／i18n的src与公开入口逐字相同，当前不存在代码分歧故障。
+
+实际未决点是交付而非写区：shared三个包private:true，仓内没有已发行artifact／registry出口证据；README允许本地file bridge，但正式交付要求registry／semver／lock，尚无本轮App切换方案。主控另核每包1个src文件及公共入口相同；App的tsconfig多noUncheckedIndexedAccess／exactOptionalPropertyTypes／noImplicitOverride／noImplicitReturns／noUnusedLocals／noUnusedParameters六项true，不是等价副本，不能整删packages。独立下一步只出最小包交付方案：shared唯一writer、入口／固定来源／独立App／CI／Docker构建与回退，限定web-core／i18n；先比较现有bridge与正式包交付，不为两个小包新建registry服务。方案门通过后才改manifest／lock、相关验证、删这两份副本。tsconfig保留或显式承接六项检查后再裁决，不新增发行平台或全栈共享层，也不自动发布包。当前CI单仓checkout、Docker上下文为本仓，仅改file桥会破坏独立构建，方案必须承接该门；本轮不以开发本地可解析冒完整交付。
+
+### 原owner与组合依赖
+
+- R-03／BFF README-INDEX／Admin回环-Hub分别沿Task B Admin、BFF #17与App/BFF/Admin owner，现真实写区重叠，不抢改。
+- Capability Root pin24094960是#13源，合到#12头e068fcaa而非main；当前main adbcc78至pin尚有37提交。R-07 normalizer实际新增custom_api_runtime／mcp_project_publication生成物；package/check文件patch为null不等于组合无变动。R-14 client即使无直接hunk，mcp.module composition仍有292+/3-实质变化。因此两项由Capability owner在该依赖链承接，不从main小补丁冒称Root已修，不把Task B带main。
+- 原4编号遗留仍为R-03／R-06／R-07余项／R-14；文档和回环交接不重复计故障。A-13／A-14／可选完整E2B／A-15与IAM容量边界按原已接受暂存，owner与恢复前置在唯一TODO逐项列明。
+
+本轮仅Root维护文档与台账，无业务源码／gitlink／契约／Schema／依赖变化；不运行检查生成器、全量测试、业务服务、浏览器或共享资源操作。文档检查与Root交付回执在停写后补记；Goal继续承接R-06方案前置，未将整理完成冒称其代码闭环。
+
+主控独立核验补记：archive／stash／base与两摘要一致；补齐node:crypto的randomUUID导入并调整调用后，归档字节与de40f9c3精确相同，三项后继均为当前App祖先。最初“只允许import行差异”的窄断言未涵盖调用名称调整而失败，检查真实两处差异后精确重建通过；这不是产品测试失败，也未应用补丁。R-06每包1个src文件与公共入口对照通过，六项额外严格选项逐项核实。三篇文档62个本地链接目标／新§22锚点与diff-check通过；仅维护Root文档，不运行任何业务门。Root自有PR承接台账，Goal保持active继续R-06方案门；不以本PR整理完成替代其实现交付。
