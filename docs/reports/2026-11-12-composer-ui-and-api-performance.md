@@ -48,3 +48,12 @@
 App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)正常合main `59d412c9`，树核等已验 `179b6412`；实际CI annotation是账户账单／额度导致任务未启动，不冒测试绿、不付费或绕保护。Root只更新该精确gitlink，并从85个已提交Git blobs重算93个App声明引用，其他owner不动。
 
 Root最终暂存组合的拓扑／兼容15边0违例／原checkpoint全部PASS。初次调用尚未暂存新gitlink导致旧index与新inventory不配对；暂存唯一App gitlink后原命令重跑通过，没有改验证规则或其他owner。Root自有 [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)负责最终main出口与topic清理，实际状态以MERGED／clean核验为准。
+
+
+## PERF-02 既定余项实施边界（2026-11-12）
+
+当前BFF abbfd78（业务树143）具名链仍为ProjectsModule→ProjectPinMiddleware→project-native首准入→project-pin store前/后两次currentAdmission，GET共3次verify/6次IAM HTTP。不是额外OAuth：每次包含原生Session鲜验与current_membership，保第一套完整准入，不把登录当权限。
+
+仅GET收敛为一次完整准入，原本owner SQL保tenant/本人/未删除Project同谓词，不动分页、cursor或PUT的三次校验/未知ACK。两次额外网络检查替换为本请求的断连、绝对预算与已有Session真实expiresAt检查，接监听后立即采样已退休/零预算，不新增cache/token/SDK/跨服务session引用/认证层。传递expiresAt只属于本次HTTP已准入结果，不跨请求保存；期限或资格格式异常fail closed。符合ADR-035“撤权后下次在线判断拒绝”，不承诺跨owner在途原子撤权，两次附加查询也不能提供该保证。
+
+沿现project-pin-http真实localhost IAM peer＋正式SessionAdmissionClient补最低回归：原成功6跳RED→2跳GREEN、membership无Cookie/Origin；同cookie下一请求撤权拒绝/零store，错身份/租户闭合；首次Session、membership或store延迟时断连/绝对预算/真实Session到期不得迟到返回成功或再开store；PUT原post-write revoke/unknown保障保持。旧“store后更改double即必须拒绝”断言迁移到真正承诺的下次请求撤权，不删除权限风险。只覆盖该GET，不做全站扫描/延长预算或从次数推p95。唯一source writer api_perf_audit，主控管本报告/台账/资源/Git/最终验收，停写后按当前源重跑相关HTTP/IAM client/pin repository及types/build，真实IAM与peer证据分列。

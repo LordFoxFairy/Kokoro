@@ -33,7 +33,7 @@
 - [x] UI-06：成功空目录与锁定选择缺席时不误标另一个默认模型；同一writer，保草稿／选择／命令。
 - [x] PERF-01：删除未打开Settings/目录的无用connector预热，保现Composer/default/restore/chips；api_perf_audit负责独立overlay与相关测试。
 - [x] 主控验收：停写后相关回归、正常读路径对照、首次打开/重开与菜单浏览器验收；文档与精确组合已验。本地已验：focused411／完整lint、非增量TS、build／预览E2E8通过；正常页17→raw15（含独立session1），可比页面读14，三次无用目录读消除。首次Settings三目录200、重开复用，原菜单／Esc通过；自有PR／main清理以本批Root PR最终出口核验为准。不把最初截断片段或单样本当p95。
-- [ ] PERF-02交Task B原owner：pins GET重复准入（源码3次／6 IAM），实际hunk交叉，本批不写。
+- [ ] PERF-02当前Task B实施（api_perf_audit唯一BFF writer／主控验收）：现pins GET仍3次verify/6 IAM，沿现报告边界仅GET3→1；保首Session+membership、owner SQL、expiresAt/断连/绝对预算，PUT三校验/unknown不改；无cache/新认证层/会话协议。原报告为当前具名实施门，正常BFFabb源不抢切。
 - [ ] PERF-03后继：模型BFF请求取消／绝对期限传递，需独立HTTP peer回归，不冒已修。
 - [ ] 观察项：Settings既有MCP icon404；owner待核，不冒三目录读取失败或本批已修，不越界Task B。
 
