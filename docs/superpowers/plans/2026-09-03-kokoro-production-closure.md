@@ -1824,3 +1824,19 @@ Appbf8ef938/BFFabbfd78只更新CURRENT，代码与已验c044/143逐路径相同�
 BFF原#17已推 `9cc717135255b639b66933ac58e48e813d696a86`：GET入口一次完整原生Session＋current_membership，原六跳变两跳；后续只验本request真实expiresAt/绝对预算/断连，不跨请求缓存。本人tenant/active Project SQL不变，PUT三次准入及写后撤权/unknown保持，无wire/Schema/依赖变化。主控四输入SHA核等、51 focused PASS/0 SKIP、完整types/diff-check，writer最终build/scoped lint/格式通过，独审CLEAR。证据依赖为真实localhost HTTP peer，不冒真实IAM/p95。
 
 正常源同原配置受控切至9cc，前后53 Run均终态/待投递0，旧两未知财务记录保持。首次探测误用/health得404，正式/healthz复核另记录，不当服务故障或隐藏首probe。无PG/模型/全默认重跑。Root仅更新此BFF gitlink及232真实已提交blobs/290引用；拓扑 PASS、兼容 15 edges/0 violations、原 checkpoint PASS。原3QA先前已DELETE200＋刷新验，不重复删除；新增1QA单独待确认。Goal保持active，B01/B13及原表剩余项继续，未完成全TaskB或合原Draft PR。
+
+### 2026-11-12 B13正常准入与下一片最小设计门
+
+主控沿现IAM正式管理CLI（仅独立进程显式manager配置）和现owned开发账号新建原生Session，先正式read原false/version0，再CAS grant true/v1；正常Admin同源/manage成功，Models四目录200，Provider/托管包页可读。随后CAS恢复false/v2，两个operation_id对应IAM审计成功且old/new状态版本核等；仅新Session退出和自有0600 Cookie删除，原浏览器刷新/manage→/app、普通会话继续有效。未改正常服务配置/密码/tenant，未造Cookie或SQL角色。初始Web /iam/sign-in/email JSON405、退出非空body400均保留；正式CSRF表单与空body恢复成功。不是整个Admin CRUD通过。
+
+真实新缺口已定位：users强制site却请求已不存在/api/user360，teams仍旧通用ResourceTable，壳层sites/manifests固定空。不是缺少待创建站点；不能用site=tenant或个人余额接口假装管理员任意用户读取。下一片按既有owner成员目录替换死入口，仍保未交付的更广后台需求，不标B13完整闭环。
+
+Skills正常浏览器只读：同structured-report安装、作者current history、广场package均source_ref/revision1相同，SKILL.md目录及正文核等；GET及只读List/Get RPC无生命周期写。当前作者只有v1/账号无Project，旧版恢复和Project现行关联未运行；原收据/祖先按差额承接，不重复模型。封面404如实记录，未把不存在图片当包读取失败。Root3389/Appbf8/BFF9cc源码未变；临时授权/截图/原始收据仅ignored。Goal active，新增托管stdio QA准备/启用的动作确认待用户回答，不阻塞独立修复。
+
+**B13成员目录切片设计门（主控裁决）**：IAM拥有当前tenant成员/角色事实，BFF现有 `/v1/admin/identity/members` 仍是唯一投影，Admin沿现adapter与已固定strict成员client读取，无新owner/协议/Schema/数据库/认证层。`/users` 和 `/teams` 以明确的当前租户成员/角色目录替换死site/manifest入口，共用一个有实际两调用方的业务组件；使用既有分页/cursor、刷新、401/403退休与断连/迟到隔离，过滤只声明当前页，不冒全局搜索。不修改AppShell的其它未承接模块；不造站点，不借本人账户读他人余额。删除两页旧独占user360/action/退款/停用假入口及无消费者的专属类型（仍有其它消费者则保留待对应切片）。保留积分现正式入口，不增充值/写权限。完整任意用户360及原后台尚缺的跨owner操作仍列OPEN，不以本只读片替代。最低验证：当前成员分页/空/失败重试/退休/迟到风险组件＋原成员client及本owner所需types/lint/build/contract；正常native管理员实读并复核撤权，不跑模型/全后端。Admin三面当前文档先更新此边界，再实施，独立writer与主控验收/原PR出口分开。
+
+### 2026-11-12 B07双标签主旅程补验
+
+Root3389/Appbf8/BFF9cc不改源码。正常浏览器两个同主体设置页：B初始GET revision2，A实际PUT expected_revision2成功200；B同expected2保存409，原B草稿保留。显式Reload显示权威A，再Use server profile，硬刷新仍A。随后按最新revision3将原四个空字段恢复PUT200，原标签硬刷新确认四空；另独立新原生Session走正式CSRF表单登录，profile GET200/revision4全空，再仅退出新Session并删除自有Cookie。没有模型/工具/资金/知识开关调用，也没有版本回滚；当前工作浏览器Session未退出。
+
+三个写入阶段request/response事件完整无truncated/hasMore；首A GET未捕获、后续旧response body lookup已evict均记录，不能声称全程trace完整；A outgoing expected2和B GET2、UI冲突/权威选择/刷新与新登录GET是独立实际证据。只补关闭B07此缺口，B06、Project ACL、后台完整CRUD及整个TaskB不因此完成。截图/收据仅ignored，不重跑默认/模型或旧已验分支。
