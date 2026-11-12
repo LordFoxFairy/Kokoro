@@ -8,7 +8,10 @@
 
 首片R-07已沿Capability原#12推送 `c040dda8`：主控8例／真实check／类型／相关lint与格式通过，803输入SHA／mtime／mode保持，独审CLEAR。只读check与显式generate各司其职；完整PR／Task B仍未验收。候选仍留原#12待组合；尝试推进Root时现Agent Connect发布pin24094960使组合门正确拒绝不配对，因此保留原12个已验gitlink，与B-01消费者窗口一并切换，不放宽门禁或仅为工具片改动runtime。后继R-14操作级DNS pin，再按B-01／B-02补缺失旅程；账户／Skills／后台同时先只读核当前证据。多agents分区，主控唯一台账／Git／资源与验收。原支付关闭和完整云E2B暂存边界保持；不部署／清卷，不删除未交接worktree。
 
-R-14候选现已沿原#12推送 `573a8f00`：主控两直接unit17例／完整types／scope格式与lint通过、五输入核等、独审CLEAR；writer相关7unit共63例通过，未拼作全默认。App原#49已在保留原HEAD远端引用的clean隔离worktree并入main；机器侧只保现28.35并正规生成，native／scheduled executions等按current保双方功能，旧未发行metadata／reauthorize／picture／RSS不激活。主控重建隔离旧Next types后完整非增量TS通过，rail五个合并遗留oracle正在按真实失败证据收口；正常3310与持久资源未改。
+R-14候选现已沿原#12推送 `573a8f00`：主控两直接unit17例／完整types／scope格式与lint通过、五输入核等、独审CLEAR；writer相关7unit共63例通过，未拼作全默认。App原#49已在保留原HEAD远端引用的clean隔离worktree并入main；机器侧只保现28.35并正规生成，native／scheduled executions等按current保双方功能，旧未发行metadata／reauthorize／picture／RSS不激活。主控重建隔离旧Next types后完整非增量TS、lint／build／22生成检查通过。最终rail295 PASS；完整默认6753 PASS/2 FAIL，修正两处旧oracle后原两文件48 PASS，未冒全默认绿。候选a0512901沿原#49推送，Root ae480fb9精确组合门通过，正常3310已受控切到该候选。隔离初期复用node_modules导致两个workspace依赖链接被改写、短暂Build Error；已恢复正常链接并为隔离安装独立frozen依赖，真实页恢复，未改持久数据。
+
+
+真实native-auth已补API创建→fresh exact详情→刷新，以及JSON双配置导入→明确选B→fresh Connector/Server→取消未保存修改→刷新原值；分别真实POST201，读取200，未Connect／Prepare，不冒真实供应商授权或整个B-01/02完成。3项临时配置登记于私有receipt，等待用户删除确认，原Context7保持。正常页面又发现bootstrap未读目录误报空态及English MCP配置硬编码中文，已交composer_ui_audit仅在隔离App最小修复；主控验收后再切正常源，不新增框架／请求。BFF原PR差异与Agent四字段精确pin配对并行收敛，机器Goal持续active。
 
 ## 上批已交付：Composer菜单与首页无用请求（2026-11-12）
 

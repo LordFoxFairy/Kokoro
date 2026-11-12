@@ -1726,3 +1726,11 @@ E/技术方案与联调/B07-settings-identity-locale-delivery.json绑定源码�
 Appd6dd3cd0修设置与独立技能广场的可见错误/明确重试，保原查询/分类/cursor/身份退休与安装写命令。正常两入口浏览器注入目录503→可见Alert→同body真实owner200通过，390px及设置提示框父内边界通过；原误判共用组件导致首轮广场漏修的RED保留，现两个入口均验。原CSS仅width:auto防w-full加margin裁切。Auth75、设置选中8（18未选）、广场原文件12项通过，scope lint/最终全tsc通过，停写限定独审无确定P0–P2；非完整owner门，缺hix-code-review未冒调用。
 
 App两提交已推原Draft49并核精确remote head；Root仅更新App gitlink与本计划。正常3314加载本App源码，其他owner组合/原Admin拓扑/全门仍未完整配对，不冒main或完整Task B。故障为明确浏览器fixture、非自然owner事故；单样本恢复设置1855ms/广场2036ms及退休约5秒，不冒分位或100ms。E/技术方案与联调/B03-B06-settings-recovery-delivery.json绑定原始范围；完整目标继续active。
+
+
+### 2026-11-12 Task B App候选与真实配置首片
+
+- App原#49已并入accepted main，候选a0512901保双方历史和现Public28.35；完整lint／非增量TS／build／22正规生成检查通过，rail最终295 PASS。完整默认6753 PASS/2 FAIL后，仅修旧calendar与可见错误两处oracle，原两文件48 PASS；未重跑全默认，不拼接成全绿。
+- Root ae480fb9固定App候选并从真实已提交blobs重算inventory，拓扑／15 edges 0 violations／原checkpoint通过。正常3310受控切换；隔离依赖复用曾误改正常workspace链接造成Build Error，已恢复并改独立offline frozen安装，正常浏览器确认恢复；持久数据未改。
+- 主控native真实API创建201→fresh exact详情→刷新保持；JSON双导入201→明确选择B→fresh Connector/Server200→取消未保存编辑→刷新原值通过。只保存配置，未连接/Prepare/执行或声称供应商成功，秘密未回显。3项唯一命名测试配置待删除确认，原Context7未改；原始脱敏metadata／截图／receipt保本地ignored。
+- 本片真实观察：bootstrap空models被误投影ready-empty，MCP English详情/配置/JSON编辑有硬编码中文与局部缺译。composer_ui_audit仅在隔离App最小修正，复用现字典/测试，不动auth、机器契约/正常源；主控停写后验收。BFF原#17收敛和Agent精确消费者四字段配对并行，Goal保持active。
