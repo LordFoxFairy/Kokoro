@@ -795,4 +795,4 @@ BFF28.35普通operation仍保历史Bearer security，而现产品运行是native
 
 这是n=2本地Project观察，不是生产p95、普通Conversation复测或性能收益；rAF也不是逐像素绘制承诺。document返回很快，主要未决区间在DCL之后到首关键GET，原断言还含约43～63ms观测差。未证实授权缓存、删scope或合并owner能解决该区间，因此不修改生产认证／缓存来凑100ms目标。后续仅沿App layout／hydration／首关键数据读取作独立最小切片，不反复扫全仓。非关键依赖未配503仍保留，不把这次片段PASS冒完整产品外部依赖验收。
 
-App #58已实际MERGED；Root配对merge026a7d12并从真实Git blobs重核93项来源／85个唯一输入，内容摘要均未变化，拓扑／15边0违例／原checkpoint通过。Root自有PR与本轮topic／预览清理待最终出口。冷100ms未达；不为结案虚构收益，也不因原owner未决把已交付Task A重开或标blocked。
+App #58已实际MERGED；Root配对merge026a7d12并从真实Git blobs重核93项来源／85个唯一输入，内容摘要均未变化，拓扑／15边0违例／原checkpoint通过。Root [#86](https://github.com/LordFoxFairy/Kokoro/pull/86)承载本轮精确组合，合入状态以PR为准。App #58 topic已清；主控已停止自有4186预览并将两个本轮私有证据工作目录完整归档后回收，既有PG／Redis未停、未清共享数据。Root正常合入后只清本topic并回同步main，不为本PR自身状态另建文档PR。冷100ms未达；不为结案虚构收益，也不因原owner未决把已交付Task A重开或标blocked。

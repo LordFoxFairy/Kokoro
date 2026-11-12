@@ -10,7 +10,7 @@
 - [x] 当前精确组合真实Project两对采样：Root6a61／Appc3b09／BFF7c503／IAM40cda；冷306／296ms、热15／14ms，native/browser/cleanup通过。关键GET在+193／183ms发起，headers+237／234ms；缺精确request-id不硬归因BFF/IAM。非关键owner未配置503明确保留。
 - [x] 文档最小片实现并验收：App #58源码818141e9、merge026a7d12同树，已合main；产品功能目录保留，外部skill.list与第一方任务参考分开；改旧Bearer／上传响应／未声明control；生成资源目录与操作深链，保209操作／446schemas。门户check及真实浏览器／窄屏／浅深代码对比度通过，独审CLEAR。
 - [x] A-15阶段缺口已补：原业务oracle与source gate保留；Roota5b9／App818141的两对收据c1694f00整体／cleanup通过。document首字节18～22ms、DCL52～55ms，精确GET发起198～203ms，rAF UI-ready252～276ms；原断言315～320ms。只定位，不把观测开销算作生产固定等待，也不编造优化收益。
-- [ ] Root自有PR配对App已合main026a7d12，核93项来源／85个真实Git blobs；正常合main后清理本轮topic与预览进程。App #58已MERGED，不待Task B。
+- [x] 集成与清理门已验：App #58已合main／自有topic已清；Root [#86](https://github.com/LordFoxFairy/Kokoro/pull/86)固定App026a7d12，93项来源／85个Git blobs重核、拓扑／15边0违例／原checkpoint通过。私有证据已归档、预览与两处本轮临时目录已回收；Root合入状态以该PR为准，最终本地main／topic出口由主控回执确认，不为PR自己的状态再造后继文档PR。
 
 本轮证据与范围见[报告§23](docs/reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。100ms冷态目标尚未达成，不因脚本PASS冒称性能闭环。文档与owner契约认证声明纠正是两项事实，不伪装全部接入已经统一。
 
