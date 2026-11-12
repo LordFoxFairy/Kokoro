@@ -33,6 +33,22 @@ Agent / BFF 的 AG-UI 事件 → BFF 持久 ledger / cursor / replay
 
 完整路径以 [.gitmodules](../../../.gitmodules)、[仓库组合](../../REPOSITORY_STATUS.md)为准。Admin 是独立前端工程，走同源 `/manage`，共享 Product 登录，不新增身份 owner。Mori 与共享前端库不因本轮工作台收尾改变职责。
 
+### Web 与后台的职责边界
+
+BFF 当前同时是工作台的产品应用后端，不是纯转发器：Conversation、Message、Project 等事实和事务归它。保留这一部署边界，不为名称纯度另拆 Product Service。App 同源 adapter 则只承担浏览器入口、协议转换、请求／响应流和取消传递；不再成为第二个产品业务后端。
+
+| 链路 | 当前实现 | 优化边界 |
+| --- | --- | --- |
+| 普通工作台请求 | Browser → App 同源 adapter → BFF → 具名 owner；BFF 自有业务访问本仓数据 | 规则归事实 owner；App 不复制业务权限或访问内部 owner |
+| 原生认证 | App `/iam/*` 也转到 BFF 认证边缘，再访问 IAM | 不绕开浏览器安全边界，不新增登录系统或内部换票 |
+| Agent 长任务 | BFF 持久提交／派发，Agent 执行；事件经 BFF ledger/replay 回到 App | AG-UI 保持唯一网络协议，AI SDK 只维护本地视图；不在同步请求中等待整轮任务 |
+| 文件字节 | Skills 包可向签名对象地址直接 PUT；个人 Library／Project 上传仍经 App→BFF | 控制面与字节面分开；现有直传不等于浏览器可调用内部 Storage 业务接口，不冒称所有上传已直传 |
+| 管理 API | 部分 Admin adapter 请求 Product App 的 `/api/admin/*` 或 `/api/hub/self/*`，再由 App 调 BFF | 存在可精简的服务端回环；目标是 Admin adapter 直达既有 BFF 管理边界，但尚未实施，须与 Task B owner 对齐 |
+
+上述是调用关系，不是性能实测。`/manage` 页面挂载与后续管理 API 是不同请求；配置内部 origin 也不代表已经验证网络隔离。后端之间按 owner 协议直接协作，不要求 Agent 的资源读取或 Scheduler 回调再多绕一层 BFF。
+
+已批准的优化方向是：收敛同源 adapter 的重复处理，按真实功能拆分混合入口，删除被正式链路替代的旧实现；不建万能 proxy、第二套路由中心、Admin BFF 或通用认证框架。JSON、上传和 SSE 分别表达期限、断连和恢复策略，不机械采用同一个 timeout。具体写区、候选核验和交付结果只维护在[唯一 TODO](../../../todo.md)与[维护报告](../../reports/2026-11-11-typescript-auth-admin-audit.md#19-web与后台链路优化设计门)，不把目标写成已完成。
+
 ## 3. 原生登录与内部调用
 
 1. **IAM 唯一拥有原生登录 Cookie、数据库 Session 和续期。** App 提供同源薄 adapter，Admin 复用同一链；BFF 认证边缘使用官方 `get-session`，不维护另一套 RP Session／refresh token／Session-ref。
