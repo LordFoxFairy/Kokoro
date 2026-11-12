@@ -1741,3 +1741,19 @@ App两提交已推原Draft49并核精确remote head；Root仅更新App gitlink�
 Agent281bde49（PR #48）仅4行顶层Platform pin／常量／断言配对Capability573a8f00（原#12），四Proto、generated、独立历史发行锚不变。主控正常3.14.3复验四contract文件129 PASS／contract-check，四SHA与隔离archive fixture核等；正规generator／Ruff／Pyright／wheel安装smoke通过，初次3.11 TypedDict收集失败保留。managed worktree工具两次未返回且未生成目录，独立验证用ignored源码archive，不掩称managed工作树成功。
 
 52 Run均终态、Agent dispatch与BFF相关pending0后，主控SIGTERM原HTTP／Worker／Platform，应用已验补丁并恢复正式入口；两owner health／ready200、Worker消费，原持久数据和两笔未知财务恢复记录保持。staged Root精确gitlink与按76真实Git blobs重算93引用的inventory已通过拓扑／15边0违例／原checkpoint。首轮未stage导致gitlink不一致失败保留，随后补齐真实gitlink通过；未弱化规则。源码／本地候选组合通过不冒PR已合、供应商授权或整个Task B完成。App局部多语言片16路径停写／独审CLEAR，主控验收中；BFF认证metadata按owner发行单独推进。
+
+
+### 2026-11-12 B-01明确重新授权最小续做裁决
+
+复用原#17 e3b5fb7已批准边界与Capability573a8f00正式ReauthorizePersonalMcpServer，无新owner／Schema／认证。BFF现MCP native管理入口显式POST承接source_connector_id及server/connector双CAS、冻结原key/body/digest；Capability唯一生成全新pending/disabled身份，旧身份永久无效，不自动Prepare/OAuth或补连接资格。历史ACK允许按原命令重放，不在重放前插current GET；ACK后由App fresh exact读新Server/Connector决定当前投影，失败仅重读，身份／窗口退休与迟到结果不handoff。
+
+BFF独立MCP writer api_perf_audit仅承接旧具体hunks，并用当前owner精确commit/provenance正规生成；四Proto／67 artifacts已核与旧候选相同，当前新增serviceCredentialSources使provenance摘要必须按当前真实字节配对，独立publication旧pin保留。Public Chat／Share、Schema、package-lock及共有文档仍由Chat writer／主控持有。MCP private code-first artifact与App正式固定消费者顺序交付，不制造第二SDK或公开传输协议。正常资源不动；两writer停写后由主控统一build／contract与真实最小边界验收再入原BFF#17／App#49。
+
+
+### 2026-11-12 Native UI／清理与已验Agent PR出口
+
+App8208882d四文件443 PASS／build、后继34c51204七字典十默认key与原测试117 PASS／build／独审／输入核等；真实English详情/JSON安全错误/取消回焦/390px与最终French320默认表单内收通过（288px容器与scrollWidth相等）。实际French先复现回退与English占位才修，不把key存在当正确翻译。未全站／全部locale视觉QA；最终观察网络缓冲eviction保留，不把留存零mutations冒完整零写证据。
+
+用户明确批准后，仅删除本轮API与JSON A/B三唯一配置，三DELETE200，硬刷新仅余原Context7，未改它；恢复en与视口，原收据／截图留ignored。Agent#48正常merge mainb7867212，树核等281bde49，topic本地远程均清；4个CI红annotation明确账户账单/额度未启动，未绕保护。Root db28020c精确配对Agent main／App34c51204／Capability573a8f00，131真实blobs／150引用重算，拓扑／15边0违例／原checkpoint通过。
+
+BFF3007c16仅本地metadata已验未push，后继Share GET19路径停写待真实PG、MCP独立writer进行；原PR17最终保历史集成后统一发行消费者。Skills只读核验已证多数原功能和真实旅程在现源码祖先，剩余现三入口一致性、后台/管理员撤权与跨tenant边界，复用真实Skill运行，不把旧待领取或旧候选独有提交机械扩成新Task B范围。Goal active，主控继续收口独立已验片而非只汇报。

@@ -1,16 +1,18 @@
 # Current Facts
 
-## 当前任务：Task B 已移交本主控（2026-11-12）
+## 当前任务：Task B 正式推进（2026-11-12）
 
-机器Goal为active：完成Task B剩余功能、各仓PR/main及精确组合出口，不以局部通过结束。唯一执行清单[TODO](../todo.md)，范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)和既有production-closure计划；已交付Task A及未交接WIP保留，不重开无边界扫描。
+机器Goal **active**；唯一执行清单[TODO](../todo.md)，范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)及既有production-closure计划。原Root #67已保Task B14提交／468行记录合入accepted main，Task A与未交接WIP不重开；旧“Task B不动”只描述历史批次。
 
-原Root #67已保14个原提交／468行记录合入accepted main。App原#49候选 `a0512901` 普通合入双方历史，保Public28.35及Task A成果；完整lint／非增量TS／build／22生成检查通过，最终rail295 PASS。完整默认6753 PASS/2 FAIL，两处旧oracle修正后两文件48 PASS，未重跑全默认、不冒全绿。隔离依赖复用曾误改正常workspace链接造成短暂Build Error，已恢复且改独立frozen安装，正常3310已受控恢复该候选；未改持久数据。
+**当前实际组合：Root `db28020c`**，App `34c51204`（原#49）、Agent main `b7867212`（#48已合）、Capability `573a8f00`（原#12），其余owner维持已验源。131个真实Git blobs／150引用重算，拓扑／15边0违例／原checkpoint通过。Agent merge树等已验281bde49，topic本地／远程已清；四CI红因GitHub账户账单／额度未启动，未绕保护。
 
-Capability原#12 R07／R14候选 `573a8f00` 已完成Agent精确消费者配对 `281bde49`（新原需求PR #48）。R07只读check真实803输入SHA／mtime／mode不变；R14操作级DNS pin保同操作拒漂移、IP/Host/SNI及原取消，不新增框架。Agent仅4行顶层pin及常量／断言，生成物与独立历史发行锚保持；主控正常Python3.14.3四contract文件129 PASS、contract-check、四SHA核等，fixture正规生成／静态／wheel检查通过。初次Python3.11既存TypedDict收集失败保留，不混同静态3.13与最终运行3.14.3阶段。
+**App配置与UI本片已验。** 原#49普通合入双方历史，保现Public28.35及Task A，不激活旧未发行29.3。完整lint／非增量TS／22生成检查／build已过；初始完整默认6753 PASS/2 FAIL，两旧oracle修正后原两文件48 PASS，未重跑全默认、不拼绿。后继MCP本地化／bootstrap主控443相关例及build、默认词条补口117例及build／冻结／独审通过。正常English详情→JSON安全错误→取消回焦／390px、最终French320默认表单内收通过，恢复en与视口。此前隔离依赖复用误改正常workspace链接造成短暂Build Error已恢复，隔离现独立frozen安装。全站缺译及其它面板仍随B-14承接，不冒九语言全部视觉QA。
 
-主控确认52个Run全终态／pending0后SIGTERM相关HTTP／Worker／Platform，再配对源码并恢复；两owner health／ready均200，官方Worker消费。原数据／卷与2笔历史未知财务记录保持。Root候选inventory按76个真实提交blobs重算93引用，staged精确gitlink拓扑／15 edges 0 violations／原checkpoint通过；最初未stage时gitlink不一致失败如实保留，未改门禁。原PR与完整功能仍待出口验收，不以readiness冒真实供应商授权。
+**R07／R14与Agent配对本地闭合。** Capability只读check保803输入SHA／mtime／mode，OAuth DNS pin限一次操作；真实Provider末端不冒通过。Agent仅4行顶层pin／常量／断言，生成物及独立历史锚不变；正常3.14.3主控四contract文件129 PASS／contract-check、四SHA核等，fixture正规生成／静态／wheel检查已过；初次3.11既存TypedDict收集失败保留。52 Run全终态／pending0后受控SIGTERM并恢复正式HTTP／Worker／Platform，两owner health／ready200、Worker消费，原数据／卷和两笔未知财务记录保持。最初未stage的Root gitlink不一致失败亦保留，未弱化门禁。
 
-真实native浏览器已补API创建201→fresh exact详情→刷新，JSON双配置导入201→明确选B→fresh Connector/Server200→取消未保存编辑→刷新原值；只保存配置，未Connect／Prepare，秘密未回显。3项登记测试配置待用户删除确认，原Context7未改。页面又发现bootstrap未读目录误报空态及English MCP硬编码中文，16路径修复已停写、独审CLEAR；主控冻结回归／build与正常浏览器补验中。BFF原#17差异已分类，基于main仅先正规发布认证metadata与文档纠偏，保匿名／独立Bearer例外，不恢复旧层或新增内部OAuth。Share GET／private reauthorize／其它原范围仍沿TODO推进。主控唯一Git／台账／资源／最终验收，多agents分区；不部署／清卷，不删除归属未明worktree。
+**BFF下一业务片进行中。** Metadata28.36／215项与README/INDEX旧清库指导纠偏本地已提交 `3007c16`（99 contract／215semantic／1135输入核等／独审通过），未push／未切正常或原#17。Share GET28.37／216项同一有界只读owner SELECT，真实PG fixture仅编写、唯一空测试库已登记待主控验；MCP显式reauthorize正规消费573a8f00、双CAS／新pending身份／原ACK重放，不自动Prepare/OAuth。新private profile旧Bearer声明正按真实native边界纠偏；同一未发行28.37只补当前IAM已支持的delete_series枚举，不新造权限／运行层／版本。两独立writer停写后主控统一build／定向回归／真实PG，再保原PR历史集成与消费者发行。
+
+**复用证据、清理已完成。** Skills已有真实导入／安装／版本恢复／删除、作者/同团队权限及任务真使用收据在当前祖先，不重跑模型；剩余现三入口一致性和后台／跨tenant缺口。用户批准的本轮三配置已真实DELETE200，硬刷新仅余原Context7、未改原配置；原始证据仅ignored。后继空表单只打开取消，网络缓冲eviction不冒完整零写证明。主控唯一Git／台账／资源／最终验收，多agents分区，不部署、不清卷、不删除归属未明worktree；Task B整体与原PR出口仍未完成。
 
 ## 上批已交付：Composer菜单与首页无用请求（2026-11-12）
 
