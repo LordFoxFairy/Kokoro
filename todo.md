@@ -1,6 +1,18 @@
 # Kokoro · 当前维护 TODO
 
-核对日期：2026-11-11（America/New_York）。本轮起点Root `8567416b`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
+核对日期：2026-11-12（America/New_York）。本轮起点Root `86c8d890`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
+
+## 统一 Goal：主工作台维护批次（本批执行／验收收口）
+
+机器Goal已建立，动态状态以机器Goal为准：从当前精确组合完成App／BFF／IAM一轮有界检查，确认独立项集中修复并交付；排除项、原owner遗留和未运行验证如实记录。**不以“所有源码不存在问题”作为完成条件，不反复新建Goal。**
+
+- [x] **基线与范围**：Root86c8d890及三个子仓clean／精确配对，Task B四个PR头和状态已只读记录；主控拥有Git／验收／唯一台账。
+- [x] **集中检查**：`r07_storage_check`核App账户／消息／资源与草稿；`r09_governance_calibration`核BFF入口／内部接线／旧代码；`a03_read`核IAM原生会话／账户／内部服务边界。已交真实caller与归属：App默认读取取消漏接、BFF损坏UTF8可进入改名写入；IAM未确认新增修复，BFF坏百分号已被框架400证伪。不机械十轮扫描。
+- [x] **批量修复**：主控收敛为App reader默认取消与BFF fatal UTF8两项，均先RED后GREEN；各只改一处现有逻辑，无新抽象层／协议／数据。App同仓一批，BFF同仓一批；停写后统一验收交付。
+- [x] **验收**：App三新case先RED后22PASS，一次完整owner check（22生成门／lint／types／6522测试／build）通过；BFF正式Chat HTTP先RED200后400且无新增写，9相关文件150PASS及静态／build通过；停写独审CLEAR。只验受影响行为，不重跑Task A真实产品旅程。
+- [x] **统一交付准备**：App #56／BFF #26已合main并清理自有topic；Root本PR配对556dc0f0／7c503f08，383项来源按317个实际Git blobs核验，拓扑／15契约边0违例／原checkpoint通过。最终出口由主控核本PR合入main、Root与12子仓clean／精确配对及自有分支清理后，才结束机器Goal；不冒称Task B原owner项已完成。
+
+设计与证据复用[维护报告§21](docs/reports/2026-11-11-typescript-auth-admin-audit.md#21-统一维护goal与集中批次)，不新增第二个任务中心。当前原编号4项遗留与产品暂存保持下方状态。
 
 ## 当前盘点
 
@@ -14,6 +26,7 @@
 - [x] **Web→后台链路设计对齐**：保留 App 同源入口与 BFF 产品后端；普通内部服务使用专用服务身份＋可信 actor，不重复 OAuth；Agent 执行与 AG-UI／AI SDK 展示职责不变。现状与批准目标见[技术总览](docs/kokoro-handbook/technical/00-system-overview.md#web-与后台的职责边界)。本项是设计对齐，不是代码重构完成。
 - [x] **独立代码切片静态核验**：`r07_storage_check` 核 App session／IAM adapter，协议职责不同，不为微小重复单独抽层；`r09_governance_calibration` 核 Library body 阶段，保留已批准的分阶段预算，不静态宣称缺少全局期限。主控核源码；无业务代码变更。
 - [x] **Library超限响应修复**：自有BFF PR #24已合main，源码c2bae90d；真实Nest未结束Content-Length／chunked两例先RED（503而非413），修后完整413／EOF且零新增receipt／Storage请求。仅本地入口读取，公共reader／原上传恢复断言不变；主控相关80项、build／lint／types／格式通过，独审CLEAR。详见[报告§19](docs/reports/2026-11-11-typescript-auth-admin-audit.md#19-web与后台链路优化设计门)。
+- [ ] **BFF工程首读交接**：README／INDEX过期当前态、旧版本和清库叙述已有核查，写区与Task B #17重叠，交其BFF owner随原PR收敛；本轮不抢改、不按旧README操作数据。见[报告§20](docs/reports/2026-11-11-typescript-auth-admin-audit.md#20-上传入口收敛与工程首读核查)。
 - [ ] **管理链路回环与 Hub 职责收敛**：先交 Task B owner 对齐；不直接改其 Admin／Hub 写区，不新增服务或路由事实源。仍属目标，未声称减少延迟。
 - [x] **BFF认证状态请求生命周期**：自有PR #23已合main，源码6346f623；原handler内的请求作用域统一期限／取消／清理，活连接超时仍原503，断连／迟到结果不写。主控51项相关回归及build／lint／types／format通过，原5测试块保留；无新认证框架／协议。
 - **设计准则**：先用职责、状态和不变量证明问题，再选合适模式；可以替换旧实现并同步删除，但不为模式增加空类／层。IAM账户事务／具名Repository及原生会话边界本轮复核合理，不强行重写，不重开R-01／R-02／R-04。

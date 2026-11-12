@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)、[认证修复§18](#18-认证状态请求作用域)和[链路设计§19](#19-web与后台链路优化设计门)及[当前入口收敛§20](#20-上传入口收敛与工程首读核查)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
+- 当前执行状态先读[唯一TODO](../../todo.md)、[统一维护Goal§21](#21-统一维护goal与集中批次)、[认证修复§18](#18-认证状态请求作用域)和[链路设计§19](#19-web与后台链路优化设计门)及[当前入口收敛§20](#20-上传入口收敛与工程首读核查)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -662,3 +662,44 @@ App只读候选已排除实施：协议scheme需正式反代信任边界裁决�
 - 自有BFF [PR #25](https://github.com/LordFoxFairy/kokoro-bff/pull/25)正常合main：已验源码`84ed5a2ec481a3583ed9b7241df4f6133b077b61`，merge`e4764adffda17e51c52ad87870649ca86e59572e`树等于源，自有远程／本地topic已清。未运行全默认、产品浏览器或真实PG／Redis／Storage组合，不部署，不操作Task B PR／分支／工作树。
 
 Root本片固定已验BFF源；290项引用按232个真实已提交Git blobs重新核摘要，实际拓扑PASS、15条契约边／0违例、原checkpoint PASS。现有三篇维护文档核本地链接和新§20锚点，diff-check通过；Root自有PR承接精确组合与台账，最终main同步／分支清理以Git回执为准，不因本片勾掉原owner遗留。
+
+
+## 21. 统一维护Goal与集中批次
+
+日期：2026-11-12（America/New_York）。Root基线`86c8d8901a475e78891e45b1e8ab985a2b124b4b`；App`906f9c01`、BFF`84ed5a2e`、IAM`40cda8e3`，三仓clean且与Root配对。用户要求统一目标持续推进，机器Goal从null创建为active；阶段状态只维护[唯一TODO](../../todo.md)，本节记录范围／取舍／证据，不再按每个小问题开启一次维护轮或复制计划中心。
+
+### 范围、方案与负责人
+
+- 保留已批准Browser→App同源adapter→BFF产品后端→owner；原生认证／普通内部service+actor／AG-UI与AI SDK边界不重设计。
+- 三个独立只读面：`r07_storage_check`查App账户／消息／资源与草稿；`r09_governance_calibration`查BFF具名入口／内部服务接线／旧逻辑；`a03_read`查IAM原生Session／账户／内部认证。主控唯一writer，汇总后按实际依赖批量实施和验收，不用代理退出码冒完成。
+- 选择“集中盘点→按仓完整维护批次→统一交付”；不选“每个微小候选一个PR”的碎片循环，也不选“全仓推倒／十轮扫描直到零告警”的无界重写。只处理确认且有独立写区的缺陷／无消费者旧实现；无收益或已有传输owner承接的疑点排除。
+- 不动Task B、Mori、共享资源／数据、部署及已接受产品暂存；BFF README／INDEX与Task B实际hunk重叠，明确交原BFF owner，不藏在已完成项中，也不按旧清库叙述操作数据。原R-03／R-06／R-07余项／R-14仍属原owner。
+- 新owner／破坏性契约／数据模型变更先过设计门；已有边界内的局部修复以真实caller与RED/GREEN收敛。无对应持久化或协议变化，不新建Schema／contract／抽象层。
+
+### 完成口径
+
+三个约定检查面有结论；确认独立项已修复、主控相关验证与停写独审完成；按仓自有PR交付、Root精确组合及来源检查通过、自有分支清理；排除／原owner／环境缺口各有证据和负责人，Goal／TODO与实际Git状态一致。此目标是本轮维护收口，不是全部仓库逐行审计或“绝无问题”的证明。
+
+### 集中检查结果与选定修复
+
+三方本轮收口为两个确认机制，不扩散其他扫描：
+
+1. App `readBoundedRequestBody`仅显式第三参才监听取消；scheduled POST/PATCH等真实caller省略signal，内存Web Request流在caller abort后仍锁住。主控选定在现helper默认继承request.signal，显式signal override保持，覆盖同一事实源的省略参数caller。不将15秒上游预算强加为入站／总预算；“超过15秒”不单独算已确认期限缺陷。补现helper预取消／读中取消与scheduled同源route零BFF调用回归，不新增Resource Scope框架或改路由业务。
+2. BFF `requestBodyJson`先用Buffer.toString宽松解码，真实Chat title PATCH的损坏FF字节可被改成U+FFFD并200写入；具名代理正式Nest已复现claim／rename／put各1、SQL tripwire0。选定fatal UTF8＋ignoreBOM:true，保合法U+FFFD、原BOM拒绝、空body／multipart／对象与duplicate-key策略。仍走原400错误分支，不新增协议码；复用现ChatModule fixture证明零写入。
+
+App实际写区为`src/lib/server/upstream-http.ts`与现server transport／scheduled route测试；BFF为`src/http/request.ts`与现chat-business-native测试。只读核Task B #49／#17实际hunk：App三路径无hunk，BFF共享request.ts仅canonicalJsonBody约95行有其他任务改动，拟改约198行无重叠；测试无hunk。IAM本轮不写。source、contract、schema与错误owner不变，新缺陷用现有行为门承接。
+
+App账户／原生认证、消息结果、草稿迟到与身份scope未确认新增独立项；BFF坏百分号在正式Nest／Express层400、准入／SQL均0，排除误报；IAM原生鲜读续期／账户CAS／本人会话管理／service+actor检查无新项，不将现声明OAuth身份模式判死代码。BFF README／INDEX保持原owner交接。
+
+两项最小设计已独立只读审CLEAR，实际RED／GREEN与交付证据待本批停写后补记。
+
+
+### 统一批次验收与交付回执
+
+- App实际RED：默认预取消仍返回body，读中cancel0，scheduled route取消后cancel0，共3 FAIL／19 PASS；修后一处默认参数，原两文件22 PASS。显式第三参仍可覆盖，预取消不锁body、读中取消释放锁，scheduled返回既有400／request_body_unreadable且真实loopback BFF零请求。此证据是Web Request signal＋真实下游peer，不冒称真实Next入站socket断连E2E。
+- 因App共享reader被多个adapter使用，主控对冻结输入只运行一次完整`pnpm check`：22生成检查、lint、types、363文件／6522测试、Next build全部通过；没有每个小步骤重复整套。源码SHA256 `037045179e185bc29e897ecb6ffb1d75f5cef1d2b896c7957dc7304c518c645f`，两个测试`77ee192de84dc77af793139884d3a971ff2ed0604b03e2d0d1b97dd6083d63e0`／`e6104650217072863e0ed08f0cf7fe32baa332af3faf15c4e112fc76d16dd185`，验后与独审一致。
+- BFF主控正式ChatModule短命Nest新case先RED（坏FF输入200而非400），fatal解码后坏字节／截断／BOM均400，合法literal U+FFFD为200，无新增rename／claim／put及receipt内容变化；原Message默认fixture与断言保留，兼容unit只保空body／multipart／对象及既有duplicate-key策略。`pnpm build`／lint／types／两文件正式Prettier通过；按owner `node --import tsx --test --test-concurrency=1`执行Chat business／input、idempotency、Project HTTP、Scheduled input／receiver、Agent control及两个文件上传共9文件，150 PASS／0 FAIL／0 SKIP。未运行BFF全默认或真实PG／Redis；不把doubles称真实owner集成。
+- BFF源码SHA256 `b7b34cb3df1ee53c966d4bcea9ecd62294cd861fe2277832cc2b0c4ac8d6db0e`，测试`4b6086eef4f7bc78cb0ccc52d511b2773482c795401882b316ccd2ef93ccd038`。五路径停写独审CLEAR，真实Task B hunk复核无重叠；无公开契约／Schema／依赖或认证层变化，IAM本轮不写。测试首次在Root误用pnpm exec因无package未运行，已转正确子仓执行；不计作产品RED或隐瞒成通过。
+- 自有App [PR #56](https://github.com/LordFoxFairy/kokoro-app/pull/56)正常合main，已验源码`556dc0f092269ac798fef07fe1fca7913fe3d59e`，merge`50f95f8d79e86d011123488e24292691cb783f04`；BFF [PR #26](https://github.com/LordFoxFairy/kokoro-bff/pull/26)正常合main，已验源码`7c503f08d2013f5cc3ffcf18b9a5d704ecac7b55`，merge`fa3896d4adf8138950f18d692ccc50122986211e`。两合并树均等于已验源，自有本地／远程topic已清；Root锁精确源，不浮动更新。
+
+Root本PR配对两个精确子仓源：App93项引用／85个真实Git blobs，BFF290／232，合383引用／317实际blobs重新核SHA。实际拓扑PASS、15条契约边／0违例、原checkpoint PASS；维护文档核本地链接与新§21锚点。Root合入／clean／分支清理后才将机器Goal complete；此处不以交付准备冒最终Git出口。Task B／Mori／原4编号遗留、README交接、既存WIP和产品暂存均保持，未部署。
