@@ -1,6 +1,6 @@
 # Agent 真实主链路：复用可插拔后端的接线收口
 
-状态：候选设计，待用户审阅；只记录首个 Agent 执行切片，不宣称实现。2026-11-12。
+状态：既有接口内实施方案；首片实现与运行状态以TODO为准，不宣称整体成功旅程。2026-11-12。
 基线 Root `07241f03`，Agent `a9021318`，BFF `7c503f08`，App `026a7d12`。
 本轮总目标与后续 AG-UI／首页阶段只维护在[唯一 TODO](../../../todo.md)。
 
@@ -101,3 +101,16 @@ Task B App #49 的 client.ts Share实际hunk与conversation-thread props存在�
 - [Manus quickstart](https://manus.im/docs/introduction/quickstart)：首页借鉴目标→上下文→执行→成果的任务路径。仅官方公开说明，未做登录态DOM／截图测量，不冒一比一视觉证据。
 
 本方案初审时仅只读核源码／当前包／PR实际hunk与公开官方资料。后继已开展正常运行恢复、登录与首条任务，具体通过／失败以[TODO](../../../todo.md)与[CURRENT](../../CURRENT.md)的当前记录为准；尚无真实模型／沙箱首片通过。多agents只读分工：agent_runtime_closure、agui_closure_design、workbench_home_design；主控负责实际写入和验收。
+
+## 12. G1真实运行发现的准入补口（本轮实施门）
+
+现正常任务证明两个独立失败：供应商SSE error被误归internal_error；严格422 insufficient_credit未持久化拒绝且同attempt并发可能重复reserve。本节为现owner内修复，不新增沙箱设计／公开合同或数据模型；其余首片方案不扩。
+
+- 供应商流：只新增锁定SDK基类APIError的精确type分类为既有model_unavailable/false，原status/validation子类不变；不得因此重试、补零或释放未知usage。
+- 先修单次准入：begin_authorization的newly_requested赢家才发原reserve／proof；已有requested_unknown仅用现正式recover，404或失联继续unknown；已有granted不再联系owner。改现窄Protocol暴露已有recover，不新增RPC。
+- 再接明确拒绝：仅首次reserve的完整有效422 insufficient_credit产生model层typed denial；不把409／503／坏ACK／recover404当永久拒绝。原活跃Run/lease锁内核exact pending/ref/digest及未dispatch，同事务写现denied授权、首条not_dispatched sealed usage2 evidence/head和Run completeness；原Schema已有此状态，无新列／状态。失败或失租整笔回滚，不产生零usage或financial ACK。
+- 两步必须一起成立：否则另一个同attempt reserve的晚到grant可能被错误排除financial recovery。历史已封存unknown不凭日志／当前0行回填denied。
+- 私有写区：Agent model/budget、call_models、call_artifacts、call_evidence，clients/model_budget，既有PostgresModelCallRepository/evidence与execution/failures；不写BFF／Billing资金、不改SDK loop／Schema／generated。纯transport分类先独立收口。
+- 最低验证：现invoke/client用例；复用原真实PG budget_authorizer fixture证明单reserve、recover miss、并发、取消／失租、denial原子封口与重复稳定；保原financial unknown负控。只用本片独有证据，不重新跑所有子仓。
+
+该门经agent_runtime_closure只读审计并由主控收敛；主控唯一writer和验收。当前实施／验证状态仍以[TODO](../../../todo.md)为准。
