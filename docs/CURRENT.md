@@ -1,5 +1,13 @@
 # Current Facts
 
+## 当前执行：Agent主链与工作台打磨（2026-11-12）
+
+用户要求优先真实Agent／Skills／MCP／沙箱／产物，再打磨AG-UI与/app首页。已创建active机器Goal，唯一状态看[TODO](../todo.md)。本轮基线Root07241f03，现只读调查与已独审通过的[首片候选设计](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)，尚无生产实现／业务测试或视觉验收；不沿用下方上一批“Goal为空”为本轮状态。
+
+现沙箱已有BackendProtocol与state/local_shell/docker/e2b/custom registry，不重做插拔体系；实际缺口是普通任务默认state、沙箱切换和部分隔离／过程捕获条件与Custom API选择耦合。原冻结recipe在装配前核request／lease并拒不兼容配置，首片保留这个正确行为、不另造读取／迁移机制；scratch过程输出与普通workspace交付不是同一来源。App live入口丢SDK chunks，现实时正文仍自拼；历史slot才实际用SDK reader。这些当前态不由旧“已AI SDK”描述覆盖。
+
+原Agent HTTP私有持久配置仍在，但不等于正常Worker配置／真实模型任务已经通过。后端插拔沿原接口，Custom API只管授权环境；首片先真实文件→原Storage FINAL，过程版本另核，不伪造同源。Task B四PR与Mori／部署不动；主控负责写入、实际资源和验收，三具名agents只读。
+
 ## 当前批次：A-15证据与公开文档（2026-11-12）
 
 当前执行清单是[TODO](../todo.md)，不再沿用上一轮R-06 Goal。机器Goal查询为空，未擅自创建重复目标。App818141e9仅改公开门户与必要内部记录：外部skill.list／第一方任务参考分离，旧Bearer与上传／control错误说明纠正，资源目录与操作锚点保留全部生成字段。门户check、真实浏览器导航／搜索／键盘／390px侧栏、浅深代码对比度及独审通过。App #58已正常合main，源码818141e9与merge026a7d12树相同；Root [#86](https://github.com/LordFoxFairy/Kokoro/pull/86)记录精确组合与交付状态，拓扑／15边0违例／原checkpoint通过；App自有topic已清、私有证据归档、本轮预览与临时目录回收。Task B与部署不动。
