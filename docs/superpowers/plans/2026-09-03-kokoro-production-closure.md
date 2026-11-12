@@ -1782,3 +1782,14 @@ Storage原#2正常合main7155093c（树等31a7c89/47bf19d），仅两test/doc差
 52 Run全终态／相关pending0后，只SIGTERM本方BFF/App，正常源码切609b0e93/ebc36617、原配置启动，health/页面200、原生会话刷新恢复。真实浏览器Share打开只GET200、未创建公开链接；自建无密钥MCP QA Disconnect→显式reauthorize200→不同connector pending/disabled/version1→exact Connector与Server GET200→硬刷新保持未连接，完整操作阶段trace仅1个reauthorize POST，无自动Prepare/OAuth/enable，Context7未改。刷新后再取旧response body已evict，保留实际早先ACK/状态/完整阶段trace，不冒重取得body。新1项测试配置待用户单项删除确认；原3项批准删除此前已完成，不能挪用其授权。
 
 当前staged精确组合由326真实已提交Git blobs更新398引用，拓扑／15边0违例／原checkpoint通过；初次遗漏inventory owner版本更新而FAIL，按实际28.37纠偏后通过，未改规则。Skills现本人structured-report安装详情/真实SKILL.md读取200及返回已验，但当前账号Project为空，不冒广场/Project/作者history三入口全验，也不为验收复制旧账号数据。Goal仍active，完整Task B/原Draft PR出口未完，下一步仍只补当前TODO缺失。
+
+
+### 2026-11-12 B-02最低补证、Skills多语言与B-08实施
+
+主控复用现测试，只补Custom API材料资格/秘密边界：Capability573真实PG4 PASS（执行准入double、fixture随机库回收）；Agentb786在Python3.14.3三小文件＋Factory接缝107 PASS（model/sandbox doubles，178原实验/弃用warnings保留）；BFF609已构建隔离checkout单文件7 PASS。源码核对Acquire只作调用局部SecretStr、metadata-only prompt/recipe、先脱敏再截断与原文件/产物guard，未发现具体新明文出口；不新增每载体重复套件，不冒真实IAM撤权、任意编码外发DLP、全存量扫描或云E2B。
+
+App正常英文Skills两radio回退中文、日期固定zh已修，5source/test路径：仅en补2已有key（另外8语言齐备）、formatter显式locale及两调用、现组件回归。writer7 RED→主控41 PASS/types/build与5SHA核等，独审CLEAR；原#49提交844fbbcb/0c6078e3，正常HMR后native英文/320px文本完整、Third-party整词换行、documentWidth320、日期November12，恢复视口。不称全站九语QA。
+
+B08不换当前Agent8.17已发行pin；三设计实施门本地1d9ab9e，唯一writer app_merge_gate在隔离BFF推进同owner快照→原Chat outbox→私有材料。无profile/usage省略，关闭保revision，原key/regen原输入；consumer按canonical补闭集/knowledge条件/ID唯一性，不另造schema。主控Agent当前两相关文件21 PASS，待writer停写后独立真实PG；正常BFF609保持。
+
+Admin原正常3320监听缺失，主控校原9bed/私有配置与Product origin一致后恢复正式Next dev；无代码/角色/凭据/Schema变更。匿名直入/Web入口307，当前浏览器/manage回/app且无管理菜单，只作当前用户拒绝边界，正管理员/撤权/跨tenant未验。原三QA已清；新增1MCP QA待单项删除确认，Goal仍active。

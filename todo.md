@@ -16,7 +16,11 @@
 - [x] B-T4／Storage #2（已合main并清本轮分支）：真实PG核对否证原fresh1d60→0f480假设，已撤回未提交兼容分支；生产工具／canonical不改。现仅修历史FINAL工具/helper/993aede目标Schema的测试冻结、当前workspace_output枚举oracle与测试URL GUC隔离；原业务行／no-op／ArtifactsStore断言保留。主控真实6 PASS、格式／ESLint／types／独审CLEAR，两SHA核等；3个注册probe库及fixture自有库均回收、正常DB未改。`47bf19d` 两文件修复已提交，普通保原add2历史集成 `31a7c89`，完整树等已验47bf19d；原#2正常合main `7155093c`，树等已验源；本轮local／remote topic已清，其他dirty工作树不动。远端CI因账户账单／额度未启动，未绕保护，不带未获实证的旧兼容配对。
 - [ ] B-01／B-02：当前消费者／正常源已配对；本次真实MCP显式断开→新身份→鲜读→刷新已验，Prepare／外部授权末端与Custom API缺失冲突／撤权／迟到及秘密边界按原缺口承接。新增1项无密钥QA配置已登记，待用户单项删除确认，不将此前3项已使用的删除授权重复挪用。已有真实Docker成功／取消／刷新不重跑；完整云E2B沿已接受边界暂存。
 - [ ] B-03～B-05（composer_ui_audit只读已核）：ZIP/GitHub导入、安装启停／下载／移除重装、v1→v2→撤回→历史恢复新UID/v3→系列删除及作者/同团队负控均有有效真实收据且源码祖先在当前；11-12真实Skill→MCP→Docker→FINAL也已验，不重跑模型。剩余只补广场／Settings／Project三入口exact身份与读历史一致性、后台／管理员撤权与跨tenant边界。AI创作／录制当前为fresh Composer prompt-starter，不冒实际录制/自动产包成功，不因旧待领取状态重造Skill框架。
+- [x] B-02材料边界补验（api_perf_audit聚焦核验／主控执行）：Capability573当前真实PG4 PASS（执行准入double、自有随机库回收）；Agentb786 Python3.14.3客户端／执行环境／秘密产物出口＋真Factory接缝107 PASS（sandbox/model doubles），BFF609当前独立checkout单文件7 PASS。复用既有Docker成功／取消／刷新；未跑云E2B或重复模型。只读核验未发现具体Acquire明文新出口，不制造每载体重复测试；不冒任意编码/外网的通用DLP、全存量日志扫描或真实IAM撤权。
+- [ ] B-08（app_merge_gate BFF唯一writer，主控设计／验收）：已核当前Agent8.17支持，缺的是同owner已保存设置→下一次Chat接线。现BFF三设计实施门已写：最终原事务单snapshot读取／冻结、无事实省略、开关保revision、原key／regenerate原快照、私有材料不入公开投影、原1MiB拒绝；正规修consumer生成器遗漏闭集，不改owner/wire/Schema、不新记忆服务。B02缺失定向组已通过后进入本片，三设计1d9ab9e已本地提交；Agent当前owner两文件21 PASS。正常BFF仍609，隔离writer停写后主控真实PG/工程验收再发行。
 - [ ] B-06～B-13：按原表核账户会话、设置／个性化、团队／分享、模型／积分和对应Admin；复用已有成果，补实际缺口后逐片交付。真实支付继续关闭，不新增内部OAuth／认证层。
+- [x] B-14 Skills语言本片（composer_ui_audit实现／api_perf_audit独审／主控验收）：en两现key补齐、两日期调用显式locale，其他八语言不改。主控5输入冻结41 PASS／types／build；正常英文桌面＋320px文本内收/日期正确、无横溢/长标签自然换行。原#49代码844fbbcb＋文档0c6078e3已推，正常App同源激活，不重跑全默认/九语截图矩阵。
+- [ ] B-13后台缺口：原9bed3d2正常Admin已按原配置恢复3320，Web同源/manage当前用户会回产品、无管理菜单。只证非管理员准入隔离，正管理员/撤权/跨tenant仍待，未改角色/凭据或业务源码。
 - [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。原PERF-02 pins重复准入、模型目录取消和icon404纳入当前owner核验，不再以“Task B不动”为由搁置，也不抢跑改未核明的事实。
 
 主控唯一管理Root台账／Git／资源／最终验收；两agents先独立调查，R-07单writer。每仓沿原PR，完整验收后正常合main并清本轮分支；不部署、不清卷、不删除归属未明worktree。用户2026-11-12已明确要求设置目标，机器Goal现为active：完成Task B已批准剩余功能及原PR/main/精确组合出口。按本TODO持续推进，局部依赖只约束对应动作，不自行暂停或误标整体完成。

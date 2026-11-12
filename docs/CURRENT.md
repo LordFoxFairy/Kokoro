@@ -1,3 +1,13 @@
+## 2026-11-12 本轮推进：Custom API 补证、Skills语言、B-08接线
+
+Goal保持active。Custom API现Capability573真实PG单文件4 PASS（执行准入double、自有库回收），Agentb786 Python3.14.3三文件＋一个Factory接缝107 PASS（sandbox/model doubles），BFF609独立已构建checkout单文件7 PASS；只补材料冲突/身份/撤权状态/取消/秘密出口缺口，不重跑Docker成功或旧模型。源码聚焦未发现Acquire明文的新具体出口，不冒任意编码/外网通用DLP或全存量日志扫描。
+
+App原#49后继代码844fbbcb／收据文档0c6078e3，仅5source/test文件＋当前事实：英文scope两key缺失、日期固定zh已修。主控冻结5输入41 PASS／types／build，独审CLEAR；正常英文native桌面与320px实测4radio文本完整、documentWidth320、Third-party整词自然换行，原视口恢复。英/中/德及动态locale组件覆盖，不称九语言全站QA。App source已正常切0c6078e3；Root staged按85真实blobs／93引用配对，组合检查结果随本轮提交记录。
+
+B-08当前Agent8.17已支持；真正缺口是BFF已保存个性化/个人知识未接下一次Chat。现BFF三设计门1d9ab9e已本地提交，app_merge_gate在隔离checkout唯一实施；原key/regen冻结、同owner snapshot、私有材料与1MiB边界，不新owner/wire/表/记忆服务。正常BFF仍609，未激活或冒验收。
+
+Admin原9bed3d2源码/配置未改，探测3320原为空后按正式Node22/Next dev恢复。私有直入与Web同源入口均有正常307；当前浏览器用户访问/manage回产品且无管理菜单，只证当前未获管理准入的隔离，不冒正管理员/撤权/全部后台验收。不新建角色或改凭据以伪造通过。新增MCP QA单项删除仍待用户确认，原Context7不动，不阻塞其余工作。
+
 # Current Facts
 
 ## 当前任务：Task B 正式推进（2026-11-12）
