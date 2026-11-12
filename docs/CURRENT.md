@@ -1,10 +1,12 @@
 # Current Facts
 
-## 当前链路优化：职责对齐与Library超限修复（2026-11-11）
+## 当前链路优化：职责对齐与上传入口收敛（2026-11-11）
 
 用户已批准保留 Browser→App 同源 adapter→BFF 产品应用后端→业务 owner 的主链，优先收短多余跳转、减少重复规则，不新增服务／认证层。现有[技术总览](kokoro-handbook/technical/00-system-overview.md#web-与后台的职责边界)已区分实际调用、文件数据面例外与未实施目标：BFF不是纯代理，AI SDK不是第二网络协议，部分Admin API仍回经Product App。管理回环与Hub拆分交Task B owner对齐，本轮不改其写区。
 
-两位只读代理已核App session／IAM适配与BFF Library入口：前两者协议职责不同，不合成万能proxy。主控真实Nest复现两种未结束超限上传均误返回503；局部读取修后完整返回既有413并关闭连接，零新增receipt／Storage调用。BFF自有PR #24已合main，源码c2bae90d／merge9a82a98c树相同，自有topic已清；主控相关80项／build／lint／types／格式通过、冻结独审CLEAR。公共reader、正常上传恢复、API／Schema／依赖不变；未重跑全产品／PG／Redis。Root本片锁精确源码与来源，组合检查和最终PR回执见[报告§19](reports/2026-11-11-typescript-auth-admin-audit.md#19-web与后台链路优化设计门)，执行只看[TODO](../todo.md)。不重开Task A或四项原owner遗留。
+Library首片413修复已由BFF #24交付，历史证据见[报告§19](reports/2026-11-11-typescript-auth-admin-audit.md#19-web与后台链路优化设计门)。本轮继续确认Project正式上传也误报503：现两上传入口共用窄reader并删除Library原private实现；主控两HTTP例RED→完整413、零新增receipt／Storage操作，相关96项／build／lint／types／格式通过，冻结独审CLEAR。具名代理正式Nest短命探针两413／小非法体400及零SQL／receipt另有证据。BFF自有PR #25已合main，已验源码84ed5a2e、mergee4764adf树相同，自有topic已清。
+
+App两个疑点核后不作为生产故障实施；BFF README／INDEX与Task B实际hunk重叠，本轮未改、交原owner。公共reader、正常上传恢复、认证／API／Schema／依赖保持，未重跑全默认／全产品／真实PG／Redis。Root本片锁精确源与来源，组合和交付回执见[报告§20](reports/2026-11-11-typescript-auth-admin-audit.md#20-上传入口收敛与工程首读核查)，执行只看[TODO](../todo.md)。不重开Task A或四项原owner遗留。
 
 ## 当前设计改进：认证状态请求作用域（2026-11-11，已验收）
 

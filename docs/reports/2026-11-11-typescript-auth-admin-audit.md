@@ -5,7 +5,7 @@
 - Root 精确基线：`32c56199a74e61bd757d6c69ee17efcd7904d16a`。
 - 目的：为统一整改提供依据；第1～7节是只读审计快照，第8～9节记录用户随后授权的实施范围与深入核验。审计本身未修改业务代码，后续修复状态以唯一TODO和交付基线为准。
 - 方法：主控核仓库组合、治理脚本和证据；三名只读代理分别检查 IAM/OAuth、BFF/Admin、其余 TypeScript 仓。属于入口及关键链路审计，不是所有源码逐行安全审计。
-- 当前执行状态先读[唯一TODO](../../todo.md)、[认证修复§18](#18-认证状态请求作用域)和[链路设计§19](#19-web与后台链路优化设计门)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
+- 当前执行状态先读[唯一TODO](../../todo.md)、[认证修复§18](#18-认证状态请求作用域)和[链路设计§19](#19-web与后台链路优化设计门)及[当前入口收敛§20](#20-上传入口收敛与工程首读核查)；第1～7节是原始快照，不把已修问题继续当当前故障，Mori不属于本轮后续实施范围。
 - **Task B 保持其原负责人和 PR。本报告检查的是当前 Root 固定组合，不代表其未合并分支的最终状态。**
 
 ## 1. 先说结论
@@ -632,3 +632,33 @@ Root290项BFF引用按232个真实提交Git blobs重核，不机械换摘要；�
 - 自有BFF [PR #24](https://github.com/LordFoxFairy/kokoro-bff/pull/24)已正常合main；已验源码`c2bae90df45c8c09abbce356c226081e41a0aafe`，merge`9a82a98ca817f57a88e3da6e2087f5decf7261c8`树等于源，自有本地／远程topic已清。Root固定已验源而非浮动更新，不处理Task B PR或部署。
 
 Root本片更新精确BFF gitlink；290项引用按232个真实已提交Git blobs逐项重核，非机械替换摘要。实际拓扑PASS、15条契约边／0违例、原checkpoint PASS；四篇文档本地链接目标68项及新增两节锚点核验通过，diff-check通过。Root自有PR承接该组合与设计／TODO，最终main同步与分支清理以Git回执为准；原编号遗留不随本片勾掉。
+
+
+## 20. 上传入口收敛与工程首读核查
+
+本轮Root基线`8567416b`，BFF源码`c2bae90d`／main树等价。继续用户批准的Web→BFF边界内优化，不重开Task A、不接管Task B，不预设每个静态疑点都是故障。
+
+### 取舍与写区
+
+- `r09_governance_calibration`只读追ProjectsModule→ProjectPinMiddleware→`handleProjectResourceUploadRequest`，该正式上传入口仍调用公共`readBody`，可能在parser既有413之前失败；先用真实HTTP复现，不把上一片Library结果直接外推为本片通过。
+- 若确认同类缺陷，`src/http/file-upload-body.ts`只承接Library／Project共同的1MiB字节上限、完整413与未读连接关闭；从Library移除旧private reader，两处调用同一窄函数。公共JSON reader和其它路由不动，不新增可配置万能proxy／类层／协议。
+- 回归复用现`test/project-resource-upload.test.mjs`正式handler的Node HTTP夹具，保正常成功／回执恢复断言，补未结束Content-Length与chunked超限；原Library Nest回归作为第二真实调用方承接，避免再复制第三套入口夹具。
+- BFF README多段旧候选／public4～23当前态与末尾清库叙述会误导现部署；独立只读全分页核Task B #17发现README／INDEX实际hunk重叠，按边界本轮不写，交原owner收敛。历史从Git与既有记录追溯，不动产品暂存／WIP证据，也不以旧README清库叙述操作数据。
+
+App只读候选已排除实施：协议scheme需正式反代信任边界裁决，不直接放宽；session迟到响应在真实`requestWithDomain`传输已有abort收尾，只有非合作替身缺口不成立为生产泄漏。没有新增确认的App故障，不为凑数重写或加框架。
+
+### 验收边界
+
+只验证两个上传入口与受影响Nest绑定、正常上传／恢复／下载等相关行为及格式／lint／types／build；文档核实际命令与本地链接。无SQL／Schema／公开契约变化，不新增真实PG／Redis／全产品浏览器重验。源码停写后独立审查，主控串行处理自有PR与Root精确组合；实际RED／GREEN与交付回执后补，不以调查数字称闭环。
+
+
+### 实际验证与交付
+
+- `r09_governance_calibration`首先用短命正式ProjectsModule／ProjectPinMiddleware、内存准入／lookup与数据库tripwire复现：有效multipart共1,048,682字节，Content-Length和chunked均完整503／resource_upload_unavailable；小非法体400。主控在现正式handler的真实Node HTTP夹具另补两个未结束请求，各发送1MiB+1，原代码均RED503而非413；原成功断言保持。
+- 新窄reader承接两处相同协议，不参数化成框架；原Library方法完整删除，Project只在读取位置接线，null短路不进入parser／ticket／Storage。Project原准入→本人lookup→key校验顺序及45秒上传signal不变，公共reader不动。除接线外，project-native只有一处Prettier折行。
+- 主控build／lint／typecheck／四文件正式Prettier／diff-check通过；`node --import tsx --test --test-concurrency=1`执行project-resource-upload、personal-file-upload、project-resource-list、personal-file-download、nest-feature-architecture五文件，96 PASS／0 FAIL／0 SKIP。两个新case完整413／JSON／EOF／request-id，receipt字节与Storage调用保持，原正常上传／恢复／撤权断言保留。首次命令漏tsx loader导致73通过／1装载失败（生成TS enum不支持Node strip-only）；使用owner正式loader复验后上述通过，未修改生成物或删断言。
+- 同一具名代理使用当前正规dist复跑正式Nest探针：相同两超限输入完整413／request_body_too_large，小非法体仍400，均完整EOF无reset；准入／lookup各3，SQL／receipt／Storage调用0。短命实例已关闭。主控已独立跑相关入口回归，不用代理exit0代替验收；该探针不是实际IAM／PG／Storage集成。
+- 独立冻结四文件审查CLEAR，旧测试除t参数及新case之外逐字保留。helper SHA256 `ccee159a5cd25fbb26812a06da1feac011a4c22e8f41a25999eb590a70c58fcb`，Project入口`7560ab59a33e7053c0b2041b097f80392346f57d39861f9d7842ab5b0fcf0df8`，Library入口`c2683d2e1499a3f54b78cb355313d7a34520bbb942f1e436b672ac94a3cc3e5b`，测试`b70fb6ceed1173d6073e3f912110b1323bb2ee3e90e9a246220b1dbeb3ed10cd`。
+- 自有BFF [PR #25](https://github.com/LordFoxFairy/kokoro-bff/pull/25)正常合main：已验源码`84ed5a2ec481a3583ed9b7241df4f6133b077b61`，merge`e4764adffda17e51c52ad87870649ca86e59572e`树等于源，自有远程／本地topic已清。未运行全默认、产品浏览器或真实PG／Redis／Storage组合，不部署，不操作Task B PR／分支／工作树。
+
+Root本片固定已验BFF源；290项引用按232个真实已提交Git blobs重新核摘要，实际拓扑PASS、15条契约边／0违例、原checkpoint PASS。现有三篇维护文档核本地链接和新§20锚点，diff-check通过；Root自有PR承接精确组合与台账，最终main同步／分支清理以Git回执为准，不因本片勾掉原owner遗留。
