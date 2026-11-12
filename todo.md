@@ -1,22 +1,39 @@
-# Kokoro · 当前维护 TODO
+# Kokoro · 当前执行 TODO
 
-核对日期：2026-11-12（America/New_York）。本轮基线 Root `6a61e1bf`；本文件是唯一执行清单。只推进已批准的 A-15 观察与对外文档收拢，不重新扫描凑问题、不重开已交付 Task A。机器 Goal 当前查询为空，以下是本轮执行目标，不冒称另有 active／blocked Goal。
+更新：2026-11-12。唯一执行清单；本轮基线Root `07241f03`，不重开已交付Task A，不重复扫描凑问题。
 
-## 本轮目标：当前性能证据与可读的公开文档
+## 本轮 Goal：Agent 真实闭环 → AG-UI 单轨呈现 → 工作台首页
 
-主控负责取舍、写入、验收、Git 与本台账；只读代理 `r09_governance_calibration` 复核 A-15 证据，`a03_read` 复核公开文档与真实认证边界。Task B／Mori／部署不动。
+**本轮实现与验收已收口，Git 最终出口以自有 Root [PR #87](https://github.com/LordFoxFairy/Kokoro/pull/87) 的 MERGED／main clean 为准。** 机器 Goal 在最终出口核对前保持 active；不重开历史 Task A，不接管 Task B／Mori，不部署。
 
-- [x] A-15旧证据重新定性：约303～306ms是已有登录态新context的页面可用耗时，不是单API／进程冷启动或生产p95；不据此先改认证缓存。
-- [x] 当前精确组合真实Project两对采样：Root6a61／Appc3b09／BFF7c503／IAM40cda；冷306／296ms、热15／14ms，native/browser/cleanup通过。关键GET在+193／183ms发起，headers+237／234ms；缺精确request-id不硬归因BFF/IAM。非关键owner未配置503明确保留。
-- [x] 文档最小片实现并验收：App #58源码818141e9、merge026a7d12同树，已合main；产品功能目录保留，外部skill.list与第一方任务参考分开；改旧Bearer／上传响应／未声明control；生成资源目录与操作深链，保209操作／446schemas。门户check及真实浏览器／窄屏／浅深代码对比度通过，独审CLEAR。
-- [x] A-15阶段缺口已补：原业务oracle与source gate保留；Roota5b9／App818141的两对收据c1694f00整体／cleanup通过。document首字节18～22ms、DCL52～55ms，精确GET发起198～203ms，rAF UI-ready252～276ms；原断言315～320ms。只定位，不把观测开销算作生产固定等待，也不编造优化收益。
-- [x] 集成与清理门已验：App #58已合main／自有topic已清；Root [#86](https://github.com/LordFoxFairy/Kokoro/pull/86)固定App026a7d12，93项来源／85个Git blobs重核、拓扑／15边0违例／原checkpoint通过。私有证据已归档、预览与两处本轮临时目录已回收；Root合入状态以该PR为准，最终本地main／topic出口由主控回执确认，不为PR自己的状态再造后继文档PR。
+| 阶段 | 结果与边界 | owner |
+| --- | --- | --- |
+| G0 设计 | [实施方案](docs/superpowers/specs/2026-11-12-agent-runtime-closure-design.md) §12～14；复用原可插拔后端、owner与协议，无新框架／OAuth层／Schema | 主控设计与集成；具名 agents 分区实现／独审 |
+| G1 真实主链 | native IAM＋真实模型＋structured-report Skill＋Context7 MCP＋Docker＋Storage FINAL＋浏览器已验，原失败与个别命令 exit1保留。普通脚本生成后资金拒绝，再同会话仅交付恢复也已验，不拼成一个Run成功 | Agent／BFF既有边界；主控正常持久资源 |
+| G2 产物来源 | 报告1469bytes，原workspace版本／FINAL／下载 SHA `de656263…ae12cf4`核等；普通脚本108bytes／SHA `49daae46…7cde86e`跨显式失败恢复后同字节交付。两终态容器已回收，不混同scratch版本和可变路径 | Agent／Storage现接口 |
+| G3 正文与终态 | live／paged同一AI SDK reader，reducer只采用绝对snapshot；采用先于cursor／terminal／错误，同会话reopen退休旧queue。exact Run旧未决Skill中性结束，资金文案不冒权限唯一原因。主控冻结门及独审通过 | SDK agent_runtime_closure；UI／集成主控；agent_spec_review独审 |
+| G4 首页／文档 | 保留单Composer，仅补模型／连接器可见读取反馈和既有模型重试。真实菜单／Esc回焦、390×844单textarea／scrollWidth390通过。公开产品子目录／API分层保持，产品指南／内部当前设计已同步 | Composer agui_closure_design；文档／最终浏览器主控 |
 
-本轮证据与范围见[报告§23](docs/reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。100ms冷态目标尚未达成，不因脚本PASS冒称性能闭环。文档与owner契约认证声明纠正是两项事实，不伪装全部接入已经统一。
+### 精确交付与实际验证
 
-## 本轮外已交付
+- **Agent #47 → main `16984caf`**，树等于已验 `75c0b6b`（生产 `c2c563e`）；**BFF #27 → main `05a10749`**，树等于已验 `ee62845`；**App #59 → main `dcc0faff`**，树等于已验 `61af3848`。三仓main干净，本轮local／remote topic已清。远端CI均有失败状态，已逐PR披露；不冒CI绿、不绕保护。
+- **App冻结验收**：主控默认6533 PASS（含contract／architecture行为），全ESLint、非增量TS、22个固定生成检查与生产build通过。57个修改输入在门禁前后逐文件SHA核等；后继只有3份当前文档。SDK／Composer／UI独审CLEAR。不是拿数量代替验收；具体风险沿原定向RED→GREEN承接，不再重跑后端／全量资源。
+- **真实浏览器**：复用报告与脚本交付真实历史；失败、成功正文／card及硬刷新恢复。脚本读取初次遇429，窗口后原只读重载两条消息成功，随后硬刷新无缺页；不放宽限流、不重发任务／模型。原Skill不再永久Loading，资金拒绝明确涵盖积分／权限。独立preview test:e2e未重跑，受影响正常认证UI直接实测，不冒全产品或Manus像素等同。
+- **公开文档**：产品任务／文件指南Markdown、门户build与61页面／20402条内部链接通过；API原canonical不变。VitePress原大chunk warning保留，未冒新性能达标。
+- **Root精确组合**：三个owner上述main已固定，inventory从363个真实已提交Git blobs重算440个引用；拓扑、15 edges／0 violations与原checkpoint结果以本轮实际验证为准。其他gitlink尤其Task B Capability保持不动。
+- **运行与资金边界**：原PG／Redis／MinIO／Scanner复用，未清卷／重建；正常HTTP＋官方独立Worker运行，App仅为build短暂停后恢复。累计130非现金开发积分有原owner receipt／ledger，非真实支付。旧供应商overload的held30／unknown evidence保留，不猜零／退款；当前成功Run单独封存。凭据、备份、原始收据和机器操作脚本只在本地ignored，保留恢复资料，不进PR。
 
-R-06未使用web-core分片（App #57／Root #85）已交付；归档登录失败页WIP已由main祖先承接，不恢复旧补丁。原审计分类依据见[报告§22](docs/reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)，不重复完整验证。
+### 已确认的边界
+
+- 沙箱本来可插拔：已有state／local_shell／docker／e2b／custom与SDK接口。修的是普通任务装配耦合；产品不新增宿主执行兜底。
+- 原Agent HTTP私有持久配置仍在；缺目标位置的.env.local不等于全部配置丢失。Worker配置按正式字段合齐，旧process registry仅历史，不当当前启动证据。原配方在装配前核request／lease并fail closed，保留它，不为首片增新repository读取或跨配置迁移。
+- Skill虚拟路径不等于容器挂载；首片不造任意包脚本自动执行平台。MCP复用现连接和授权，不接管Task B配置/管理。
+- AG-UI已有safe activity／interaction／delivery，先用已有事实；未公开VM生命周期就不画假“已启动/回收”。
+- Task B #49首页候选5文件无file diff；client.ts有Share hunk、conversation-thread有props hunk，实施与集成前再核，不能整文件覆盖。
+
+## 上批已交付，不重跑
+
+App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分支／预览与临时目录，证据归档。门户产品/API分层、来源/生成/示例/导航与实际浏览器已验；A-15当前Project两对与阶段补口已验，冷rAF252～276ms未达100ms。它是后续体验余量，不挡本轮真实Agent主线，也不冒性能达标。详情见[报告§23](docs/reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。
 
 ## 需原 owner 承接，不进入本轮写区
 
@@ -40,7 +57,7 @@ Capability Root pin `24094960`来自已交付#13，已合入#12头`e068fcaa`但�
 | A-13真实外部渠道 | 渠道owner；Telegram／LINE／Slack真实账号授权、收发、撤权条件齐备后验收，当前本地协议证据不冒真实供应商 |
 | A-14本人语音 | 用户＋App owner；用户方便时主动口述、编辑并显式发送，沿此前“稍后验收”，不保留录音／原文 |
 | 可选完整E2B生命周期 | Agent／运行环境owner；实际采用云或完整自托管时补创建／重连／独立回收，既有官方envd Docker证据不重跑 |
-| A-15体验余量 | App owner；本轮当前两对冷306／296、热15／14ms，已补浏览器阶段，rAF252～276ms；下一独立性能切片仅沿DCL→hydration／首关键GET定位，100ms冷目标未达，未证明需要改IAM／缓存／架构 |
+| A-15体验余量 | App owner；当前Project两对冷rAF252～276ms，100ms冷目标未达。保留已定位DCL→hydration／首GET区间，本轮只随首页真实影响补验，不抢Agent闭环主线 |
 | IAM共享源IP额度／非合作写入取消 | 原owner容量与运行语义边界；代表性负载核验另定，不随意抬限流，不宣称HTTP取消等于事务硬回滚 |
 
 真实支付关闭，未部署；上述不作为本轮独立代码故障或新增阻塞。

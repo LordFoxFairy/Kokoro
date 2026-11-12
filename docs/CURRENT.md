@@ -1,6 +1,16 @@
 # Current Facts
 
-## 当前批次：A-15证据与公开文档（2026-11-12）
+## 本轮核心打磨：实现／验收收口（2026-11-12）
+
+当前唯一执行清单见[TODO](../todo.md)，设计裁决见[方案§12～14](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)。Agent #47／main `16984caf`、BFF #27／main `05a10749`、App #59／main `dcc0faff` 已正常PR合并；各merge树逐一核等停写已验源，三仓本轮topic已清。Root #87负责精确组合和最终main clean出口，未核出口前机器Goal不预写完成。远端CI失败已披露，未绕保护；Task B／Mori／部署不动。
+
+正常native IAM、真实模型／Skill／Context7 MCP／Docker／FINAL到浏览器首片已通过。报告1469bytes的实际workspace版本、FINAL与下载SHA核等；普通脚本108bytes原Run资金拒绝后，同会话新Run只交付原文件，不重跑脚本。历史失败、个别exit1与未知供应商usage保留，容器已回收。不是把两Run或fixture冒一个全绿旅程。
+
+App live／history同AI SDK正文装配，cursor确认／terminal／错误等正文采用，scope／hydrate／reopen退休旧reader与queue。exact Run未决Skill中性结束，资金拒绝文案涵盖积分与权限；首页只补现模型／连接器读取反馈，不重做布局／认证层。主控冻结默认6533 PASS、完整lint／非增量TS、22生成检查、生产build通过；真实历史正文／产物硬刷新、390×844与菜单Esc已验。一次429读取失败已保留，窗口后原只读恢复与后续刷新通过，无新模型／任务。产品指南build／61页面20402链接通过，canonical API未变；preview E2E未重复跑，不冒全产品／像素一致。
+
+Root inventory从363真实提交blobs重算440引用，三个精确main gitlink与拓扑／兼容／原checkpoint一并验。正常持久资源和备份保留，未清卷／重建；App为build短停后恢复，私有运行记录不入Git。尚存原owner／Task B遗留与接受的支付、渠道、语音／E2B等边界见TODO，不扩成本轮新故障。
+
+## 上批已交付：A-15证据与公开文档（2026-11-12）
 
 当前执行清单是[TODO](../todo.md)，不再沿用上一轮R-06 Goal。机器Goal查询为空，未擅自创建重复目标。App818141e9仅改公开门户与必要内部记录：外部skill.list／第一方任务参考分离，旧Bearer与上传／control错误说明纠正，资源目录与操作锚点保留全部生成字段。门户check、真实浏览器导航／搜索／键盘／390px侧栏、浅深代码对比度及独审通过。App #58已正常合main，源码818141e9与merge026a7d12树相同；Root [#86](https://github.com/LordFoxFairy/Kokoro/pull/86)记录精确组合与交付状态，拓扑／15边0违例／原checkpoint通过；App自有topic已清、私有证据归档、本轮预览与临时目录回收。Task B与部署不动。
 
