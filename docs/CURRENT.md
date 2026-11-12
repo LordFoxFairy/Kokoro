@@ -1,3 +1,17 @@
+## 2026-11-12 B13标题本地修复候选，真实窄屏复验待
+
+Admin10bc264正常native验证当前tenant3成员、正式GET200、两入口一致、本页筛选1→清空3、中英/UTC均通过；390px documentWidth390、表内310/920横滚正确，但截图标题/说明被默认PageHeader同一行ellipsis截为Curre...，故首轮视觉FAIL保留，不以DOM全文或宽度通过冒验收。
+
+后继Admin4241c2f只改组件标题结构与原两个公开语义断言：正式pageHeaderRender=false、语义h1和独立自然换行说明，不改读取/状态机/文案/表格。主控两SHA/11 focused、独审CLEAR；writer相关lint/types/build/post-types通过，不重复355/后端/模型。原临时role已恢复false/version4、新Session/cookie已清、原浏览器回/app；再由主控停自启Admin修候选。新源正常390最终复验仍待，原PR7保持Draft。
+
+Root仅固定该Admin新gitlink，owner传输/契约/生成物与09e1完全相同，沿此前合同门证据，不重跑不变输入；本轮只补新gitlink拓扑。Goal active，全部TaskB及后台更广合同需求仍OPEN。
+
+## 2026-11-12 B11/B12复用既有Run补足精确绑定和账本事实
+
+未增加模型/工具调用或财务写入。主控按现canonical schema，对B08既有Run在BFF、Agent、Billing各owner独立只读查询，无跨owner SQL。唯一dispatch/attempt/admission及原会话核等；actor/payer、attempt/call/ordinal和调用三摘要、模型精确revision/digest与冻结报价均匹配。Agent actual=verified，最新evidence/ACK/admission引用核等；ACK/admission/hold=captured，usage/settlement=settled，单条usage debit与capture金额、每个funding allocation及预留=capture+release守恒核等。
+
+首次摘要仅因psycopg UUID与string比较方式产生admission_matches=false，原始身份其实相等；统一两侧类型后全部关系核等，初次私有摘要保留，无生产修复/重新计价或重跑模型。该证据只证明此前B08真实Run及其历史冻结报价，不把当前活动政策、旧两未知预占、所有Run或Admin政策管理顺带标完成。完整查询和无秘密摘要均只留ignored，唯一TODO已补此差额。
+
 ## 2026-11-12 B06专用接线修复与真实差额验证
 
 只补normal IAM/BFF原已支持account_sessions专用路径，当前正常tenant精确配对、独立随机profile、0600文件，原.env私有备份；无源码/协议/Schema/SQL模型/认证层变化。主控空闲检查后受控重启两owner，healthz均200。正常浏览器当前Session列表200，精确核QA新Session身份/创建时间后，仅该目标DELETE200，fresh列表200目标消失，原当前和原另一Session都保留；被撤会话自己的auth读false、受保护profile401。此为正常IAM/BFF真实链，不是HTTP替身。

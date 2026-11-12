@@ -1854,3 +1854,17 @@ B13成员目录设计门已记同一有效计划。唯一writer api_perf_audit�
 另一个自建QA Session仅fixture缩短自身expires_at到8秒，正式auth先true且返回的真实expiresAt精确相符；墙钟过期后auth=false/profile401，不先logout/不改全局TTL/原Session，不冒七天浸泡或浏览器自动倒计时已验。两个测试Session均经正式退出与自有Cookie清理。前后53 Run终态/pending0，旧两财务未知保持；不调用新模型/资金/全默认。原503与首次临时登录残留已清理，完整收据只留ignored。
 
 Admin目录候选10bc264已沿自有PR7推送（此前Admin PR已合闭，实际新需求才建），writer完整lint/contract/355测试/build/post-types，主控九SHA/相关35测试/独审CLEAR，当前待正常native中英/窄屏与撤权。Root只配新Admin gitlink；inventory无该Admin repository_path描述项，本次0引用/0blob变化，不能冒重算其它owner。本轮Root拓扑PASS、15边0违例、原checkpoint PASS；整个TaskB/后台广义CRUD仍OPEN，Goal active。
+
+### 2026-11-12 B11/B12既有Run只读补证
+
+未增加模型/工具调用或财务写入。主控按现canonical schema，对B08既有Run在BFF、Agent、Billing各owner独立只读查询，无跨owner SQL。唯一dispatch/attempt/admission及原会话核等；actor/payer、attempt/call/ordinal和调用三摘要、模型精确revision/digest与冻结报价均匹配。Agent actual=verified，最新evidence/ACK/admission引用核等；ACK/admission/hold=captured，usage/settlement=settled，单条usage debit与capture金额、每个funding allocation及预留=capture+release守恒核等。
+
+首次摘要仅因psycopg UUID与string比较方式产生admission_matches=false，原始身份其实相等；统一两侧类型后全部关系核等，初次私有摘要保留，无生产修复/重新计价或重跑模型。该证据只证明此前B08真实Run及其历史冻结报价，不把当前活动政策、旧两未知预占、所有Run或Admin政策管理顺带标完成。完整查询和无秘密摘要均只留ignored，唯一TODO已补此差额。
+
+### 2026-11-12 B13窄屏首轮FAIL与最小标题修复
+
+Admin10bc264正常native验证当前tenant3成员、正式GET200、两入口一致、本页筛选1→清空3、中英/UTC均通过；390px documentWidth390、表内310/920横滚正确，但截图标题/说明被默认PageHeader同一行ellipsis截为Curre...，故首轮视觉FAIL保留，不以DOM全文或宽度通过冒验收。
+
+后继Admin4241c2f只改组件标题结构与原两个公开语义断言：正式pageHeaderRender=false、语义h1和独立自然换行说明，不改读取/状态机/文案/表格。主控两SHA/11 focused、独审CLEAR；writer相关lint/types/build/post-types通过，不重复355/后端/模型。原临时role已恢复false/version4、新Session/cookie已清、原浏览器回/app；再由主控停自启Admin修候选。新源正常390最终复验仍待，原PR7保持Draft。
+
+Root仅固定该Admin新gitlink，owner传输/契约/生成物与09e1完全相同，沿此前合同门证据，不重跑不变输入；本轮只补新gitlink拓扑。Goal active，全部TaskB及后台更广合同需求仍OPEN。
