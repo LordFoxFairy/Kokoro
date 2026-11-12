@@ -752,3 +752,47 @@ Root本PR配对两个精确子仓源：App93项引用／85个真实Git blobs，B
 
 
 Root本片93项App来源按85个真实已提交Git blobs重核；实际拓扑PASS、15条契约边／0违例、原checkpoint PASS。维护文档62个本地链接目标与diff-check通过。完成审计已逐项核：原队列owner／下一动作齐备，WIP只核实不恢复，独立web-core分片App #57已交，i18n发行门与其它owner／产品暂存明确保留；不以原编号R-06未清零冒Goal停滞，也不以Goal收口冒其完整迁移。独立文档审唯一当前态修正是将TODO内#84“无gitlink变更”的旧阶段描述改成当前#57配对事实，已修。待本Root实际合main、自有topic清理、12子仓clean／精确配对及Task B头不变复核后，才结束本轮Goal。
+
+
+## 23. A-15当前观测与公开文档收拢
+
+用户批准继续当前性能观察与公开文档收拢，不重扫全仓、不接管Task B、不新建认证／文档平台。基线Root6a61e1bf，Appc3b09e4b、BFF7c503f08、IAM40cda8e3。原A-15三对数据来自Root48c2517a，只作历史比较，不冒当前证据。
+
+### 当前性能事实
+
+主控复用原私有runner与严格已提交gitlink门，真实production App／Chromium／native IAM／BFF／隔离PG／Redis跑Project两对；System catalog/manifest为明确协议fixture，无Agent／Storage，不冒完整供应商组合。当前收据38148ea957c2dd4f3b953251整体PASS、native退出0、cleanup PASS。
+
+冷为已登录的新browser context，热为同document软离开后Back；样本各n=2，只列实际值，不称生产p95。冷306／296ms，热15／14ms。精确Project GET分别在导航后193／183ms发起、237／234ms收到headers；headers后69／62ms包含断言观测延迟，待最小浏览器阶段补口。精确GET缺有效request-id，不能按时间窗旁证冒严格BFF／IAM归因。已对齐的Project tasks BFF9ms／IAM两跳合5ms；未发现可独立删除的重复等待。两个会话列表有不同scope，resources重复记录是response＋requestfailed，均未据此删代码。
+
+### 公开文档分片
+
+App #58源码818141e9，正常合main026a7d12（两树精确相同），仅developer-docs及内部CURRENT／INDEX。复用现VitePress门户、产品功能目录与固定28.35 owner artifact，不新平台、不复制Schema、不改canonical/catalog/依赖或生产源码。
+
+- 外部快速开始只教真实Web GET /v1/skill.list，Bearer不携带Cookie／内部secret；原五个第一方生命周期例改native issuer Cookie／固定Origin／服务凭据，保原审批、resume、流和分页逻辑。
+- 纠正旧手写版本、generic上传成功与未声明run.steer；新增外部skill.list例与上传／技能响应schema回归。
+- 参考首页资源目录，tag页操作锚点；保209 public operations与446 reachable schemas。内部工程文档不入公开产物和搜索。
+- 浏览器发现原浅色Shiki深字配深底，改light代码背景并选锁定Shiki内建高对比浅／深主题；无新增依赖、强制CSS覆盖或主题重做。
+
+主控Node22.23.4／pnpm11.25.0门户check通过：lint/types、55测试、provenance、确定性生成、6个HTTP fixture示例、publication boundary、build及61页／20400内部链接。真实Chromium主页→quickstart、中文搜索＋Enter、资源→operation anchor、390px无页横溢与侧栏、浅／深代码token对比度通过；当前quickstart最低4.96／8.93，私有浏览器收据与截图保留。独审a03_read CLEAR。仅文档范围门禁，不重跑产品全默认／全产品E2E、未部署，fixture不是live API Key/IAM接入验收。
+
+### 原owner门与下一检查点
+
+BFF28.35普通operation仍保历史Bearer security，而现产品运行是native Cookie／Origin。BFF #17确有canonical version实际hunk（base22.3→head29.3），即使security section没有逐行变更也不能把后续版本／artifact配对当独立。门户显式披露差异，不篡改生成security、不宣称owner已纠正；交BFF owner随原PR版本化收敛。Task B四个Draft PR／分支／工作树不动。
+
+### A-15最小阶段补口（当前精确源码，无生产改动）
+
+主控在原私有runner补只读Navigation／Resource Timing和rAF可见／可编辑观察，保原heading／input／软返／无额外写／cleanup断言，不改变任何产品状态。Root a5b9f2ec／App818141e9精确已提交组合，收据c1694f00fd30b2d290f8e625整体PASS、native退出0、cleanup PASS。
+
+| 相对document导航阶段 | 冷1 | 冷2 |
+| --- | --- | --- |
+| document responseStart／End | 21.5／21.7ms | 17.8／18.1ms |
+| DOMContentLoaded end | 54.7ms | 51.6ms |
+| exact GET ResourceTiming start／requestStart | 202.5／233.8ms | 198.3／226.9ms |
+| exact GET headers／bodyEnd | 260.3／260.6ms | 240.4／240.5ms |
+| rAF观察heading可见＋input可编辑 | 275.9ms | 251.9ms |
+| 原Playwright测量，含断言等待 | 320ms | 315ms |
+| 原软返测量 | 17ms | 17ms |
+
+这是n=2本地Project观察，不是生产p95、普通Conversation复测或性能收益；rAF也不是逐像素绘制承诺。document返回很快，主要未决区间在DCL之后到首关键GET，原断言还含约43～63ms观测差。未证实授权缓存、删scope或合并owner能解决该区间，因此不修改生产认证／缓存来凑100ms目标。后续仅沿App layout／hydration／首关键数据读取作独立最小切片，不反复扫全仓。非关键依赖未配503仍保留，不把这次片段PASS冒完整产品外部依赖验收。
+
+App #58已实际MERGED；Root配对merge026a7d12并从真实Git blobs重核93项来源／85个唯一输入，内容摘要均未变化，拓扑／15边0违例／原checkpoint通过。Root [#86](https://github.com/LordFoxFairy/Kokoro/pull/86)承载本轮精确组合，合入状态以PR为准。App #58 topic已清；主控已停止自有4186预览并将两个本轮私有证据工作目录完整归档后回收，既有PG／Redis未停、未清共享数据。Root正常合入后只清本topic并回同步main，不为本PR自身状态另建文档PR。冷100ms未达；不为结案虚构收益，也不因原owner未决把已交付Task A重开或标blocked。
