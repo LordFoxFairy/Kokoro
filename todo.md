@@ -24,7 +24,7 @@
 - [x] B-07缺失双标签CAS主旅程（主控正常native，Root3389/Appbf8/BFF9cc，无源码变化）：两页同revision2，A PUT expected2→200，B PUT expected2→409且草稿保留；显式Reload→展示权威A→Use server profile→硬刷新仍A；按新revision3 PUT恢复原四空字段→200，原标签硬刷新核空；另新原生Session正式CSRF表单重登GET200/revision4全空，随后仅退出新Session/删除自有Cookie。原工作Session保持，无模型/工具/知识开关写。三个写阶段网络证据完整；首A读取collector未捕获、旧response body后被evict如实保留，A outgoing expected2及B初始GET2证明基线，不冒全程trace完整。只是本缺失旅程，不等于B06自然到期/独立设备或全TaskB完成。
 - [x] B-14 Skills语言本片（composer_ui_audit实现／api_perf_audit独审／主控验收）：en两现key补齐、两日期调用显式locale，其他八语言不改。主控5输入冻结41 PASS／types／build；正常英文桌面＋320px文本内收/日期正确、无横溢/长标签自然换行。原#49代码844fbbcb＋文档0c6078e3已推，正常App同源激活，不重跑全默认/九语截图矩阵。
 - [ ] B-13后台（主控验收；api_perf_audit实现/app_merge_gate独审）：当前成员目录读取片已验，Admin原PR7业务4241c2f/文档e7f2f79。真实GET200/3成员、users与teams一致/本页筛选、中英UTC通过；首轮390标题截断FAIL后两文件局部修复，最终390中英完整换行/无全页横溢，撤权刷新403立即清成员、显式重核回产品。主控最终2SHA/11相关测试/独审，前序35与writer完整355等分阶段保留，不拼成最终全量绿。临时角色恢复false/v6，六次CAS audit核等，新Session/Cookie均清，原工作会话保持；Admin已恢复3320。**后台广义User360/身份与财务跨owner管理、邀请/权限管理面与资费政策等原剩余范围仍OPEN**，本读取片不替代；PR保持Draft。受管隔离创建仍待工具响应，未重复创建、已有checkout完成本片，句柄仅本地登记。
-- [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消已随PERF-03收口，icon404仍纳入当前owner核验，不再以“Task B不动”为由搁置，也不抢跑改未核明的事实。
+- [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消已随PERF-03收口，icon404已核为可选媒体缺省回退，见下；不为非缺陷新增代码。
 
 主控唯一管理Root台账／Git／资源／最终验收；两agents先独立调查，R-07单writer。每仓沿原PR，完整验收后正常合main并清本轮分支；不部署、不清卷、不删除归属未明worktree。用户2026-11-12已明确要求设置目标，机器Goal现为active：完成Task B已批准剩余功能及原PR/main/精确组合出口。按本TODO持续推进，局部依赖只约束对应动作，不自行暂停或误标整体完成。
 
@@ -38,7 +38,7 @@
 - [x] 主控验收：停写后相关回归、正常读路径对照、首次打开/重开与菜单浏览器验收；文档与精确组合已验。本地已验：focused411／完整lint、非增量TS、build／预览E2E8通过；正常页17→raw15（含独立session1），可比页面读14，三次无用目录读消除。首次Settings三目录200、重开复用，原菜单／Esc通过；自有PR／main清理以本批Root PR最终出口核验为准。不把最初截断片段或单样本当p95。
 - [x] PERF-02（源码/正常激活已验，原PR整体交付仍待）：BFF原#17 `9cc7171`，GET完整准入3→1/真实HTTP peer六跳RED→两跳GREEN；保首Session/current_membership、本人tenant SQL及expiresAt/断连/绝对预算，PUT三校验与写后unknown不变，无cache/新认证层/协议/SQL变化。主控四输入冻结核等、51 focused PASS/完整types/diff-check，writer最终build/scoped lint-format通过，独审CLEAR。正常BFF在53 Run终态/pending0后同原配置受控重启，旧两财务记录保持；真实IAM/p95未测，不冒全TaskB/原PR完成。Root精确组合232真实blobs/290引用更新，拓扑/15边0违例/原checkpoint均PASS。
 - [x] PERF-03（源码/定向验证已收口，正常原PR待整体交付）：BFF原PR17已推aad81e7，4生产路径+2现测试仅修GET /v1/models一次deadline/signal；首完整Session+membership保持，退役零后续System/在途socket关闭/剩余预算/同步最终send，删本GET无用幂等Map。原真实逻辑RED1/9→最终34 PASS，主控最终六SHA/34/完整types，独审原六文件CLEAR；零预算header补口由主控发现、原子例RED后最小修并复核，其余四SHA不变。writer最终build/scoped lint通过，测试既有全文件format告警不冒绿。正常空闲后受控切aad、healthz200，53终态/pending0/旧两财务未知保持；只证明HTTP peer/本方取消，不冒System回滚或p95。Root按232真实提交blobs/290引用重算；本轮拓扑PASS、兼容15边/0违例、原checkpoint PASS。
-- [ ] 观察项：Settings既有MCP icon404；owner待核，不冒三目录读取失败或本批已修，不越界Task B。
+- [x] icon404观察项核验（无代码修复）：当前native同一Context7 server详情200且未保存icon绑定，独立媒体404；本次挂载1次媒体GET，打开详情没有重读，UI保首字母C/Connected，目录200。对应BFF正式可选字段/无绑定404和App不重试源码/已有定向覆盖一致。旧布尔测量没有exact URL，未倒称原次根因；本次404响应body被CDP回收，仅保status/详情字段，不冒完整trace。无需新增cache/协议/代理。
 
 App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)已正常合main `59d412c9`，树核等已验源 `179b6412`；本轮App local／remote topic已清（远端引用另核）。本次CI annotation确认账户账单／额度导致任务未启动，不冒测试绿；未调整付费或绕保护。Root精确组合拓扑／兼容15边0违例／原checkpoint通过；Root自有 [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)负责交付，最终出口核对MERGED／main clean及本轮topic已清，不以文档先行勾选代替。
 

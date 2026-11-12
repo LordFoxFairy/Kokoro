@@ -74,3 +74,7 @@ BFF原#17源码9cc7171已推，主控四SHA核等，51 focused/完整types通过
 ### PERF-03实际交付
 
 BFF原PR17提交aad81e7。真实逻辑RED1/9（首轮另含fixture提前回收错误）→原相关34 PASS；主控最终六SHA/同34/完整types通过，独审原六文件CLEAR。主控发现零预算header缺口，原子例真实RED后outer catch沿原requestId/503/code补header，增量已核、其他四SHA不变。writer最终build/scoped lint通过；两测试基线全文件format告警保留，未刷原prefix换绿。正常原配置受控激活healthz200，原数据保持；真实IAM/System或p95不因HTTP peer/取消socket证据冒通过，不承诺System回滚。Root精确组合与后继native读取见唯一TODO/当前事实，整个TaskB仍OPEN。
+
+### 当前native补读及icon观察结论
+
+Root0b725116/BFFaad：正常认证目录GET200/菜单可用，未新发模型/资金操作。当前Context7 exact server详情200且无icon绑定、独立media404、本挂载一次GET，详情不重读，首字母C/Connected保持；与正式optional契约及已有fallback/no-retry行为一致，无必要代码修复。旧测量仅布尔，未倒填历史根因；本次media body已被CDP回收，状态/详情字段与UI证据保留。此观察收口，不新增cache/代理/协议，不冒全站p95或TaskB完成。

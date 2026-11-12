@@ -1884,3 +1884,11 @@ BFF原PR17已推aad81e7，4生产路径/2原测试完成模型目录一次共同
 正常BFF在空闲检查后同原配置受控切aad，healthz200，前后53Run终态/pending0，旧两财务未知保持。Root按232个真实已提交BFF blobs重算290引用，本轮暂存组合拓扑PASS、兼容15边/0违例、原checkpoint PASS；均为本组合实际结果，不用旧门冒新组合。原正常模型读/浏览器菜单仅补必要回读，无新模型或资金操作。
 
 当前另有私有native模型/计价隔离driver正在接线：真实IAM/App/Admin/BFF/System/Billing，正常tenant/配置不动；只允许独立源码/输出/临时数据库及精确localhost开发态fixture接缝，尚未启动或验证，不冒已闭环。stdio echo包已在本地由锁定SDK生成声明并经Agent/Platform两owner结构验证，未创建Provider/上传/发布/启动进程，等待原动作确认。Project ACL产品边界同样待用户选择；这些局部前置不暂停整个Goal。
+
+### 2026-11-12 native目录与icon观察核验
+
+Root0b725116/BFFaad正常认证目录GET200、两现有模型选项/Default原选中态和Esc回焦已验；network189事件未截断，未发任务/模型或资金操作。精确组合拓扑PASS、兼容15边0违例、原checkpoint PASS已提交推送原#67，BFF原#17描述同步；两PR继续Draft、整体TaskB未完。
+
+icon观察由api_perf_audit只读链路核验、主控当前native采样：同一Context7服务详情200/无icon绑定，独立media404；本挂载只发1次media请求，打开详情不重读，首字母C及Connected保持，列表200。正式owner已定义optional绑定缺失404，App已有no retry/fallback，无新缺陷或必要代码。旧布尔样本缺exact URL不能倒填根因，当前404body被CDP回收故不称全trace。只关闭该观察，不扩缓存/协议/服务。原三QA配置已删除；后来新reauthorization配置不在三项授权内，仍待原单项确认。
+
+B09主动leave源码已具备，缺真实主动退出而非管理员移除证据。正常Product固定tenant/最后owner保护，不让原账号退出；现隔离主机primary/secondary是同用户，不能伪造第二成员。后继复用真实IAM/App/BFF隔离组织与正式邀请一个QA member/两个自然Session，预期退出窗口logout后401、另一Session当前资格403；不强锁退出窗口403或新写生产实现。
