@@ -1,10 +1,16 @@
 # Current Facts
 
+## 当前剩余队列：归属收口与R-06前置（2026-11-12）
+
+只复核现有TODO，未新增源码扫描。下一轮机器Goal已active，阶段与owner只维护[TODO](../todo.md)，证据见[报告§22](reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)。本轮可独立收口归档WIP与旧台账事实；登录失败页原意图已有main祖先承接，无需恢复旧补丁，私有归档继续保留。上轮Root #83／App #56／BFF #26均已实际合入，Root b24b6146及12子仓clean／精确配对，不再写成等待合并。
+
+R-06可独立推进最小包交付设计，但发行方式尚未确定，不能直接改依赖／删副本；只考虑web-core／i18n并保App六项额外严格编译检查。R-07／R-14因Capability未main组合交原owner，Admin／README／Hub沿Task B原PR，不将其带main或抢写。已接受产品暂存不重开；本轮只改Root文档，无源码／gitlink变化，不跑业务测试／浏览器／服务或部署。
+
 ## 统一维护批次：App／BFF／IAM（2026-11-12）
 
 用户要求已建立一个统一机器Goal，不再逐微小问题开启一轮；阶段只维护[TODO](../todo.md)，范围／排除项与证据复用[报告§21](reports/2026-11-11-typescript-auth-admin-audit.md#21-统一维护goal与集中批次)。三面集中核查确认两项：App现body reader默认继承request.signal，BFF现JSON入口fatal UTF8；只替换两处现有逻辑，不加15秒入站策略、认证层或parser框架。IAM原生会话／账户／service+actor本轮未确认新项，不按OAuth关键字清理；坏百分号等疑点已用正式框架反例排除。
 
-App自有#56源码556dc0f0、BFF#26源码7c503f08均已合main且树等于已验源，自有topic已清。主控App一次完整owner check通过（22生成检查／lint／types／6522测试／build），BFF真实Chat HTTP损坏字节200→400且无新增写、相关150项／静态／build通过，冻结独审CLEAR。Root本PR锁两精确源，383引用按317真实Git blobs重核，拓扑／15边0违例／原checkpoint通过。机器Goal仅在本Root PR实际合入和最终clean核对后结束，不提前声称Git出口完成；Task B／Mori／部署与原owner遗留不动。
+App自有#56源码556dc0f0、BFF#26源码7c503f08均已合main且树等于已验源，自有topic已清。主控App一次完整owner check通过（22生成检查／lint／types／6522测试／build），BFF真实Chat HTTP损坏字节200→400且无新增写、相关150项／静态／build通过，冻结独审CLEAR。Root #83已实际合main（b24b6146），锁两精确源，383引用按317真实Git blobs重核，拓扑／15边0违例／原checkpoint通过。上一轮机器Goal已在最终clean／自有分支清理核对后结束；Task B／Mori／部署与原owner遗留未动。
 
 ## 当前链路优化：职责对齐与上传入口收敛（2026-11-11）
 

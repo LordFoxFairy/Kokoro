@@ -1,82 +1,54 @@
 # Kokoro · 当前维护 TODO
 
-核对日期：2026-11-12（America/New_York）。本轮起点Root `86c8d890`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
+核对日期：2026-11-12（America/New_York）。本轮基线Root `b24b6146`；本文件是唯一执行清单，历史实施与证据见[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。不重新扫描源码凑问题，不重开已交付Task A。
 
-## 统一 Goal：主工作台维护批次（本批执行／验收收口）
+## 当前 Goal：既有遗留收口与 R-06 交付前置
 
-机器Goal已建立，动态状态以机器Goal为准：从当前精确组合完成App／BFF／IAM一轮有界检查，确认独立项集中修复并交付；排除项、原owner遗留和未运行验证如实记录。**不以“所有源码不存在问题”作为完成条件，不反复新建Goal。**
+机器Goal已设为active，动态状态以机器Goal为准。只处理下列现有队列；主控负责设计取舍、验收、Git与本台账，不动Task B／Mori／部署／共享数据。
 
-- [x] **基线与范围**：Root86c8d890及三个子仓clean／精确配对，Task B四个PR头和状态已只读记录；主控拥有Git／验收／唯一台账。
-- [x] **集中检查**：`r07_storage_check`核App账户／消息／资源与草稿；`r09_governance_calibration`核BFF入口／内部接线／旧代码；`a03_read`核IAM原生会话／账户／内部服务边界。已交真实caller与归属：App默认读取取消漏接、BFF损坏UTF8可进入改名写入；IAM未确认新增修复，BFF坏百分号已被框架400证伪。不机械十轮扫描。
-- [x] **批量修复**：主控收敛为App reader默认取消与BFF fatal UTF8两项，均先RED后GREEN；各只改一处现有逻辑，无新抽象层／协议／数据。App同仓一批，BFF同仓一批；停写后统一验收交付。
-- [x] **验收**：App三新case先RED后22PASS，一次完整owner check（22生成门／lint／types／6522测试／build）通过；BFF正式Chat HTTP先RED200后400且无新增写，9相关文件150PASS及静态／build通过；停写独审CLEAR。只验受影响行为，不重跑Task A真实产品旅程。
-- [x] **统一交付准备**：App #56／BFF #26已合main并清理自有topic；Root本PR配对556dc0f0／7c503f08，383项来源按317个实际Git blobs核验，拓扑／15契约边0违例／原checkpoint通过。最终出口由主控核本PR合入main、Root与12子仓clean／精确配对及自有分支清理后，才结束机器Goal；不冒称Task B原owner项已完成。
+- [x] 核上轮出口：App #56、BFF #26、Root #83均已MERGED；Root main `b24b6146`，12子仓clean／精确配对。不是“等待上轮合并”。
+- [x] 核原未完成项的真实文件与分支依赖，按“可独立／原owner／已接受暂存”分类；只读角色分别为`a03_read`（归档WIP）、`r09_governance_calibration`（R-06／R-07／R-14）。
+- [x] 归档WIP对照完成：原生登录失败页意图早已进入main；不恢复旧补丁，保留私有归档。
+- [x] R-06前置核验：web-core／i18n源码与入口等价，无Task B实际hunk；正式包发行方式尚未确定，tsconfig也非等价副本。
+- [ ] **下一实施点：R-06最小交付方案**。明确shared唯一writer、固定包来源／版本与lock、独立App／CI／Docker构建及回退；先比较现有本地bridge与正式包交付，不为两份小包新建registry服务／通用共享层。方案门通过后才切依赖、删两份副本；保App六项严格检查，不整删`packages/*`。不把本地bridge称为正式发行。
+- [ ] R-06若达到独立实施条件，再按仓集中PR／主控相关验证／Root精确配对交付；未定的发行方式先列清，不自动发布包或改Task B。
 
-设计与证据复用[维护报告§21](docs/reports/2026-11-11-typescript-auth-admin-audit.md#21-统一维护goal与集中批次)，不新增第二个任务中心。当前原编号4项遗留与产品暂存保持下方状态。
+本轮分类与依据见[报告§22](docs/reports/2026-11-11-typescript-auth-admin-audit.md#22-剩余todo归属与下一轮goal)。完成归属整理不等于R-06代码已闭环；不重复创建Goal或为暂存项标blocked。
 
-## 当前盘点
+## 我们可独立推进
 
-- 原审计16个编号是历史全仓盘点，不是本轮全部实施目标。Mori R-05移出主线；其余**15项主线编号中11项已收口、4项有遗留**（R-03／R-06／R-14待处理，R-07部分完成）。不将Mori交付计作本轮主线进度。
-- 另有2条旧代码清理候选，单独列出，不混成新故障；已接受容量／取消边界和产品验收暂存也不混入编号统计。
-- Task A按用户确认口径已交付，不重开。Task B的PR、分支和工作树不操作；已合并的自有PR不反复建单。
-
-## 当前推进：主工作台／BFF／IAM认证与旧代码清理
-
-- [x] **本轮上传入口收敛**：自有BFF PR #25已合main，源码84ed5a2e；Project两真实HTTP超限例先RED503、修后完整413且回执／Storage调用不变。Library／Project共用一个窄reader，旧局部实现已删；主控相关96项、build／lint／types／格式通过，冻结独审CLEAR。正式Nest短命探针另证两413／小非法体400。BFF README／INDEX与Task B实际hunk重叠，交原owner，本轮未改。证据与排除项见[报告§20](docs/reports/2026-11-11-typescript-auth-admin-audit.md#20-上传入口收敛与工程首读核查)。
-- [x] **Web→后台链路设计对齐**：保留 App 同源入口与 BFF 产品后端；普通内部服务使用专用服务身份＋可信 actor，不重复 OAuth；Agent 执行与 AG-UI／AI SDK 展示职责不变。现状与批准目标见[技术总览](docs/kokoro-handbook/technical/00-system-overview.md#web-与后台的职责边界)。本项是设计对齐，不是代码重构完成。
-- [x] **独立代码切片静态核验**：`r07_storage_check` 核 App session／IAM adapter，协议职责不同，不为微小重复单独抽层；`r09_governance_calibration` 核 Library body 阶段，保留已批准的分阶段预算，不静态宣称缺少全局期限。主控核源码；无业务代码变更。
-- [x] **Library超限响应修复**：自有BFF PR #24已合main，源码c2bae90d；真实Nest未结束Content-Length／chunked两例先RED（503而非413），修后完整413／EOF且零新增receipt／Storage请求。仅本地入口读取，公共reader／原上传恢复断言不变；主控相关80项、build／lint／types／格式通过，独审CLEAR。详见[报告§19](docs/reports/2026-11-11-typescript-auth-admin-audit.md#19-web与后台链路优化设计门)。
-- [ ] **BFF工程首读交接**：README／INDEX过期当前态、旧版本和清库叙述已有核查，写区与Task B #17重叠，交其BFF owner随原PR收敛；本轮不抢改、不按旧README操作数据。见[报告§20](docs/reports/2026-11-11-typescript-auth-admin-audit.md#20-上传入口收敛与工程首读核查)。
-- [ ] **管理链路回环与 Hub 职责收敛**：先交 Task B owner 对齐；不直接改其 Admin／Hub 写区，不新增服务或路由事实源。仍属目标，未声称减少延迟。
-- [x] **BFF认证状态请求生命周期**：自有PR #23已合main，源码6346f623；原handler内的请求作用域统一期限／取消／清理，活连接超时仍原503，断连／迟到结果不写。主控51项相关回归及build／lint／types／format通过，原5测试块保留；无新认证框架／协议。
-- **设计准则**：先用职责、状态和不变量证明问题，再选合适模式；可以替换旧实现并同步删除，但不为模式增加空类／层。IAM账户事务／具名Repository及原生会话边界本轮复核合理，不强行重写，不重开R-01／R-02／R-04。
-- [x] App R-11／R-15已通过自有PR #55合main：Node22类型对齐，保22项生成检查，本地／CI／release验证默认测试只跑一次，独立入口和覆盖不减。主控一次完整check通过；Task B实际hunk与共享CURRENT未动。
-- [x] BFF不可达的旧Admin OAuth允许表已删除，自有PR #22合main；Web原生登录／Admin业务／外部OAuth保留，主控44项相关回归与build／lint／types通过。
-- [x] IAM过期0.20待接线指引已纠正，主链不换OAuth token、现役外部OAuth配置保留；自有PR #8合main，主控22链接／机器版本与摘要事实通过。
-
-三名聚焦代理分摊App、BFF与IAM，源码独立审查CLEAR；主控已复验并串行交付，不重复十轮扫描或全产品测试。Mori后续及Music产品待办退出本轮；已合版本只保留历史事实，不擅自回滚main。
-
-## 未闭环编号队列（当前4项）
-
-| ID | 遗留问题 | owner／下一动作 |
-| --- | --- | --- |
-| R-03 | Admin部分菜单／旧页面仍未接正式业务接口 | Task B后台owner；不接管、不造假成功页面 |
-| R-06 | App私有workspace与web-shared仍双writer，规范交付未收敛 | shared＋App；App消费者与Task B重叠，先确认owner／交付方式再切换删除 |
-| R-07 | **部分完成**：Storage检查已只读交付，Capability检查写副作用仍在 | Capability交其owner；Storage不重复修，Root #77已完成精确组合 |
-| R-14 | MCP OAuth DNS pin跨独立授权驻留，公网轮换可持续拒绝 | Capability原owner；composition与Task B重叠，本轮不动 |
-
-**后继边界：** 剩余4项按原owner／Task B交接，未获独立写区不抢改；不为清零扩产品、不按扫描数字扩修。本轮Root自有PR承接精确组合与台账，子仓自有分支已清理。
-
-## 主线已收口编号（当前11项）
-
-| ID | 结果与交付依据 |
+| 项目 | 状态／下一动作 |
 | --- | --- |
-| R-01／R-02／R-04 | IAM可信actor限流分桶、同事务分页撤销、原生读取／响应生命周期；IAM #7，源码cee88df4，Root #72 |
-| R-08 | 已列App／Billing／BFF／IAM／Root入口事实漂移已纠正；本轮App #54／Billing #5完成余项，不泛称全仓所有文档绝无错误 |
-| R-09 | 12仓profiles／协议与导入来源／未知诊断机制已本地验收；实际FAIL／unverified原样保留，不把预检当产品闭环，Root #77已交付 |
-| R-10 | Admin无消费者旧认证配置／包装退役；Admin #6，源码9bed3d2a，Root #71 |
-| R-11／R-15 | App #55，源码906f9c01；Node22类型与锁图对齐，原22项生成检查／Vitest覆盖保持，聚合与CI重复调用去重，完整owner check通过 |
-| R-12 | 持久回执不再重复留无界Map；BFF #20，源码00a9ebee，Root #71 |
-| R-13 | Project业务／完成回执同事务，回滚／重放／竞争／提交响应未知已定向验；BFF #21，源码a3e19062，Root #75 |
-| R-16 | 一次性main-only脚本及当前入口退役，合法detached／他人topic与错pin反例保留；Root #75，mainf0efcb87 |
+| R-06交付设计与产物核验 | **下一实施点**。shared＋App，主控先收敛最小正式交付方案；当前不是代码分歧故障，也不是Task B写区冲突 |
+| 登录失败页归档WIP核实 | **已完成**。目标`src/app/auth/sign-in/failed/page.tsx`；de40f9c3已落地，后继dead1843／bfb749c3完成native-only与canonical消费，均为当前App祖先；保留归档，不恢复旧fallback |
+| 上轮最终回执／本轮台账整理 | **已核实**。当前队列去除过期“待合并／待核实”，完成记录收至报告；本Root文档PR承接分类，不改业务源码／gitlink |
 
-详细实际命令、失败／复验、跳过与未运行边界见[报告§13～18](docs/reports/2026-11-11-typescript-auth-admin-audit.md#18-认证状态请求作用域)。不拿测试数量代替行为闭环。
+## 需原 owner 承接，不进入本轮写区
 
-## 旧代码候选（不重复立编号）
+| 项目 | 负责人／阻断点与下一动作 |
+| --- | --- |
+| R-03 Admin菜单／旧页面正式接线 | Task B Admin owner；沿原后台PR完成真实业务，不接管、不造成功页 |
+| R-07 Capability contract-check写副作用余项 | Capability owner／Task B #12；normalizer与现组合生成物相连，需在该组合做只读check。Storage部分已完成，不重复修 |
+| R-14 MCP OAuth DNS pin生命周期 | Capability owner／Task B #12；client无直接hunk不代表composition无依赖，不从独立main小补丁冒称Root组合已修 |
+| BFF README／INDEX首读清理 | Task B BFF owner／#17；过期当前态／旧版本／清库指导有实际重叠hunk，随原PR收敛，不按旧文字操作数据 |
+| Admin回环／Hub职责收敛 | Task B App／BFF／Admin owner；需统一共享登录、管理权限和路由映射，不加Admin BFF或万能proxy |
 
-- [x] BFF旧Admin OAuth允许表：已核与Task B账务实际hunk不重叠，经#22退役；现役原生relay与外部OAuth保留。
-- [x] Billing旧`createBillingAuth`总factory：已通过#5退役，现役Personal／Catalog／operator／JWT保留。
+Capability Root pin `24094960`来自已交付#13，已合入#12头`e068fcaa`但未合main；比main多37提交。仅看同名文件或零patch都不足以判定可独立交付；本轮不动其PR／分支／工作树，也不把Task B带入main。
 
-## 既存本地工作的保护与交接
-
-- [ ] 原仓App登录失败页的既存WIP已保存完整文件、基线和二进制补丁；恢复／交接状态仍需核实。保留私有归档，不当垃圾清理；未确认前不覆盖当前main或他人改动。恢复前核摘要、仅处理该路径，不整仓reset。此项不计作新增产品／代码故障。
+原审计15项主线编号仍为**11项收口／4项遗留**（R-03、R-06、R-07余项、R-14）；上表两条文档／链路交接与编号存在重叠，不叠加成新故障总数。Mori R-05不属本轮。
 
 ## 已接受边界与产品暂存
 
-- IAM原生get-session按BFF汇聚源IP共享额度仍需代表性容量核验；不随意抬限流或引入token缓存。HTTP超时不等于非合作数据库副作用硬回滚，超大撤销集合保留有界事务失败语义。
-- [ ] A-13：Telegram／LINE／Slack真实账号授权、收发和撤权；本地协议证据不冒充真实供应商。
-- [ ] A-14：用户本人语音转写后编辑并显式发送；不保留录音或口述原文。
-- [ ] 可选E2B云／完整自托管生命周期：实际使用时补创建、重连、独立回收；官方envd Docker本地真实协议链已通过，不再阻塞开发交付。
-- [ ] A-15体验余量：冷态约303～306ms对100ms目标差距及历史偶发诊断，按下一轮产品需求排序。
+| 项目 | owner／恢复前置 |
+| --- | --- |
+| A-13真实外部渠道 | 渠道owner；Telegram／LINE／Slack真实账号授权、收发、撤权条件齐备后验收，当前本地协议证据不冒真实供应商 |
+| A-14本人语音 | 用户＋App owner；用户方便时主动口述、编辑并显式发送，沿此前“稍后验收”，不保留录音／原文 |
+| 可选完整E2B生命周期 | Agent／运行环境owner；实际采用云或完整自托管时补创建／重连／独立回收，既有官方envd Docker证据不重跑 |
+| A-15体验余量 | App／BFF／IAM owner；下一轮产品性能范围明确后处理冷态约303～306ms与100ms目标差距，不先改缓存／架构 |
+| IAM共享源IP额度／非合作写入取消 | 原owner容量与运行语义边界；代表性负载核验另定，不随意抬限流，不宣称HTTP取消等于事务硬回滚 |
 
-Task A原生浏览器／附件／历史引用／定时任务／E2B收据见[当前技术总览](docs/kokoro-handbook/technical/00-system-overview.md)及[CURRENT](docs/CURRENT.md)；真实支付保持关闭，未部署。唯一证据私有归档保留；只清自有已交付分支／资源，不碰他人工作。
+真实支付关闭，未部署；上述不作为本轮独立代码故障或新增阻塞。
+
+## 已交付事实入口
+
+上轮统一维护的两个独立缺陷已通过App #56／BFF #26／Root #83交付并清理自有分支；本轮不重跑其完整门。[报告§21](docs/reports/2026-11-11-typescript-auth-admin-audit.md#21-统一维护goal与集中批次)保存RED／GREEN与验证边界；更早R-01～R-16及上传入口结果见报告§13～20。Task A产品收据见[技术总览](docs/kokoro-handbook/technical/00-system-overview.md)和[CURRENT](docs/CURRENT.md)，历史不再平铺为当前TODO。
