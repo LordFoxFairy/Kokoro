@@ -4,7 +4,7 @@
 
 机器Goal **active**；唯一执行清单[TODO](../todo.md)，范围沿[原交接](handoffs/2026-10-30-task-b-capabilities-account.md)及既有production-closure计划。原Root #67已保Task B14提交／468行记录合入accepted main，Task A与未交接WIP不重开；旧“Task B不动”只描述历史批次。
 
-**当前候选组合已验，待Root提交：** App `ebc36617`（原#49）、BFF `609b0e93`（原#17）、Storage main `7155093c`（原#2已合）、Agent main `b7867212`（#48已合）、Capability `573a8f00`（原#12），其余owner不变。326个真实Git blobs／398引用重算，staged拓扑／15边0违例／原checkpoint通过；初次inventory漏同步owner版本28.35→28.37失败保留，修正真实metadata后通过，未放宽门禁。上一Root db28020c组合保留历史。Agent merge树等已验281bde49，topic本地／远程已清；四CI红因GitHub账户账单／额度未启动，未绕保护。
+**当前候选组合：Root `b8da3381` 已提交推送原#67。** App `ebc36617`（原#49）、BFF `609b0e93`（原#17）、Storage main `7155093c`（原#2已合）、Agent main `b7867212`（#48已合）、Capability `573a8f00`（原#12），其余owner不变。326个真实Git blobs／398引用重算，staged拓扑／15边0违例／原checkpoint通过；初次inventory漏同步owner版本28.35→28.37失败保留，修正真实metadata后通过，未放宽门禁。上一Root db28020c组合保留历史。Agent merge树等已验281bde49，topic本地／远程已清；四CI红因GitHub账户账单／额度未启动，未绕保护。
 
 **App配置与UI本片已验。** 原#49普通合入双方历史，保现Public28.35及Task A，不激活旧未发行29.3。完整lint／非增量TS／22生成检查／build已过；初始完整默认6753 PASS/2 FAIL，两旧oracle修正后原两文件48 PASS，未重跑全默认、不拼绿。后继MCP本地化／bootstrap主控443相关例及build、默认词条补口117例及build／冻结／独审通过。正常English详情→JSON安全错误→取消回焦／390px、最终French320默认表单内收通过，恢复en与视口。此前隔离依赖复用误改正常workspace链接造成短暂Build Error已恢复，隔离现独立frozen安装。全站缺译及其它面板仍随B-14承接，不冒九语言全部视觉QA。
 
