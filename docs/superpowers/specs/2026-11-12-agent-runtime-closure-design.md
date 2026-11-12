@@ -100,7 +100,7 @@ Task B App #49 的 client.ts Share实际hunk与conversation-thread props存在�
 - [AG-UI events](https://docs.ag-ui.com/concepts/events)、[AI SDK readUIMessageStream](https://ai-sdk.dev/docs/reference/ai-sdk-ui/read-ui-message-stream)：后继App片复用原有事件和SDK reader，不为新展示新增第二网络协议。
 - [Manus quickstart](https://manus.im/docs/introduction/quickstart)：首页借鉴目标→上下文→执行→成果的任务路径。仅官方公开说明，未做登录态DOM／截图测量，不冒一比一视觉证据。
 
-本方案初审时仅只读核源码／当前包／PR实际hunk与公开官方资料。后继已开展正常运行恢复、登录与首条任务，具体通过／失败以[TODO](../../../todo.md)与[CURRENT](../../CURRENT.md)的当前记录为准；尚无真实模型／沙箱首片通过。多agents只读分工：agent_runtime_closure、agui_closure_design、workbench_home_design；主控负责实际写入和验收。
+本方案初审时仅只读核源码／当前包／PR实际hunk与公开官方资料。后继已开展正常运行恢复、登录与首条任务，具体通过／失败以[TODO](../../../todo.md)与[CURRENT](../../CURRENT.md)的当前记录为准；后继真实模型／沙箱／FINAL首片已通过，G3／G4仍在推进。多agents只读分工：agent_runtime_closure、agui_closure_design、workbench_home_design；主控负责实际写入和验收。
 
 ## 12. G1真实运行发现的准入补口（本轮实施门）
 
@@ -125,3 +125,15 @@ Task B App #49 的 client.ts Share实际hunk与conversation-thread props存在�
 - **真实展示缺口**：已观察到旧 `assembly_failed` Run 在成功 Regenerate 后仍显示 `Skill Loading`。复用现 `runTerminalsById`，将 exact Run 终态传到对应 process/Skill row；未完成 activity 在已知终态下显示中性“Run 已结束”，不伪造 Skill Ready/Failed，不用非 live 或超时推断结束。保留旧失败正文与新成功交付。`model_access_denied` 现同时承接余额与权限拒绝，文案覆盖两者，不另加 wire。
 - **写区**：现 `client`/mapper/文本 reader、`execution-adapter`/`machine`、内部 projection/reducer；终态展示限现 conversation/assistant/process/Skill rows 与 i18n。保留 Task B Share 与 failure-code 的实际 hunk；不整体覆盖同名文件。
 - **最低验证**：复用现 transport、parts reader/machine 和 UI 测试，覆盖重复 cursor、中段 prefix、迟到 baseline、terminal 紧随最后 delta、scope/dispose 迟到结果和不同 Run 终态隔离。正常浏览器复用本次真实历史与产物验展示/刷新，不再为同一后端风险重跑模型或全套资源验收。
+
+
+## 14. G4：首页保持结构，只补可见恢复反馈
+
+现首页已有单 Composer、按需工具菜单、窄屏换行、长草稿和 IME／键盘规则，不重做布局或再引入展示框架。只读核验发现两个实际反馈缺口，本片按既有产品授权直接收敛：
+
+- 模型目录首次失败且无已确认候选时，显示轻量错误与现 `onRetryModels` 操作；首次加载提供可见状态。已有候选／选择保持，不自动提交或另造读取状态。模型锁定／隐藏规则保持。
+- Connectors 原列表内呈现加载／读取失败，不再只给读屏文本；成功空态、已知选择、添加／管理与重新打开刷新机制保持，无第二请求链。
+- 写区限现 `composer-selectors`／`composer-connections` 及局部 CSS、原对应 UI 测试；沿用现 locale 文案，无网络／Schema／依赖增量。Task B #49 只读核对：该两组件无 diff；`composer.test` 的异步准入保存模型新增 hunk（原 971 附近）保留，不接管。
+- 最低验收：原 UI 场景中的初始加载／失败／现有数据保留与单次手动重试；主控在 SDK writer 停写后合并验收，浏览器复用已运行工作台验桌面／窄屏／键盘，不再重复模型派发。
+
+文档限 Composer INDEX、原公开产品任务指南与当前事实；API 文档只解释现 AG-UI→SDK 本地装配，不增 API。

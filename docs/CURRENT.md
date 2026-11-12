@@ -2,9 +2,11 @@
 
 ## 当前执行：Agent主链与工作台打磨（2026-11-12）
 
-机器Goal保持active；唯一执行清单为[TODO](../todo.md)，[方案](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)§13收敛下一片G3。当前已取得真实主链首批收据，不把组件测试或负路径冒全Goal闭环。
+机器Goal保持active；唯一执行清单为[TODO](../todo.md)，[方案](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)§13／§14收敛G3正文单轨与G4最小首页反馈。当前已取得真实主链首批收据，不把组件测试或负路径冒全Goal闭环。
 
 **精确源码候选**：Root `6d94d170`／自有[Draft #87](https://github.com/LordFoxFairy/Kokoro/pull/87)，Agent `ea20468`／[Draft #47](https://github.com/LordFoxFairy/kokoro-agent/pull/47)，BFF `ee62845`／[Draft #27](https://github.com/LordFoxFairy/kokoro-bff/pull/27)，App main `026a7d12`。Agent生产修复在`c2c563e`，后继仅README；Worker加载的生产输入核等。Root精确gitlink、实际Git blob inventory、拓扑／15 edges兼容／原checkpoint已验。默认3626 PASS／955 deselected与真实Docker3项等组件证据见owner CURRENT；不重复全默认凑证据。
+
+**当前实施**：App在 `codex/workbench-sdk-projection` 隔离写入。SDK引擎由 agent_runtime_closure 负责；主控完成exact Run历史未决Skill中性终态与资金／权限文案，原三文件先RED后 **68 PASS**、相关ESLint通过，agent_spec_review独审CLEAR。G4由 agui_closure_design 仅补现Composer模型／连接器可见读取反馈。组合尚未停写，未冒最终验收；主控已把已接收正文／cursor与错误收束的异步顺序风险交writer修正，不扩后端测试。Agent补充文档现 `75c0b6b` 已推原PR，生产字节不变，Root待App冻结后统一精确配对。
 
 **正常持久环境**：七个核心HTTP owner ready、官方Worker运行；原PG/Redis/MinIO/Scanner复用，未清卷或重建。专用开发账号正常IAM注册／SMTP验证／浏览器登录，非platform admin。已备份并按canonical补Storage枚举/两列，Capability按已知parent走正式绑定增量；原MCP keyring保留，实际缺的connector/authorization surface已补启。现站点允许App已支持的`en`，正常manifest恢复而非App fallback放开；最小mcp导航和真实Context7连接均来自现System／Capability owner操作。没有新增OAuth／内部token层、协议或数据库。
 
