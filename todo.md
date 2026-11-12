@@ -1,8 +1,28 @@
 # Kokoro · 当前执行 TODO
 
-更新：2026-11-12。唯一执行清单；本轮基线Root `07241f03`，不重开已交付Task A，不重复扫描凑问题。
+更新：2026-11-12。唯一执行清单；当前批次基线Root `3054825b`，不重开已交付Task A，不重复扫描凑问题。
 
-## 本轮 Goal：Agent 真实闭环 → AG-UI 单轨呈现 → 工作台首页
+## 当前批次：截图缺陷与相邻代码瘦身
+
+基线 Root `3054825b`／App `dcc0faff`。本轮只修已复现的设置页缺陷，不把上一轮核心链路验收当成全部UI完善；不做无边界十轮扫描，Task B／Mori／后台／业务协议不动。
+
+| TODO | 根因与最小方案 | 状态／owner |
+| --- | --- | --- |
+| UI-01 连接器操作挤压 | 正常设置页实测Browse文字126.74px、按钮86px，现gap8px；删除86/64px固定width和冲突的单行锁定，让操作按内容定宽、搜索有可用下限并随容器换行。保现Button／menu／hook，不增基础组件或新断点平台 | 已实现／主控3语浏览器回归通过；ui_toolbar_diagnosis实现，ui_memory_diagnosis交叉独审CLEAR |
+| UI-02 记忆底栏白块 | 正常页实测footer90px，按钮42px、上下padding48px且背景白色；保sticky与正常流占位，改为紧凑一致的面板背景／间距，不造fixed底栏或第二滚动容器 | 已实现／原末字段与焦点回归通过；ui_memory_diagnosis实现，ui_toolbar_diagnosis交叉独审CLEAR |
+| UI-03 相邻失效代码 | 删除本surface不存在的CSS module class引用、无消费者的样式和不匹配DOM的选择器；不为残留名字补空层，不顺手改业务hook／状态机 | 已核实并删除；原wrapper／业务hook保持 |
+
+验收绑定这两处布局：桌面与窄屏、英文及长译文文本内收／按钮不相交、搜索可用；footer缩紧且末字段可滚到其上方，弹窗键盘／取消回焦保持。复用原UI与responsive E2E，只补缺失几何断言，不跑模型／资金／沙箱／完整默认套件。沿各仓本轮自有PR交付，正常合main／清本轮分支。
+
+设计思想：业务行为继续归原feature hook／组件，局部CSS只管布局；操作尺寸由内容决定、容器负责重排；复用已有组合边界而非新增继承体系。截图之外的架构重构须先有具体重复／耦合证据，单列后续，不将模式数量当优化成果。
+
+**本批交付**：App [#60](https://github.com/LordFoxFairy/kokoro-app/pull/60) 已合main `a2bb4a4d`，树核等停写已验源 `52503adf`。主控相关UI454 PASS／完整非增量TS／相关ESLint／build通过；原Playwright预览runner 12 PASS（中／英／德1000与320px＋原footer三视口亮暗主题），normal native-auth英文另实测。六个生产／测试修改输入在门禁与build前后SHA核等；不重跑默认／模型／账务／沙箱。九语言布局策略不等于九语言全部词条翻译已验。
+
+GitHub App本次CI annotation明确任务因账户账单／额度问题未启动（不是测试执行失败），未调整付费／额度或绕保护；交GitHub账户管理员处理。Root只更新精确App gitlink与实际Git blob inventory，Task B同文件其它hunk／PR未修改或合入。
+
+本批两个截图问题已收口，不标记全站UI完善；后续只按真实页面证据继续修交互／布局和相邻冗余，不做无边界架构重写。
+
+## 上轮已交付：Agent 真实闭环 → AG-UI 单轨呈现 → 工作台首页
 
 **本轮实现与验收已收口，Git 最终出口以自有 Root [PR #87](https://github.com/LordFoxFairy/Kokoro/pull/87) 的 MERGED／main clean 为准。** 机器 Goal 在最终出口核对前保持 active；不重开历史 Task A，不接管 Task B／Mori，不部署。
 

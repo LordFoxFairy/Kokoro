@@ -1,5 +1,13 @@
 # Current Facts
 
+## 当前批次：设置截图缺陷与多语言适配（2026-11-12）
+
+正常登录浏览器已复现：Browse文字126.74px溢出86px固定按钮、Import memory底栏90px且白底与面板不符。现按钮内容定宽／容器换行、搜索保可用宽度；底栏桌面58px并复用Settings背景，保sticky／正常流／末字段／焦点行为。删除相邻失效class和样式，不加基础组件、业务层、依赖或协议。
+
+App自有#60已正常合main `a2bb4a4d`，树等已验源 `52503adf`。主控相关UI454、完整非增量TS、相关ESLint、build通过，原预览runner12 PASS：中英德桌面／320窄屏，及原footer1280／876／320亮暗主题全部断言；六修改输入SHA冻结核等。正常native-auth英文另实测，原Web运行配置在预览／build后已恢复，不跑模型／资金／沙箱或全部默认套件。全部词条翻译完整性不是本次结论。
+
+Root精确配对App与实际blobs，其余gitlink尤其Task B保持。GitHub本次App CI任务因账户账单／额度未启动，非测试已跑失败；未付费／增额或绕保护。唯一[TODO](../todo.md)维护本批与原owner后继，不把这两个问题通过冒全站UI完工。
+
 ## 本轮核心打磨：实现／验收收口（2026-11-12）
 
 当前唯一执行清单见[TODO](../todo.md)，设计裁决见[方案§12～14](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)。Agent #47／main `16984caf`、BFF #27／main `05a10749`、App #59／main `dcc0faff` 已正常PR合并；各merge树逐一核等停写已验源，三仓本轮topic已清。Root #87负责精确组合和最终main clean出口，未核出口前机器Goal不预写完成。远端CI失败已披露，未绕保护；Task B／Mori／部署不动。
