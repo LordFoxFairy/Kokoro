@@ -58,7 +58,7 @@
 
 ## 7. 正常本地运行与真实依赖
 
-主控先恢复持久运行配置，不复用测试临时库／模型 fixture 作为日常站点。不新造账号、模型路由、余额或每次 bootstrap；不去掉 Billing 许可来做“免费聊天”。保原各 owner 受管配置，单库迁移不是本片前置。
+主控先恢复持久运行配置，不复用测试临时库／模型 fixture 作为日常站点。保留现有模型路由，不造余额或每次 bootstrap；原先优先复用账号，本轮用户已明确全权授权本地账号准备，允许一次专用持久开发账号与最低成员接入，积分只走Billing原事务／流水并如实标明operator操作；不去掉 Billing 许可来做“免费聊天”。保原各 owner 受管配置，单库迁移不是本片前置。
 
 启动 Worker 前核现 owner 运行配置、待处理任务和队列归属，防止盲目消费旧 durable 任务；只操作本轮已登记进程／容器。缺少真实模型或可用 MCP 时给出明确缺口，不把 fixture冒外部供应商验收。MCP优先复用已批准连接；本地协议服务只证明实际协议调用，不冒某个外部账号已接通，也不放宽默认 egress／SSRF边界。
 
@@ -100,4 +100,4 @@ Task B App #49 的 client.ts Share实际hunk与conversation-thread props存在�
 - [AG-UI events](https://docs.ag-ui.com/concepts/events)、[AI SDK readUIMessageStream](https://ai-sdk.dev/docs/reference/ai-sdk-ui/read-ui-message-stream)：后继App片复用原有事件和SDK reader，不为新展示新增第二网络协议。
 - [Manus quickstart](https://manus.im/docs/introduction/quickstart)：首页借鉴目标→上下文→执行→成果的任务路径。仅官方公开说明，未做登录态DOM／截图测量，不冒一比一视觉证据。
 
-本轮仅只读核源码／当前包／PR实际hunk与公开官方资料，未运行业务服务、模型调用、沙箱或工程测试；这些不是通过记录。多agents只读分工：agent_runtime_closure、agui_closure_design、workbench_home_design；主控负责实际写入和验收。
+本方案初审时仅只读核源码／当前包／PR实际hunk与公开官方资料。后继已开展正常运行恢复、登录与首条任务，具体通过／失败以[TODO](../../../todo.md)与[CURRENT](../../CURRENT.md)的当前记录为准；尚无真实模型／沙箱首片通过。多agents只读分工：agent_runtime_closure、agui_closure_design、workbench_home_design；主控负责实际写入和验收。

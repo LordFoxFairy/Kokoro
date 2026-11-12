@@ -2,11 +2,17 @@
 
 ## 当前执行：Agent主链与工作台打磨（2026-11-12）
 
-用户要求优先真实Agent／Skills／MCP／沙箱／产物，再打磨AG-UI与/app首页。已创建active机器Goal，唯一状态看[TODO](../todo.md)。本轮基线Root07241f03，现只读调查与已独审通过的[首片候选设计](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)，尚无生产实现／业务测试或视觉验收；不沿用下方上一批“Goal为空”为本轮状态。
+用户要求优先真实Agent／Skills／MCP／沙箱／产物，再打磨AG-UI与/app首页。机器Goal为active，唯一状态看[TODO](../todo.md)。本轮基线Root07241f03；[首片设计](superpowers/specs/2026-11-12-agent-runtime-closure-design.md)已独审，普通后端复用原BackendProtocol／registry，未新增平台。当前没有Agent生产改动或真实模型闭环。
 
-现沙箱已有BackendProtocol与state/local_shell/docker/e2b/custom registry，不重做插拔体系；实际缺口是普通任务默认state、沙箱切换和部分隔离／过程捕获条件与Custom API选择耦合。原冻结recipe在装配前核request／lease并拒不兼容配置，首片保留这个正确行为、不另造读取／迁移机制；scratch过程输出与普通workspace交付不是同一来源。App live入口丢SDK chunks，现实时正文仍自拼；历史slot才实际用SDK reader。这些当前态不由旧“已AI SDK”描述覆盖。
+正常持久运行已恢复：复用原基础设施及凭据，按canonical有备份补现有BFF／Agent schema drift，未重写业务行／清卷；五个HTTP服务health/ready实际200，独立Agent Worker运行。用户全权本地授权后，专用开发账号经原IAM注册／SMTP验证，operator补普通member，已正常浏览器登录。Billing原CreditService事务先发10、再为定向供应商诊断发10（累计20个非现金开发积分），首笔真实页面刷新及+10流水已核；不是管理员HTTP或邀请旅程通过，不伪造Session、不直接改余额。
 
-原Agent HTTP私有持久配置仍在，但不等于正常Worker配置／真实模型任务已经通过。后端插拔沿原接口，Custom API只管授权环境；首片先真实文件→原Storage FINAL，过程版本另核，不伪造同源。Task B四PR与Mori／部署不动；主控负责写入、实际资源和验收，三具名agents只读。
+BFF仅HealthController增加ReadinessIndicator显式注入，修正常tsx源码启动；source-mode RED→GREEN。相关架构测试另一个原断言遗漏已有withReceipt能力，已核a3e19062来源后保持严格keys补齐。主控该测试文件43 PASS／0 SKIP，build／typecheck／正式lint通过；已本地提交BFF ee62845，未推送／建PR／合并；Agent配置、装配、SDK loop未改。
+
+首条正常浏览器请求暴露BFF既有Agent开关false；核队列后启用，原请求重试202准入。System正式resolve初503，实证原因是provider DNS落198.18/15且未获当前精确hostname许可；仅使用已有配置给该provider hostname opt-in，resolve恢复200，不重签key／改路由／手写健康。实际预算201后供应商stream抛openai.APIError，任务没有正常正文；并非已完成真实模型闭环。
+
+后继预算不足正式422（model_admission_insufficient_credit、schema有效）被Agent误投影internal_error，两个本次subject的未派发attempt仍requested_unknown、恢复404；owner只读查无对应Billing admission，不按“存在hold”处理，不手工释放／改pending。早先把model_budget.py第502行误读response-invalid的判断已撤回：它实际是已知denial的raise。下一步只补供应商安全错误定位与known-denial语义，不盲重试或绕过Billing。临时无内容observer已停，官方Worker已恢复；Skills／MCP／沙箱／FINAL、AG-UI单轨与首页验收仍待。Task B／Mori／部署不动，秘密／诊断／备份只在ignored。
+
+原冻结recipe在装配前核request／lease并拒不兼容配置，保留它；scratch过程版本与普通workspace交付不是同一来源。App live入口丢SDK chunks、实时正文仍自拼，历史slot才用SDK reader；这些现态不由旧“已AI SDK”描述覆盖。
 
 ## 当前批次：A-15证据与公开文档（2026-11-12）
 
