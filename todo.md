@@ -8,9 +8,9 @@
 
 - [x] A-15旧证据重新定性：约303～306ms是已有登录态新context的页面可用耗时，不是单API／进程冷启动或生产p95；不据此先改认证缓存。
 - [x] 当前精确组合真实Project两对采样：Root6a61／Appc3b09／BFF7c503／IAM40cda；冷306／296ms、热15／14ms，native/browser/cleanup通过。关键GET在+193／183ms发起，headers+237／234ms；缺精确request-id不硬归因BFF/IAM。非关键owner未配置503明确保留。
-- [x] 文档最小片实现并验收：App源码818141e9；产品功能目录保留，外部skill.list与第一方任务参考分开；改旧Bearer／上传响应／未声明control；生成资源目录与操作深链，保209操作／446schemas。门户check及真实浏览器／窄屏／浅深代码对比度通过，独审CLEAR。
-- [ ] A-15仅补观测缺口：在同一个私有runner补Navigation／Resource Timing和rAF UI-ready时间，保原业务oracle与精确source gate；不重复完整产品旅程，不在未定位前改生产源码。
-- [ ] 正常合入我们自己的App／Root PR，精确组合与来源验证后清理本轮topic／预览进程。未merge之前不写已交付。
+- [x] 文档最小片实现并验收：App #58源码818141e9、merge026a7d12同树，已合main；产品功能目录保留，外部skill.list与第一方任务参考分开；改旧Bearer／上传响应／未声明control；生成资源目录与操作深链，保209操作／446schemas。门户check及真实浏览器／窄屏／浅深代码对比度通过，独审CLEAR。
+- [x] A-15阶段缺口已补：原业务oracle与source gate保留；Roota5b9／App818141的两对收据c1694f00整体／cleanup通过。document首字节18～22ms、DCL52～55ms，精确GET发起198～203ms，rAF UI-ready252～276ms；原断言315～320ms。只定位，不把观测开销算作生产固定等待，也不编造优化收益。
+- [ ] Root自有PR配对App已合main026a7d12，核93项来源／85个真实Git blobs；正常合main后清理本轮topic与预览进程。App #58已MERGED，不待Task B。
 
 本轮证据与范围见[报告§23](docs/reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。100ms冷态目标尚未达成，不因脚本PASS冒称性能闭环。文档与owner契约认证声明纠正是两项事实，不伪装全部接入已经统一。
 
@@ -40,7 +40,7 @@ Capability Root pin `24094960`来自已交付#13，已合入#12头`e068fcaa`但�
 | A-13真实外部渠道 | 渠道owner；Telegram／LINE／Slack真实账号授权、收发、撤权条件齐备后验收，当前本地协议证据不冒真实供应商 |
 | A-14本人语音 | 用户＋App owner；用户方便时主动口述、编辑并显式发送，沿此前“稍后验收”，不保留录音／原文 |
 | 可选完整E2B生命周期 | Agent／运行环境owner；实际采用云或完整自托管时补创建／重连／独立回收，既有官方envd Docker证据不重跑 |
-| A-15体验余量 | App owner；本轮当前两对冷306／296、热15／14ms，正补浏览器阶段观测；100ms冷目标未达，未证明需要改IAM／缓存／架构 |
+| A-15体验余量 | App owner；本轮当前两对冷306／296、热15／14ms，已补浏览器阶段，rAF252～276ms；下一独立性能切片仅沿DCL→hydration／首关键GET定位，100ms冷目标未达，未证明需要改IAM／缓存／架构 |
 | IAM共享源IP额度／非合作写入取消 | 原owner容量与运行语义边界；代表性负载核验另定，不随意抬限流，不宣称HTTP取消等于事务硬回滚 |
 
 真实支付关闭，未部署；上述不作为本轮独立代码故障或新增阻塞。

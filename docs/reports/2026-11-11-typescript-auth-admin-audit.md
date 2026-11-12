@@ -766,7 +766,7 @@ Root本片93项App来源按85个真实已提交Git blobs重核；实际拓扑PAS
 
 ### 公开文档分片
 
-App源码818141e9（同一自有PR），仅developer-docs及内部CURRENT／INDEX。复用现VitePress门户、产品功能目录与固定28.35 owner artifact，不新平台、不复制Schema、不改canonical/catalog/依赖或生产源码。
+App #58源码818141e9，正常合main026a7d12（两树精确相同），仅developer-docs及内部CURRENT／INDEX。复用现VitePress门户、产品功能目录与固定28.35 owner artifact，不新平台、不复制Schema、不改canonical/catalog/依赖或生产源码。
 
 - 外部快速开始只教真实Web GET /v1/skill.list，Bearer不携带Cookie／内部secret；原五个第一方生命周期例改native issuer Cookie／固定Origin／服务凭据，保原审批、resume、流和分页逻辑。
 - 纠正旧手写版本、generic上传成功与未声明run.steer；新增外部skill.list例与上传／技能响应schema回归。
@@ -779,4 +779,20 @@ App源码818141e9（同一自有PR），仅developer-docs及内部CURRENT／INDE
 
 BFF28.35普通operation仍保历史Bearer security，而现产品运行是native Cookie／Origin。BFF #17确有canonical version实际hunk（base22.3→head29.3），即使security section没有逐行变更也不能把后续版本／artifact配对当独立。门户显式披露差异，不篡改生成security、不宣称owner已纠正；交BFF owner随原PR版本化收敛。Task B四个Draft PR／分支／工作树不动。
 
-本批仍需A-15仅阶段观测、App／Root正常PR合main、精确组合与本轮topic／预览清理。冷100ms未达；不为结案虚构收益，也不因需原owner把已交付Task A重开或标blocked。
+### A-15最小阶段补口（当前精确源码，无生产改动）
+
+主控在原私有runner补只读Navigation／Resource Timing和rAF可见／可编辑观察，保原heading／input／软返／无额外写／cleanup断言，不改变任何产品状态。Root a5b9f2ec／App818141e9精确已提交组合，收据c1694f00fd30b2d290f8e625整体PASS、native退出0、cleanup PASS。
+
+| 相对document导航阶段 | 冷1 | 冷2 |
+| --- | --- | --- |
+| document responseStart／End | 21.5／21.7ms | 17.8／18.1ms |
+| DOMContentLoaded end | 54.7ms | 51.6ms |
+| exact GET ResourceTiming start／requestStart | 202.5／233.8ms | 198.3／226.9ms |
+| exact GET headers／bodyEnd | 260.3／260.6ms | 240.4／240.5ms |
+| rAF观察heading可见＋input可编辑 | 275.9ms | 251.9ms |
+| 原Playwright测量，含断言等待 | 320ms | 315ms |
+| 原软返测量 | 17ms | 17ms |
+
+这是n=2本地Project观察，不是生产p95、普通Conversation复测或性能收益；rAF也不是逐像素绘制承诺。document返回很快，主要未决区间在DCL之后到首关键GET，原断言还含约43～63ms观测差。未证实授权缓存、删scope或合并owner能解决该区间，因此不修改生产认证／缓存来凑100ms目标。后续仅沿App layout／hydration／首关键数据读取作独立最小切片，不反复扫全仓。非关键依赖未配503仍保留，不把这次片段PASS冒完整产品外部依赖验收。
+
+App #58已实际MERGED；Root配对merge026a7d12并从真实Git blobs重核93项来源／85个唯一输入，内容摘要均未变化，拓扑／15边0违例／原checkpoint通过。Root自有PR与本轮topic／预览清理待最终出口。冷100ms未达；不为结案虚构收益，也不因原owner未决把已交付Task A重开或标blocked。
