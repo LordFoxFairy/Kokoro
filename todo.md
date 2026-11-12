@@ -2,30 +2,26 @@
 
 更新：2026-11-12。唯一执行清单；本轮基线Root `07241f03`，不重开已交付Task A，不重复扫描凑问题。
 
-## 当前 Goal：Agent 真实闭环 → AG-UI单轨呈现 → 工作台首页
+## 本轮 Goal：Agent 真实闭环 → AG-UI 单轨呈现 → 工作台首页
 
-机器 Goal 已创建为 **active**（动态状态以工具为准）。首要目标不是再造框架，而是把现有可插拔Backend、Skills/MCP、Storage及事件链正确接齐，完成正常持久环境的一条真实任务。Task B／Mori／部署不动。
+**本轮实现与验收已收口，Git 最终出口以自有 Root [PR #87](https://github.com/LordFoxFairy/Kokoro/pull/87) 的 MERGED／main clean 为准。** 机器 Goal 在最终出口核对前保持 active；不重开历史 Task A，不接管 Task B／Mori，不部署。
 
-| 阶段 | 当前状态／完成条件 | 负责人／写区 |
+| 阶段 | 结果与边界 | owner |
 | --- | --- | --- |
-| G0 设计与范围 | **已收敛、分片实施**：[实施方案](docs/superpowers/specs/2026-11-12-agent-runtime-closure-design.md)沿现BackendProtocol／registry；运行中发现的准入补口已过§12独审，不引入新owner／公开字段／Schema | 主控唯一台账/Git/集成；G3生产按SDK引擎与UI终态隔离写区，具名agent独审，资源apply主控串行 |
-| G1 正常运行＋Agent首纵切 | **阶段通过**：正常native登录、真实模型/Skill/MCP/Docker/FINAL与刷新首片已验；普通脚本生成→失败后同会话仅交付补缺已验，分别保留两Run事实。现chat-default已沿原policy指向已验revision，正常resolve及新任务Default chat已核。不抹去历史失败或额外路径检查exit1 | Agent现配置／Factory／profile／sandbox；Root恢复既有本地材料／资源与实际验收；不动Task B控制面 |
-| G2 产物来源闭合 | **首片阶段通过**：真实报告过程版本与FINAL分别取证，同字节下载/刷新已核；普通脚本源到FINAL的跨Run恢复已到下载。不把scratch output_path与同名workspace文件冒同源。指定过程版本直接交付同字节FINAL需沿原owner API裁决后再实施，不暗加复制／工具入口 | Agent／Storage现交付与不可变版本消费者；主控把控设计增量 |
-| G3 AG-UI／AI SDK | **推进中／设计§13已收敛**：live目前丢SDK chunks、正文仍自拼，历史才使用SDK。推荐现decoder→mapper→SDK reader唯一正文装配；engine仍管命令／cursor／恢复。活动显示按稳定业务ID收敛；准入失败文案应覆盖资金／权限，不把资金拒绝只解释成模型权限；不暴露raw reasoning/tool payload、不再造useChat提交／恢复链 | SDK引擎：agent_runtime_closure；UI终态/文案与集成：主控；独审：agent_spec_review。同文件Share实际hunk保护，现contract默认不增量 |
-| G4 首页与文档／集成收口 | **推进中／设计§14收敛**：保留现首页单Composer与工具按需入口，仅补模型目录首次失败重试和Connectors可见加载／错误；窄屏／键盘／长草稿复用原保障。参考Manus公开说明，可视对照尚未做。更新产品/API适用文档（Agent内部API文档2处已存历史v2 proto链接在此收尾，不恢复旧协议），停写验收后自有PR合main／清本轮topic | App首页已有组件/CSS，Root精确组合；不改后台／营销站或重做品牌 |
+| G0 设计 | [实施方案](docs/superpowers/specs/2026-11-12-agent-runtime-closure-design.md) §12～14；复用原可插拔后端、owner与协议，无新框架／OAuth层／Schema | 主控设计与集成；具名 agents 分区实现／独审 |
+| G1 真实主链 | native IAM＋真实模型＋structured-report Skill＋Context7 MCP＋Docker＋Storage FINAL＋浏览器已验，原失败与个别命令 exit1保留。普通脚本生成后资金拒绝，再同会话仅交付恢复也已验，不拼成一个Run成功 | Agent／BFF既有边界；主控正常持久资源 |
+| G2 产物来源 | 报告1469bytes，原workspace版本／FINAL／下载 SHA `de656263…ae12cf4`核等；普通脚本108bytes／SHA `49daae46…7cde86e`跨显式失败恢复后同字节交付。两终态容器已回收，不混同scratch版本和可变路径 | Agent／Storage现接口 |
+| G3 正文与终态 | live／paged同一AI SDK reader，reducer只采用绝对snapshot；采用先于cursor／terminal／错误，同会话reopen退休旧queue。exact Run旧未决Skill中性结束，资金文案不冒权限唯一原因。主控冻结门及独审通过 | SDK agent_runtime_closure；UI／集成主控；agent_spec_review独审 |
+| G4 首页／文档 | 保留单Composer，仅补模型／连接器可见读取反馈和既有模型重试。真实菜单／Esc回焦、390×844单textarea／scrollWidth390通过。公开产品子目录／API分层保持，产品指南／内部当前设计已同步 | Composer agui_closure_design；文档／最终浏览器主控 |
 
-验证只补本次独有缺口：首片配置与冻结/lease、真实Docker隔离与回收、FINAL字节、正常浏览器主旅程；AG-UI再承接断线／刷新／审批／取消／迟到的现有必要风险，不另铺测试平台。不以数目、ready或fixture冒真实供应商闭环。
+### 精确交付与实际验证
 
-### 本轮实际运行进展（2026-11-12）
-
-- **已推源码候选**：Agent `ea20468`（生产修复 `c2c563e`，后继仅README）／原[Draft #47](https://github.com/LordFoxFairy/kokoro-agent/pull/47)；BFF `ee62845`／原[Draft #27](https://github.com/LordFoxFairy/kokoro-bff/pull/27)。Root候选 `6d94d170`／[Draft #87](https://github.com/LordFoxFairy/Kokoro/pull/87)精确记录两gitlink；App从main `026a7d12`进入 `codex/workbench-sdk-projection` 实施G3/G4；Next自动类型引用差异不纳入交付。源组件门沿已冻结证据，不重复全默认；Root拓扑／15 edges兼容／原checkpoint通过，不等于全部Goal交付。
-- **正常持久环境已恢复**：七个核心HTTP owner ready，独立官方Worker运行；复用原PG/Redis/MinIO/Scanner，不清卷/重建。专用开发账号原IAM注册/SMTP验证/正常浏览器登录，非platform admin，仅现动态Skill创作/安装角色。本地Storage备份后按Prisma exact diff补枚举/两列，后置diff为空；Capability精确已知parent经正式installer回填原唯一绑定，后置canonical通过。现MCP元数据/授权两surface缺项亦已补齐；恢复原keyring，不新建认证层。
-- **真实Skill/MCP已接入**：structured-report经正常导入安装并enabled；真实Context7握手/发现两工具/连接与本次实际文档查询成功。站点策略只补App已支持的`en`，解决浏览器locale导致manifest403而隐藏入口；正式navigation配置只补现mcp入口，不改App默认fallback。正常Composer可显式选择Skill、MCP和模型。
-- **首份真实报告已闭合**：`conv_49012e43`首次因未注册surface assembly_failed/模型0派发，保留失败；补配置后Regenerate completed，冻结新模型/Skill1/MCP1/Docker，12次真实模型派发封存。报告由native write_file落实际workspace并deliver；FINAL/CLEAN **1469bytes**，工作区版本/实际文件/浏览器下载SHA `de656263…ae12cf4`核等，正文与交付刷新保持；容器已清理。额外绝对`/outputs`命令检查exit1/路径错误如实保留，未冒所有工具通过。
-- **普通脚本补缺已到交付**：`conv_c84850da` plain execute（无Custom API/output_path）exit0，实际`/workspace/outputs`生成108bytes/SHA `49daae46…7cde86e`。随后余额不足造成明确not_dispatched拒绝，不归脚本失败；只补一次收尾dev额度后，同会话新请求仅deliver既存文件，不重跑脚本/MCP。下载与原脚本/跨失败Run保留文件同字节，刷新保持；收尾Run completed、仅deliver1/execute0/MCP0，2次调用capture8/release12/pending0，cleanup完成；不把两Run写成单Run成功。
-- **资金边界**：累计130个有receipt/ledger/audit的非现金开发积分，不是真实支付。首成功Run12项ACK全部captured，capture54/release66/pending0；脚本失败Run前5项capture17/release33，随后余额拒绝明确封存。原供应商overload的held30与两条旧requested_unknown依原恢复语义保留，不猜零/退款、不混算成当前成功Run成本。正常chat-default原policy已指向已验revision，display名为Default chat；旧默认标志一直为true，无空窗，不造两label原子切换API。
-- **G3 当前阶段证据**：主控 UI 终态先 RED（4 个新增行为失败），修复后同三文件 **68 PASS**，独审 CLEAR；exact Run 全部历史 passage 未决 Skill 中性结束，不改 ready/failed，不增加读取。SDK writer 仍在引擎区实施，故这不是组合最终验收。
-- **下一执行**：G1/G2收据已收拢，进入G3 SDK实时正文单轨、历史终态/余额拒绝展示；再做G4首页/产品API文档/自有PR合main收尾。真实历史可复用，不重跑MCP或全量测试凑数。Task B／Mori／部署不动；所有凭据、备份、操作脚本和原始收据仅本地ignored。
+- **Agent #47 → main `16984caf`**，树等于已验 `75c0b6b`（生产 `c2c563e`）；**BFF #27 → main `05a10749`**，树等于已验 `ee62845`；**App #59 → main `dcc0faff`**，树等于已验 `61af3848`。三仓main干净，本轮local／remote topic已清。远端CI均有失败状态，已逐PR披露；不冒CI绿、不绕保护。
+- **App冻结验收**：主控默认6533 PASS（含contract／architecture行为），全ESLint、非增量TS、22个固定生成检查与生产build通过。57个修改输入在门禁前后逐文件SHA核等；后继只有3份当前文档。SDK／Composer／UI独审CLEAR。不是拿数量代替验收；具体风险沿原定向RED→GREEN承接，不再重跑后端／全量资源。
+- **真实浏览器**：复用报告与脚本交付真实历史；失败、成功正文／card及硬刷新恢复。脚本读取初次遇429，窗口后原只读重载两条消息成功，随后硬刷新无缺页；不放宽限流、不重发任务／模型。原Skill不再永久Loading，资金拒绝明确涵盖积分／权限。独立preview test:e2e未重跑，受影响正常认证UI直接实测，不冒全产品或Manus像素等同。
+- **公开文档**：产品任务／文件指南Markdown、门户build与61页面／20402条内部链接通过；API原canonical不变。VitePress原大chunk warning保留，未冒新性能达标。
+- **Root精确组合**：三个owner上述main已固定，inventory从363个真实已提交Git blobs重算440个引用；拓扑、15 edges／0 violations与原checkpoint结果以本轮实际验证为准。其他gitlink尤其Task B Capability保持不动。
+- **运行与资金边界**：原PG／Redis／MinIO／Scanner复用，未清卷／重建；正常HTTP＋官方独立Worker运行，App仅为build短暂停后恢复。累计130非现金开发积分有原owner receipt／ledger，非真实支付。旧供应商overload的held30／unknown evidence保留，不猜零／退款；当前成功Run单独封存。凭据、备份、原始收据和机器操作脚本只在本地ignored，保留恢复资料，不进PR。
 
 ### 已确认的边界
 
