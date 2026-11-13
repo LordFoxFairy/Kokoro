@@ -26,7 +26,8 @@
 - [x] B-14 Skills语言本片（composer_ui_audit实现／api_perf_audit独审／主控验收）：en两现key补齐、两日期调用显式locale，其他八语言不改。主控5输入冻结41 PASS／types／build；正常英文桌面＋320px文本内收/日期正确、无横溢/长标签自然换行。原#49代码844fbbcb＋文档0c6078e3已推，正常App同源激活，不重跑全默认/九语截图矩阵。
 - [ ] B-13后台（主控验收；原Admin #7/e7f2f79）：成员目录读取/本页筛选/中英UTC、390px标题换行、撤权403清空及重新核对已验；原正常临时角色恢复false/v6，测试Session清理，原工作会话保持。模型/标签与计价写后回读的缺失旅程本轮已补，详见下一子项。剩余只按原具名范围：Skills管理员审核→用户可见性、Provider/MCP/API管理、用户/团队邀请角色及对应owner审计，以及本轮确定的草稿发布UX修复；不扩任意User360/退款/统一跨owner日志平台。PR继续Draft，整后台未宣称闭环。原第六次ENOSPC失败/人工回收记录留CURRENT与原计划，本轮第七次已自动回收，不再将旧磁盘预算列作现阻塞。
   - 最新实测：Root58215eca精确六owner第七run，r1空bounds发布409保留；r2显式8192/1024草稿201/发布200、label201→两次CAS200别名修改恢复、rate/policy各201、硬刷新/正式GET/原body-key replay通过，五表资金/Run均0。原driver恰1revision oracle FAIL保留、cleanup PASS；主控独立补充实录verifier PASS，不冒原driver或全部B13绿。正常数据/报价不变，无模型/Provider执行。前文ENOSPC与预算为第六次历史；当前容量恢复，未新复制源码/依赖。
-  - [ ] 下一最小修复：Admin模型草稿两bounds“可空”须解释仅草稿，发布前应可补齐并提供确定反馈；当前只读详情导致用户只能另建修订。System正式完整bounds约束保持。该缺口已由真实409复现，不开展通用编辑框架。
+  - [ ] 源码已交付、native补验待收口：BFF原#17/396897b8（Public28.38/217），主控真实Nest/loopback owner与契约190 PASS；原整contract1400/2旧oracle失败保留、两原oracle准确修正后不重跑全套。Admin原#7/df7883d固定46ops、退役旧唯一vendor，原草稿PATCH/CAS/unknown/onPrepared退休/取消/不rebase接通，最终全363/0skip、全lint/types/contract/build/post-types和独审通过。App原#49/c1444ee0桥接，主控56/build通过。三仓已推原PR，normal App/Admin/BFF按原配置恢复。Root精确组合拓扑/15边0违例/原checkpoint PASS，未合main/部署。
+  - [ ] 下一检查点：隔离native真实同一草稿编辑补齐→publish→刷新（仅本缺口，不重复费率/模型/支付）；准备接线遵新轻量复制规则，不复用旧node_modules/venv复制配方。此前r2另建成功不代替该路径。
 
 - [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消已随PERF-03收口，icon404已核为可选媒体缺省回退，见下；不为非缺陷新增代码。侧栏有限切片已沿App原#49提交推送00334cbe：32既有key/九语言、15实现测试输入冻结，主控160 focused/相关lint/完整非增量TS/正常production build、独审CLEAR；真实French项目标题与空态正确并恢复English。此次实际1000px，未冒新390通过；旧15-key阶段窄屏单列。无locale框架/导航资格/协议扩展，不冒全站翻译闭环。manifest caller取navigator而非设置locale另记事实，影响待定向核验，不冒System内容错误。
 

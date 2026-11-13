@@ -1,3 +1,13 @@
+## 2026-11-13 B13 当前草稿修正源码已交付，native补验排下一检查点
+
+原计划设计门落实：BFF原#17/396897b8固定Public28.38/217，System仍49a/既有845契约pin，只正规生成已有PATCH，源头草稿/不可变性/权限不变。现BFF现窄adapter+精确admin前缀/UUID/服务准入承接required key/CAS、closed非空partial、null/省略及同id草稿ACK。主控正常工作区build与五相关文件190 PASS/0SKIP；writer全lint/types/generator/semantic通过，独审CLEAR。原整contract1400PASS/2FAIL保留，准确修复原delete_series的16项exact enum与feedback负控误删无关Share项后两文件44 PASS；主控190已包含，但未拼成重跑全contract绿。
+
+Admin原#7/df7883d固定该BFF原字节、46消费项并退役旧唯一无依赖vendor。复用原表单编辑当前草稿，冻结id/version及不可修改model_id/revision；新读只提示重开不自动rebase，合法空bounds草稿仍可保存，发布前缺bounds有原页反馈。原journal写入读回后onPrepared只退休matching编辑器，unknown显式原命令恢复，不清key/body/CAS或算成功；取消/卸载代际阻止异步validation和迟到接管。主控最终全47文件363 PASS/0SKIP、全lint/非增量types/两正式contract/build/post-types通过，停写18输入独审CLEAR，后继只有验收文案及纠正旧版本注释。
+
+App原#49/c1444ee0仅同源桥精准开放此PATCH，原64KiB/body/key/CAS/Origin/Cookie/signal保持；主控56 focused/build、writer scopedlint/完整types通过，Public28.37子集及原生成链不盲升级。Root固定三仓精确HEAD，inventory核413真实committed blobs/507引用，拓扑/15边0违例/原checkpoint通过。三仓已推原PR，未merge main/部署。原B13第七次两revision/rate/policy真实旅程仍只证明旧组合，不借它代替本片新路径。
+
+运行恢复先只读：53 Run全终态，Agent dispatch/BFF launch/steer/scheduled待办0，原两财务未知项保持；只替换主控自己的BFF进程，healthz/readyz200。App/Admin只短停用于各一次正常工作区build后同配置恢复，未复制源码/依赖、未动PG/Redis/卷/其它owner。App dev生成next-env路径diff单列未提交。下一检查点是隔离native真实“同一草稿PATCH补齐→publish→刷新”，不重复模型/费率/支付；新fixture须遵当前轻量源码/依赖规则，历史复制配方不复用。B09正式invite/accept/leave已定位，缺隔离双身份接线，不扩Project ACL或用logout401冒成员403。
+
 ## 2026-11-13 Task B 当前收口：侧栏已交付、后台模型/计价后继旅程已验
 
 Goal实查active，整体Task B保持OPEN。App原#49新增00334cbe（基线bf8ef938，16路径含当前文档）：侧栏32个既有key九语言自有译文，补118缺译/7占位；拖动ARIA仅现有t向hook传必需label，两个真实caller承接，不改排序/权限/焦点/迟到逻辑、用户标题或locale框架。主控最终160 focused、相关ESLint、完整非增量TS、正常工作区production build通过，15输入前后SHA核等、独审CLEAR。最新真实French项目标题/空态正确并恢复English；实际目标视口1000×716/document1000，工具临时390 override未应用，不称本阶段新390验收。原15-key阶段窄屏证据仍单列，未重跑完整默认或模型/资金。

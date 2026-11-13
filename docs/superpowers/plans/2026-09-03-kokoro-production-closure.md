@@ -1930,3 +1930,20 @@ B13第七次隔离run0eb09c8e843ee281ba2f37f4绑定Root58215eca/已提交六owne
 后续只做已发现差额：B13草稿发布提示/可修正路径；原具名Skills审核、MCP/API管理、团队邀请/角色/审计等TODO仍OPEN，不扩User360/统一审计框架。共享移动侧栏primitive与manifest设置语言输入另列观察；不以有限词条齐备冒全站翻译完成。沿原PR，不部署、不提前合整PR。主控只短停自己的App3310用于build，同配置已恢复；本轮无源码/依赖副本新复制，原B13副本创建早于新备份规则，后继不得复用旧复制配方新建。
 
 正常Agent Worker恢复补记：只读预检53 Run全终态、dispatch pending0（claimed53为历史）。Worker此前缺席，Agent.env.local本身缺BFF模型准入map；沿已登记launch_worker.py从BFF purpose凭据文件精确匹配当前tenant/caller/surface，进程内复用原secret/System角色并移除HTTP-only字段，不新增凭据或改生产配置。正式AppConfig/签名/Platform文件通过，主控启动原正式worker入口并观察到consuming日志；登记实际PID/exec及九个正常listener。此为消费就绪，不冒本轮新模型端到端成功，未提交新Run；旧财务未知项保持原正式恢复边界。
+
+### 2026-11-13 B13 草稿修正接线设计门（当前实施）
+
+- 事实/owner：System49a5已有updateModelRevisionDraft；System拥有草稿/发布不可变性与版本校验。BFFaad/Admin e7当前只承接create/publish，导致空bounds合法草稿没有产品内修正入口，真实409已留证。
+- 选定位置：BFF扩现有model-configuration窄adapter，发布具名PATCH /v1/admin/model-revisions/{revision_id}（required idempotency-key+If-Match、现platform-admin准入/system:write），只透传owner已有草稿更新；Admin复用现ConfigurationFlow与revision表单，编辑仅草稿，model_id/revision不可修改；提交显式CAS，unknown保原body/key/version，退休/取消/迟到沿原流程。发布前缺bounds给就地解释，不改变System的最终执行边界，不用自动复制新revision代替修正。
+- 契约：仅BFF兼容增量并提交固定owner blob给Admin正规消费；System及数据库不改，App原public子集pin暂不无意义升级，机器治理核兼容。保持Admin同源→BFF→System、内部服务身份+可信actor，不新增Cookie/OAuth/token/SDK/缓存。文档只改本次TECHNICAL_DESIGN/API_CONTRACT/current，Root单写台账。
+- 删除/恢复/验收：没有legacy双路，不建通用编辑框架或第二草稿store；缺权限/过时版本/未知结果与已发布拒绝承接原控制。最低充分证据为现BFF实际Nest/loopback-owner传输与closed schema/权限/CAS/取消负控，Admin实际表单编辑/发布前反馈与原命令恢复；源码停写后主控focused/types/build+相关contract，真实owner草稿修正→发布补缺旅程另记，不重跑模型/支付/全部B13。
+
+### 2026-11-13 B13 草稿修正候选验收/交付
+
+原计划设计门落实：BFF原#17/396897b8固定Public28.38/217，System仍49a/既有845契约pin，只正规生成已有PATCH，源头草稿/不可变性/权限不变。现BFF现窄adapter+精确admin前缀/UUID/服务准入承接required key/CAS、closed非空partial、null/省略及同id草稿ACK。主控正常工作区build与五相关文件190 PASS/0SKIP；writer全lint/types/generator/semantic通过，独审CLEAR。原整contract1400PASS/2FAIL保留，准确修复原delete_series的16项exact enum与feedback负控误删无关Share项后两文件44 PASS；主控190已包含，但未拼成重跑全contract绿。
+
+Admin原#7/df7883d固定该BFF原字节、46消费项并退役旧唯一无依赖vendor。复用原表单编辑当前草稿，冻结id/version及不可修改model_id/revision；新读只提示重开不自动rebase，合法空bounds草稿仍可保存，发布前缺bounds有原页反馈。原journal写入读回后onPrepared只退休matching编辑器，unknown显式原命令恢复，不清key/body/CAS或算成功；取消/卸载代际阻止异步validation和迟到接管。主控最终全47文件363 PASS/0SKIP、全lint/非增量types/两正式contract/build/post-types通过，停写18输入独审CLEAR，后继只有验收文案及纠正旧版本注释。
+
+App原#49/c1444ee0仅同源桥精准开放此PATCH，原64KiB/body/key/CAS/Origin/Cookie/signal保持；主控56 focused/build、writer scopedlint/完整types通过，Public28.37子集及原生成链不盲升级。Root固定三仓精确HEAD，inventory核413真实committed blobs/507引用，拓扑/15边0违例/原checkpoint通过。三仓已推原PR，未merge main/部署。原B13第七次两revision/rate/policy真实旅程仍只证明旧组合，不借它代替本片新路径。
+
+运行恢复先只读：53 Run全终态，Agent dispatch/BFF launch/steer/scheduled待办0，原两财务未知项保持；只替换主控自己的BFF进程，healthz/readyz200。App/Admin只短停用于各一次正常工作区build后同配置恢复，未复制源码/依赖、未动PG/Redis/卷/其它owner。App dev生成next-env路径diff单列未提交。下一检查点是隔离native真实“同一草稿PATCH补齐→publish→刷新”，不重复模型/费率/支付；新fixture须遵当前轻量源码/依赖规则，历史复制配方不复用。B09正式invite/accept/leave已定位，缺隔离双身份接线，不扩Project ACL或用logout401冒成员403。
