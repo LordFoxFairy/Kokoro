@@ -1,11 +1,11 @@
 ## 2026-11-13 当前推进：治理消费源码已配齐，协作多来源继续收口
 
 - 当前候选源码组合：Capability `efe18a1f`、BFF `d875e3bd`、App `ebf97674`、Agent `0ec00aec`。Root按413个真实已提交Git blobs重核476个仓引用/18处摘要变化；拓扑、15边0违例及原checkpoint通过。此为已提交源码组合，不是正常runtime切换/完整TaskB验收；未纳入BFF Public29/多source或Agent8.18未提交WIP。
-- Capability Custom API治理/审计owner已推原#12；主控真实PG/CAS/并发/回滚/精确718d父演进与HTTP/契约检查通过。BFF个人fresh三态、原ACK缺状态不伪active及新增推荐fresh-active已推原#17；主控29source/8原HTTP/build/正规生成及独审通过。后继Admin专用6RPC client/绑定已推`d875e3bd`，主控18source通过；曾发现非法receipt marker被丢弃后当普通错误处理，已真实RED→GREEN改为DataLoss，不加认证/cache/全局错误平台。Admin公共HTTP/装配和页面仍未接，不能冒后台闭环。
+- Capability Custom API治理/审计owner已推原#12；主控真实PG/CAS/并发/回滚/精确718d父演进与HTTP/契约检查通过。BFF个人fresh三态、原ACK缺状态不伪active及新增推荐fresh-active已推原#17；主控29source/8原HTTP/build/正规生成及独审通过。后继Admin专用6RPC client/绑定已推`d875e3bd`，主控18source通过；曾发现非法receipt marker被丢弃后当普通错误处理，已真实RED→GREEN改为DataLoss，不加认证/cache/全局错误平台。Admin六公共HTTP/装配19路径现已停写，主控source HTTP/client/contract33通过且19SHA核等，Public29候选227与修正221→已发行217完整逆证保持；完整owner build/native/页面仍待，不能冒后台闭环。
 - App治理37路径已推原#49 `ebf97674`，fresh/ACK分离、nonactive禁新增/编辑但保本人Delete、当前草稿原ID/CAS与已存Project引用、九语标签。独审发现新增API选中后变nonactive仍可保存，原section仅对新增差集重新检查，保草稿/零save；原保存的失效引用仍可保留/移除。主控6文件302通过/正式build/37SHA核等，writer808阶段与后继12例不拼成一份最终全套；独审CLEAR。新native治理旅程未跑，原58编译预览保持，不用源码HMR提前激活新前端。
 - Project共享read/FINAL新增真实PG已通过：same reader资格、分页、确认FINAL、去peer资产/路径/私有process、tenant/direct负控与revoke。初两次FAIL定位共享SQL未用$6导致42P18，最小承接原LIMIT后通过；三个自有库均回收，失败原件保留。此证据绑定当时单source schema，不冒后继新版多source已通过。
 - 多人执行的真实缺口已确证并过门：Agent namespace/Chat seq按真实user；BFF以每subject唯一source cursor保原HWM/state，public Conversation序不变，不reset/代理creator/双写旧HWM。新多source PG已通过creator→editor→creator、同key跨actor、原ACK、独立HWM、单public序、重复/冲突及旧fence；前两次fixture失败分别是新Conversation ID前缀及text alias排序，保留原件，修夹具不改生产序/放宽断言，三库均已回收。共享模型窗口采用Agent owner可选typed context＋按Run隔离checkpoint/workspace，BFF冻结有权限的whole-message后缀和确认FINAL、显式更早省略；不拼input/造摘要平台。Agent8.18切片已推原#49 `3e61c0a1`（canonical cc7b8e02），主控171contract/model及2真Factory接缝/contract-check、20SHA核等与独审通过，BFF现按正式来源消费；旧legacy FINAL adjunct不满足审查形状仍unknown，不放宽reader/重签旧锚，正式durable FINAL绑定已证明。
-- 主控唯一Git/资源/台账/最终验收；pricing_fixture_review写BFF协作/canonical，Agent owner片已停写，App/private/client源已交付。下一：消费8.18并冻结shared context→原parent演进/资源/SSE完整片→App协作及Admin公共面/native旅程。Goal active，原PR保持Draft，不merge/部署；共享DockerVM重启仍独立待确认，原QA恢复命令保留，不因此blocked整体。
+- 主控唯一Git/资源/台账/最终验收；pricing_fixture_review写BFF协作/SQL/8.18消费，custom_api_admin_client接管稳定Public29候选/API文档/公共装配补六Admin操作（227独立完整退221再退217父），不双写；models_ui_review只读准备App共享消费。Agent owner片已发行，App/private/client源已交付。下一：消费8.18并冻结shared context→原parent演进/资源/SSE完整片→App协作及Admin公共面/native旅程。Goal active，原PR保持Draft，不merge/部署；共享DockerVM重启仍独立待确认，原QA恢复命令保留，不因此blocked整体。
 
 ## 2026-11-13 Task B 多语言与公开 API 文档已交付，Project 协作进入明确设计
 
