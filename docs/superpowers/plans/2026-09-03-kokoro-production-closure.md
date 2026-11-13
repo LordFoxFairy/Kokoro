@@ -2048,3 +2048,10 @@ Agent shared context由owner可选typed字段承载，BFF有权限后一致快�
 并行接缝现已交接：Admin唯一writer负责Public29候选六操作/装配/API文档，B10原writer保8.18冻结/SQL/source/SSE。App只读识别peer busy/本人控制/合法错误三wire缺口，Root已裁决复用安全execution_head.can_control、Project消息can_regenerate、消息页project_access及原AGUI metadata；不猜creator、不暴露peer pause/process，未发行221 candidate允许修正后仍严格退已发行217/28.38，不造未发行假历史。真实BFF producer→peer projector错误经当前App mapper隔离验证时发现漏thread/run ID和错误新literal，最小保原公开身份/固定safe literal后通过；29新control flag仍须正式消费验，不把旧pin适配当native。当前Parent/Admin后继源码未整片提交，整体Goal active。
 
 新增控制/context实际SQL gate：366cc322真PG通过三轮payload历史0/2/4与当前own/peer/demotion/regen事实。37d0新query content歧义、d908 orphan漏subject导致误判peer起点两FAIL先后真实发现，限定列来源/actual subject后GREEN；未放宽orphan保护/断言，所有自有库回收。Admin19源码主控33及独审CLEAR，六B10source测试与两边界测试已追加现脚本；PG继续显式隔离资源入口，不造新编排。后继仅resources/Skill安装/exact-parent与完整native/UI。
+
+
+### 2026-11-13 协作核心发行与消费实施检查点
+
+主控已把停写135路径正式提交推送 BFF `38d47c9` 原 Draft #17，Public29/227（canonical45c54365），正规消费 Agent3e61c0a1/8.18。最终 focused240/0skip、历史contract102/0skip、正规Agent generation check均PASS、135SHA不变；生产build绑定同字节。原229/11夹具失败保留，最小承接read lifetime/RR lease/两候选查询后复跑，未删scope/keyset/非法头/回滚断言。独审 buffered Project读发送前资格P1以实际RR唯一回调修复，当前CLEAR；resource阶段重核和已发Complete未知语义保持。未跑全默认，不冒正常激活/完整owner或TaskB闭环。
+
+当前Root精确源配对BFF38d47/Agent3e61，inventory按413实际committed blobs更新347引用/54摘要；App仍ebf97674原消费，Public29消费者尚在写，源码溯源检查不是可激活性承诺。主控独占Git/资源/台账/验收：pricing_fixture_review继续具名精确父演进和既定剩余BFF入口；models_ui_review正式App共享/唯一AI SDK终态/六Admin桥；custom_api_admin_client正式Admin Hub治理及52项契约消费。均用同一已发行Git artifact、不碰他仓写区，不新增认证/SDK/第二stream。后续精确父PG→前端停写/build→组合激活/真实双身份/剩余native→文档/原PR完整交付。Goal保持active、原PR Draft；共享Docker重启仍独立待答，不能将Project产品答复挪作资源授权。
