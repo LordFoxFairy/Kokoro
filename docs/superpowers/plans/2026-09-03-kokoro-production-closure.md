@@ -2078,3 +2078,10 @@ App `f32b707a` 推原#49，143paths包含正式Public29生成消费、Grant真�
 BFF `fbc2025c`推原#17，16路径：pins沿当前read资格只写本人偏好、parent锁后新SQL鲜验；installation GET、包/spec/exact download接read，四类写接edit，body/key解析后及owner I/O出口核同canonical Project，实际actor不变，private finder不全局放宽。shared_project_pin_skills_review独审发现半包body期间降权仍发owner写的P2，主控真实Nest/HTTP先RED后修，零新增owner调用；最终独审12个源码/测试路径CLEAR。主控focused183、Nest/DI74、真实PG2均0失败/0跳过；build/lint/types/12路径format通过，PG自有6c682987库DROP并确认absent。最初PG1/1、接线2例及body竞态失败、DI65/9和69/5都保留；DI只校准当前readable/read覆盖及真实Conversation事实，零I/O/8关闭阶段断言保留。无合同/Schema/认证变化，不跑无关全默认或模型，不冒native完成。
 
 主控继续Project aggregate删除、selected FINAL资格与本人editor RunDisplay；shared_project_run_display_audit只读方案已交付，须同时readable lookup与edit gate并保exact actor/final证据，不能仅换lookup放行viewer。然后正常精确父演进/组合激活、真实两身份与Admin治理、Portal29文档及原PR总收尾。Goal active、各原PR Draft，正常资源未激活、不合main/部署/清卷；Docker共享VM独立待答与两财务unknown保持。
+
+
+### 2026-11-13 本人editor RunDisplay源码收口（不冒整链）
+
+BFF `5cb7b13d`推原#17，8路径；主控按shared_project_run_display_audit最小方案实施并由同agent独审CLEAR：readable finder与Project edit gate同步接，exact Run actual actor不放宽，peer/viewer拒绝；verified spool与Agent后发头前鲜验保留。本人FINAL binder同原RR内核current/edit，SQL绑定dispatch.subject=actor=caller，去Conversation creator假设但保唯一completed slot/revision/durable-final/retired证据；selectedFinalAnswerInTransaction未改。新HTTP先404≠200、真实PG先editor binding null的RED保留；主控三完整文件123 PASS/0skip、creator→editor→creator真实PG完整1 PASS/0skip，build/lint/types/7路径format通过。c25e4c3a自有库DROP+absence、源码/dist输入SHA保持；HTTP Agent/Storage为明示fixture，未跑真实模型/native或旧parts全套，不拼全绿。
+
+接下去主控仅补Project aggregate删除与selected FINAL输入资格，再精确父演进/配对激活/真实双身份及Admin治理/Portal29产品和API文档/原PR整体交付。当前Goal active、正常资源未切换、原PR仍Draft、不合main/部署；其它已接受暂存边界不变。
