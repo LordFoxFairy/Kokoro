@@ -2071,3 +2071,10 @@ App `f32b707a` 推原#49，143paths包含正式Public29生成消费、Grant真�
 首完整默认6771/94FAIL保留（新合同/pin/fixture及实际401缺口），修后相关focused逐项通过；最终停写142输入逐SHA保持，完整默认380文件6865 PASS/0skip、完整lint、正规生成checks、Next生产build/posttypes通过。提交前仅一处测试行尾空格和两份进度文档变动，生产字节不改；正常3310/3320仍各自旧已验编译输出，未热激活新WIP。新Root inventory417真实committed blobs/93引用/31摘要，注册四个真实Project消费输入；源码溯源不代表双身份/native完成。
 
 主控继续已知BFF剩余Skills安装/包/spec、本人pins、聚合删除、selected FINAL及本人RunDisplay，然后原地演进/精确组合/真实两身份与Admin治理/Portal29产品/API文档/原PR收尾。无新扫描轮、TaskA回开、认证/SDK/第二stream；Goal active、原PR Draft，不提前合main/部署/清卷。
+
+
+### 2026-11-13 共享个人pins与Skills接线源码收口
+
+BFF `fbc2025c`推原#17，16路径：pins沿当前read资格只写本人偏好、parent锁后新SQL鲜验；installation GET、包/spec/exact download接read，四类写接edit，body/key解析后及owner I/O出口核同canonical Project，实际actor不变，private finder不全局放宽。shared_project_pin_skills_review独审发现半包body期间降权仍发owner写的P2，主控真实Nest/HTTP先RED后修，零新增owner调用；最终独审12个源码/测试路径CLEAR。主控focused183、Nest/DI74、真实PG2均0失败/0跳过；build/lint/types/12路径format通过，PG自有6c682987库DROP并确认absent。最初PG1/1、接线2例及body竞态失败、DI65/9和69/5都保留；DI只校准当前readable/read覆盖及真实Conversation事实，零I/O/8关闭阶段断言保留。无合同/Schema/认证变化，不跑无关全默认或模型，不冒native完成。
+
+主控继续Project aggregate删除、selected FINAL资格与本人editor RunDisplay；shared_project_run_display_audit只读方案已交付，须同时readable lookup与edit gate并保exact actor/final证据，不能仅换lookup放行viewer。然后正常精确父演进/组合激活、真实两身份与Admin治理、Portal29文档及原PR总收尾。Goal active、各原PR Draft，正常资源未激活、不合main/部署/清卷；Docker共享VM独立待答与两财务unknown保持。
