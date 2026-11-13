@@ -3,6 +3,7 @@
 - Capability `efe18a1f` 已推原 PR #12（未激活）：Custom API 隔离／恢复／永久撤权与独立安全审计，非 active 配置拒绝材料读取和个人修改。主控真实 PG 通过状态/CAS/并发、审计原子回滚、显式过期回执和精确 718d 父演进；自有测试库均已回收。最终 60 路径停写 SHA 核等，主控 HTTP/composition 与正式契约检查通过；owner 完整默认通过，条件资源/E2E 跳过不冒真实集成。初次过期 fixture 的两次失败保留，不修改生产回执过期规则。
 - B10 新补缺主控真实 PG 已通过：不同 actor 使用相同 ScheduledTask 幂等键独立提交；原 actor 重放仍是原 immutable ACK，历史持久 outbox ID 仍可恢复。原权限／revision／未知投递测试为独立阶段证据，不拼成全链路通过；fixture 库已 DROP 且核不存在。生产唯一执行人、creator 归属、已发送/未知投递的恢复边界保持。
 - 并行写区：pricing_fixture_review 继续 BFF Project/Conversation/FINAL 与 Public29.0；models_ui_review 只消费已发布 Capability 的固定 artifact/generated 与个人 API 窄投影，不碰公共 canonical、B10、Git或正常服务。主控唯一资源/Git/台账/验收。历史个人写 ACK 缺治理状态不推断 active，当前状态以 fresh GET 为准。
+- 消费阶段补证：主控对停写BFF消费区正规build、29source与8个原HTTP、正式生成检查通过，输入SHA不变；BFF整片仍随B10未提交。Agent `0ec00aec` 已推新Draft PR（原#48已合），主控129个原contract、generator/checker与独审通过，七路径SHA核等；独立runtime锚、24项projector与历史34-method ABI保持，新Admin请求不进入执行I/O。App消费仍在只读准备，未激活正常组合。
 - 下一检查点：B10 共享安全投影和精确父演进 → BFF 消费统一验收/发布 → App/Admin 正规消费及真实双身份旅程。Capability 正常服务仍是573a8f00，Root gitlink 暂不切到未配齐组合；不冒后台或整个 Task B 完成。Goal active，原 PR 保持 Draft，不 merge/部署；Docker 共享 VM 重启仍是独立待确认，不阻塞当前源码推进。
 
 ## 2026-11-13 Task B 多语言与公开 API 文档已交付，Project 协作进入明确设计

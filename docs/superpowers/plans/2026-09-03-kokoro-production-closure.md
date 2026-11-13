@@ -2032,3 +2032,5 @@ B10本轮实际推进：BFF33419a04三目标设计已推原PR，独审ScheduledT
 Capability Custom API owner `efe18a1f` 已推原#12，主控60路径核等，真实PG6项及HTTP/composition/正式contract通过；owner完整门通过，条件资源/外部E2E未跑分列，不激活未配对normal组合。BFF Project协作先两阶段真实PG通过，后继actor-key/immutableACK独有真实PG再通过；全部自有库回收，原expiry时间舍入与receiptfixture失败保留。此为源码/隔离PG阶段证据，不冒native Project协作闭环。
 
 pricing_fixture_review继续B10 canonical/业务/SQL，models_ui_review独立消费Capability固定artifact/generated与个人窄投影，公共API/模块/Git/正常资源不并发修改。主控验收与串行发布；下一B10共享安全投影/精确父演进，再BFF统一发布、App/Admin消费与真实双身份。Goal active、原PR Draft、不merge/部署；共享DockerVM重启仍待独立确认。
+
+B13消费补证：主控对84路径停写BFF消费区正式build、29source/8原HTTP及正规生成检查均通过，全部受测源码SHA不变，独审CLEAR。BFF仍随B10实施未统一提交。Agent新需求七路径正规配对已推 `0ec00aec` / Draft #49（原#48已合），主控129contract/generator/checker与独审通过；专用runtime历史锚、执行白名单不变，新Admin请求不进入执行I/O。App私有治理消费最小写区/现风险已只读明确，待BFF发行再写，不消费WIP冒正式来源、不提前激活normal。
