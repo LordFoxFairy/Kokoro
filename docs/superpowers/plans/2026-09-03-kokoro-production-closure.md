@@ -1983,3 +1983,10 @@ Root配对Admin87c228c；BFF396897b8/Appc1444ee0及机器契约不变，拓扑/1
 B09复用ignored现driver新增team-invitation，仅IAM/BFF/App，原source/审批/锁copy安装/进程/cleanup；三marker只控制recipient创建/精确私有邀请链接/observer激活，正式两业务写仍由浏览器，原ownerbind/BrowserBroker/生产认证不改。独审提前发现test状态与helper重名，最小rename后原IAM tsconfig466roots纯内存semantic RED7→GREEN0，累计三patch亦0错误；邀请成功断言按正式BFF/App收紧exact200。尚未启动本轮资源/浏览器；非整个Goal blocked。
 
 独立Admin原#7 `79b14599`只补Models presentation108 zh/en key，主控七文件46PASS/8SHA/types/scopedlint/真实build/posttypes、独审通过。原requests/CAS/journal/unknown及技术/用户/diagnostic原值保持，不扩框架。正常Admin恢复，本片browser/窄屏未新增，待真实后台后继复用，不冒整B14闭环。
+
+
+### 2026-11-13 B09 本人主动退出真实收据
+
+run497bcd810c3f33b82fe06ce8绑定Root5097b9b0/IAM40c/BFF396/Appc144，三owner source3318/累计三fixture+一Next patch主控核验，实际副本原tsconfig strict semantic PASS。owner UI invite200→recipient原生邀请signin/CSRF accept→Product login/本人member→UI Confirm leave DELETE200 exact member/status:left→自动signout及浏览器members401（CDP未截断）→owner fresh login目录目标缺席/owner保留→正式logout通过。独立observer before/after同Session摘要、expiry未来且真实IAM native200；原Product资格200→403 product_tenant_forbidden；owner鲜读/dispatch0/credential-log/cleanup PASS。仅本次两业务写，无roles替换/普通member remove/模型/资金或正常tenant变更；原旧角色分页移除等证据不拼成新全套。
+
+B09此具名缺口关闭，整体Task B/原PR/原件核验仍OPEN。下一实际面为B13现Skills治理→用户可见性，先定位当前active/verified immutable包，不造版本/执行模型；旧approvals网页指向不存在接口，不能作为审核成功，若要求独立待审审批流程须先owner状态/权限/审计/契约门，不把quarantine冒批准工作流。

@@ -1,3 +1,11 @@
+## 2026-11-13 B09 本人主动退出缺口真实闭环通过
+
+Root`5097b9b0`、IAM40c/BFF396/Appc144三owner source精确配对，run`497bcd810c3f33b82fe06ce8`：source3318文件与累计三fixture/一Next resource patch主控核等审批，副本原tsconfig严格semantic通过。owner真实native登录/Teams邀请200；recipient经正式邀请登录/CSRF接受/Product登录后显示本人Member、无邀请控件；UI Confirm leave DELETE200绑定同member；自动退出后浏览器GET members实测401/session_authentication_required，CDP未截断；owner重新登录fresh目录不含recipient且owner保留，最后正式logout。
+
+独立recipient observer在接受后先native Session有效/业务200；leave后仍同一Session摘要/未过期、真实IAM get-session200，但业务403/product_tenant_forbidden，独立证明撤权而非仅注销。owner鲜读、BFF dispatch0、cleanup及凭据日志PASS，所有自有源码/依赖/短tmp已回收、收据截图保ignored。只用原PG/Redis，不授platform-admin/启动System/Billing/Admin，不改生产认证/正常tenant，不跑模型或资金。原角色/移除/重发撤销等旧实证仍按历史原件边界分列，本片不冒整个B09/Task B完成。
+
+Admin79b1459的Models108key展示双语源码片、主控46/types/lint/build/独审与正常恢复已沿原PR推送；browser/窄屏未新增，仍待后继真实后台旅程补。下一实施B13现Skills治理→用户可见性，先读正式现存包身份；旧approvals接口不在当前owner契约，不伪造成功或新建审核状态机。Goal active，原PR仍Draft，不merge/部署。
+
 ## 2026-11-13 B09 双身份主旅程接线实施中
 
 当前Root6afc5fd7，B13最新native收据已通过并回收。本轮sidebar_i18n_finish只扩既有ignored driver的team-invitation分支，复用原源码/审批/锁安装/进程/回收，实际仅IAM/BFF/App，不启动Admin/System/Billing、不授平台管理员、不改正常tenant。主控负责串行owner邀请/退出→recipient正式CSRF接受/本人leave→owner鲜读；另独立recipient observer原生Session与Product403验证，无新浏览器profile/认证层。现正接线，未开始真实邀请或资源动作，不冒已验。
