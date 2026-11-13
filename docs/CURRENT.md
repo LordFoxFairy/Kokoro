@@ -1,3 +1,9 @@
+## 2026-11-13 B13 同一草稿 native 旅程进行中
+
+Goal实际为active，主控负责资源/验收，pricing_fixture_review只读审查安装微调，sidebar_i18n_finish并行核对B09双身份接线，不改生产或共享台账。原PR保持Draft，整Task B未闭环，不merge main/部署。
+
+首新规则run `c551e366f081e23dc7844615` 的rsync源码/五处实际私有patch门通过；随后锁安装请求下载超时，真实FAIL/cleanup PASS，未启动业务服务、DB或浏览器。后继仅将锁定pnpm现有请求超时设600000ms/并发4，保frozen-lockfile、版本、engine与原资源清理；不复制旧依赖或新增全量备份。后继锁安装直接复用六normal已使用的现pnpm标准store、prefer-offline命中缺失才下载、仍copy导入副本；保锁/engine/隔离node_modules，安装前后核实际storeDir，cleanup绝不清理store。run `dc4d634d3525c1b6171576a7` 在Root2303d74c精确组合上4137源码逐文件核等/五处patch主控审查通过，六owner锁安装/构建/启动实际通过，真实native登录成功。随后/manage/models编译触发Next16.2.6已确认的Google extensionless字体URL query解析缺陷；主控截图留证、正式Sign out，终止本轮后cleanup PASS。主控补充browser-failure-receipt与原driver FAIL/not_received分列，不冒业务旅程成功。Admin原#7后继`3a521aba`已以同族/字重官方真实字体及两OFL改next/font/local，约761KiB；主控12 focused、非增量types、scope lint、真实Next16.2.6 Turbopack build/posttypes、14原输入核等和独审通过。原IBM许可CRLF/空白按上游原字节保留，唯一vendor文件的.gitattributes明确固定，现15输入提交字节核等；不升级Next/改模型/认证。正常Admin已同配置恢复，后继新组合再补该旅程。正常数据不动，原失败收据保留。
+
 ## 2026-11-13 B14 双语随片交付，native接线准备完成
 
 Admin原#7后继87c228c只修两实际模型组件60个zh/en词条、现App上下文的发布确认，以及Shell现单一ConfigProvider跟随同一locale选择官方enUS/zhCN。用户模型名/协议、onPrepared/代际/CAS/null及目录不rebase保持；不加新Provider/解析层或逐组件重复覆盖。主控九输入冻结：全47文件367 PASS/0SKIP、完整lint、正常工作区build及构建后非增量types通过、独审CLEAR；原SSR/hydration/链接/监听回收覆盖保留。其它Models/Admin自定义旧文案未扩译，本片不冒全后台本地化/视觉完成。

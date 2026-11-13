@@ -1959,3 +1959,13 @@ Admin原#7后继87c228c只修两实际模型组件60个zh/en词条、现App上�
 Root配对Admin87c228c；BFF396897b8/Appc1444ee0及机器契约不变，拓扑/15边0违例/原checkpoint通过，未重复后端全门。主控同配置恢复Admin，正常数据/角色/资金未改。
 
 新native driver仅ignored四文件静态准备并由主控纯检查/四SHA复验通过；draft-correction只同一r1创建→PATCH补齐(原CAS1)→publish(CAS2)→fresh版本3，原PATCH显式历史回执重放后仍须鲜读published3，不重复label/费率/模型/资金。新source复制遵rsync相同预检/实参、固定排除清单/提交blob核等，无旧依赖/cache复制；实际fixturepatch门批准后才按各owner engines/锁安装（Next22，其它24），8GiB启动预算/运行保底1GiB，拒复用run-id时不碰历史目录。正常pnpm/Corepack只读缓存可复用，不另备缓存。主控仅一次最小旧driver四源码备份69,265bytes，未带依赖；旧runs原失败/收据保持。尚未把静态检查当source复制、安装或native成功；下一步在新Root精确SHA上由主控启动并审实际patch。
+
+
+### 2026-11-13 B13 native 执行检查点
+
+主控独占资源/浏览器，pricing_fixture_review只读复审安装参数，sidebar_i18n_finish只读准备B09双身份接线。首新规则run c551e366f081e23dc7844615源码/私有patch门通过，锁安装请求下载超时FAIL，cleanup PASS；无业务/DB/浏览器动作。后继只调锁定pnpm下载请求预算600000ms/并发4，保锁、版本和engine。新run dc4d634d3525c1b6171576a7绑定Root2303d74c，4137源码与三IAM test/两Next resource patch由主控实际核验批准，安装进行中。只补同一r1 PATCH→publish→fresh及原PATCH回执/当前态分离，不重复计价/模型旅程；Goal active，整Task B及原PR仍OPEN。
+
+
+后继实测：dc4d634d3525c1b6171576a7六owner锁安装/构建/启动通过，真实native登录成功；/manage/models首次编译触发Next16.2.6已确认Google /l/font?kit=...&skey=... 无扩展URL解析缺陷（官方issue99114/fix100158），不是业务API/TLS失败。实际截图/主控browser-failure-receipt保留；正式Sign out后abort，原driver FAIL/cleanup PASS。只实施Admin同族/字重真实官方local字体+许可的局部修复，不改依赖/认证/模型，focused及真实Next build后配新Root再补同草稿。该环境失败不扩为整个Goal blocked。
+
+局部font修复已沿Admin原#7推送`3a521aba`：原三族/字重local真实官方资产779316bytes、OFL/固定来源SHA，主控12focused/非增量types/scopedlint/真实Turbopack build/posttypes/独审通过；15提交输入核等，normal同配置恢复。后继仅复用现pnpm store按锁copy安装（prefer-offline、无复制依赖/cache或prune/reset；cleanup只run），免重复下载，不换runtime或锁版本。新Root配对后补同草稿旅程，未冒已通过。B09三命令隔离接线已纯准备/静态核验，未邀成员/改角色或跑真实旅程。
