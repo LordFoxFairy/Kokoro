@@ -2033,4 +2033,12 @@ Capability Custom API owner `efe18a1f` 已推原#12，主控60路径核等，真
 
 pricing_fixture_review继续B10 canonical/业务/SQL，models_ui_review独立消费Capability固定artifact/generated与个人窄投影，公共API/模块/Git/正常资源不并发修改。主控验收与串行发布；下一B10共享安全投影/精确父演进，再BFF统一发布、App/Admin消费与真实双身份。Goal active、原PR Draft、不merge/部署；共享DockerVM重启仍待独立确认。
 
-B13消费补证：主控对84路径停写BFF消费区正式build、29source/8原HTTP及正规生成检查均通过，全部受测源码SHA不变，独审CLEAR。BFF仍随B10实施未统一提交。Agent新需求七路径正规配对已推 `0ec00aec` / Draft #49（原#48已合），主控129contract/generator/checker与独审通过；专用runtime历史锚、执行白名单不变，新Admin请求不进入执行I/O。App私有治理消费最小写区/现风险已只读明确，待BFF发行再写，不消费WIP冒正式来源、不提前激活normal。
+B13消费补证：主控对84路径停写BFF消费区正式build、29source/8原HTTP及正规生成检查均通过，全部受测源码SHA不变，独审CLEAR。后继消费独立85路径已推BFF74117ac原#17，B10其它WIP完整保留、非完整owner验收。Agent新需求七路径正规配对已推 `0ec00aec` / Draft #49（原#48已合），主控129contract/generator/checker与独审通过；专用runtime历史锚、执行白名单不变，新Admin请求不进入执行I/O。App私有治理消费已基于BFF74117ac进入实现，原58编译基线standalone避免HMR提前激活；主控统一build和native。另独立client writer只消费已发布Capability六Admin RPC/绑定/专用purpose，公共AdminHTTP及canonical仍待B10writer停写后串行接入，不先造第二wire。
+
+### 2026-11-13 治理源码组合与多人执行门
+
+候选已提交组合Cap efe18a1f/BFFd875e3bd/Appebf97674/Agent0ec00aec；413真实Git blobs/476仓引用/18摘要据实重算，拓扑/15边0违例/原checkpoint通过，只证源码组合，不代表native激活。App37路径主控302与build/独审通过；新增未保存API转nonactive再保存漏口已最小修，保旧引用/草稿，未重复全默认。Admin6RPC薄客户端及严格receipt标记已交付，公共HTTP/页面未接。
+
+B10共享read/FINAL真PG先42P18（共享query漏$6）失败，经原LIMIT承接修正后通过；失败与回收原件保留。多人Run必须真实actor/subject，按subject源cursor唯一事实→单public序，旧stream HWM/state退役不双写、不reset；旧origin只精确已证绑定回填，矛盾拒绝，Chat同key隔离与现HTTP actor scope一致，旧ID/payload不改。新多source真PG首ACK null尚失败正定位；reader旧阶段不冒新source schema通过。
+
+Agent shared context由owner可选typed字段承载，BFF有权限后一致快照冻结whole-message bounded suffix与确认FINAL/显式has_earlier，不传creator checkpoint、不拼input；Agent current本人材料、Run级thread/workspace、同Run恢复、私密/完整window守卫；不加摘要服务/cache/SDK/重复entry凭证。20路径已停写通过主控171+2及契约/独审，8.18尚未发行，BFF不得消费WIP作正式pin。旧FINAL adjunct支持锚不改，新recipe不满足旧形状仍unknown，正式durable FINAL已验证。继续Goal active/原PR Draft，未merge/部署。
