@@ -1,3 +1,11 @@
+## 2026-11-13 最终源码门与Agent独立PR出口完成
+
+- 原Agent PR#49已正常merge main `49901fd79426257ce2e20cec62afb68cce30cca7`，完整树等已验ce57；独立收口审查CLEAR。本地未占用main先CAS快进再切同一源码树，避免运行源码瞬时退回旧版本；本轮local/remote topic已清，无进程重启/部署。Root/BFF/Storage共享成功Run→FINAL/Artifact仍独立待验，不冒整个TaskB完成。CI fast/service-acceptance未启动，annotation明确账户账单/额度，未绕保护。
+- 本轮各owner当前停写源码各补一次完整默认终态：BFFbec2591 PASS/2条件SKIP（原schema安装/tombstone两条件例）、1322输入SHA保持；App0d38 6885 PASS/0skip、1593输入保持；Admin1ed387 PASS/0skip（仅workers=2）、203输入保持；Agentce57原默认3650 PASS/955按原marker排除、541输入保持，3455实验/弃用warning保留。原FAIL已由具名后继覆盖，不重新开故障；这些结果不拼成真实integration/完整产品闭环。原合同/构建/types/门户精确来源门沿用，不再重复跑。
+- B02冲突/缺失/迟到规则：主控核既有真实PG4原件与当前四条verifier/binding/environment/test源码逐字承接；当前治理PG6原件的35输入SHA全等、库清理/正常数据保留，承接Q/restore/revoke双runtime gate。另在IAM当前main71只筛原正式HTTP permission撤权/成员移除两case，真实PG/Redis2 PASS、10筛除，526输入起终exact、DB库存无新增或缺失；JWKS/BFF binding为明确本地HTTP peer，无Docker/模型/供应商。只证明分层风险，不冒本轮正常CustomAPI+IAM+Docker联合撤权、完整E2B/任意编码DLP或永久QA清理。旧“4次verify”原件未定位；另找到8次真实历史原件但旧worktree已缺，未当当前冻结证明。
+- MCP原生Chrome仅鲜读本轮QA：HTTP endpoint为example.com占位地址，无query/userinfo；读编辑视图后Cancel，原配置与Context7保持，未Prepare/Save/Enable/OAuth。Prepare ready会实际active/enabled，并非只读，未用占位目标制造成功/新故障。真实外部端点/授权末端沿已接受边界暂存。
+- Root只将57项当前Agent evidence commit更新到main后继；420个真实提交blob逐字核等，全部摘要保持；拓扑/15边0违例兼容/原checkpoint PASS。资源重启和原两项不可逆QA动作仍待单项确认，保原卷，不重试旧unknown写，Goal active。
+
 ## 2026-11-13 IAM独立需求已通过原PR交付main
 
 IAM审计PR#9已正常merge为 `71ad4ed5935ac7ccae0dc82129d1ba2934868465`。merge完整树逐字等已验 `814ba4c4`，44冻结输入核等；原main是其祖先，无新增冲突或来源差异，未重跑相同全门。local main已ff，同一topic无新增提交/无人占用后local及remote分支已清；其它仓原PR保持未合，整TaskB未完成。GitHub verify实际未启动，annotation为账户账单/额度限制，未绕保护或称CI绿。
