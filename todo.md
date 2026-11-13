@@ -4,6 +4,14 @@
 
 ## 当前任务：Task B 正式接管（2026-11-12）
 
+### 当前最短收口队列（2026-11-13）
+
+1. **一个资源故障、多项受影响**：等待共享Docker VM重启单项确认；保原卷，恢复后鲜验Storage数据路径，只续Skills restore和Project install原body/key，再补共享Run→安全FINAL/Artifact缺失旅程。
+2. **原功能差额**：MCP Prepare/外部授权及已列Custom API冲突/撤权/迟到；已验成功/取消链不重跑，缺授权的外部末端沿已接受暂存边界。
+3. **清理确认与交付**：本轮两个QA的不可逆动作各待原单项确认；完整需求收口后其余原PR→main、Root精确组合与自有分支清理。IAM新增审计需求PR#9已合main `71ad4ed5`，完整树等已验814，本轮local/remote topic已清，不再列待合。
+4. **不新增功能**：原TaskB要求管理员边界/撤权/审计，未单列Provider专用事件库/reader/页面；本轮以已验IAM/Custom API具名审计如实交付，不新造Provider长期审计平台。Provider当前只有状态/receipt，仍不冒其为审计；将来需要可追责历史时另作owner-first增强，不作本轮新阻断。
+
+
 用户已把 Task B 移交本主控，历史“Task B 不动”仅约束当时 Task A／UI 批次，不再排除本任务。沿[原功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)和[既有有效计划](docs/superpowers/plans/2026-09-03-kokoro-production-closure.md)推进，不重开已交付 Task A、不另起任务中心。以下是接管后的真实剩余队列，不把原15个功能域当15个新故障。
 
 - [x] B-T0 接管：确认原 Root #67、App #49、BFF #17、Capability #12 及当前 main；主控保原PR历史、全部12个已验 main gitlink和正常运行源，不盲激活旧组合。Root原分支已合入当前main；原468行Task B记录保留。

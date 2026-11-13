@@ -1,3 +1,11 @@
+## 2026-11-13 IAM独立需求已通过原PR交付main
+
+IAM审计PR#9已正常merge为 `71ad4ed5935ac7ccae0dc82129d1ba2934868465`。merge完整树逐字等已验 `814ba4c4`，44冻结输入核等；原main是其祖先，无新增冲突或来源差异，未重跑相同全门。local main已ff，同一topic无新增提交/无人占用后local及remote分支已清；其它仓原PR保持未合，整TaskB未完成。GitHub verify实际未启动，annotation为账户账单/额度限制，未绕保护或称CI绿。
+
+Root只将IAM当前evidence从814更新到main后继，独立旧发行来源/SDK profile anchor814继续保真；420真实提交blob核等，全部摘要不变，拓扑/15边0违例兼容/原checkpoint通过。正常IAM不重启：main与正在运行814完整源码相同，不涉及Schema/配置/凭据。
+
+主控按原TaskB交接与Provider旧三设计裁决：原范围要求管理员边界/撤权/审计，未独立承诺Provider长期事件库/reader/审计页。本轮不因后继细化假设再造跨仓功能；已验IAM安全事件与Custom API治理审计照实交付，Provider状态/receipt仍不叫审计，专用可追责历史列后续增强而非新增本轮阻断。最短剩余队列置于todo顶部；Goal active，资源确认待回复，未部署。
+
 ## 2026-11-13 B14 语言菜单7px缺口已修复
 
 Admin `1ed8083`已推原#7，仅现语言Select补popupAlign横向shift（保原adjustX/Y、shiftY和placement），无新组件/CSS隐藏/认证或API变化。复用已有壳hydration4 PASS、非增量types/文件lint/Next build/posttypes通过，独审CLEAR；真实Chrome390px en/zh展开popup right371、document390/390，键盘选择及关闭通过。原RED397/390保留。恢复en/default视口并关闭自建页；本轮临时admin原false/v14→true/v15→false/v16，自建Sessionlogout/Cookie回收，原Chrome保持。
