@@ -1611,6 +1611,7 @@ def use_capability_iam_sdk_archive(
     fixture: InventoryFixture,
     *,
     drift: str | None = None,
+    contract_bytes: bytes | None = None,
 ) -> dict[str, object]:
     def json_bytes(value: object) -> bytes:
         return (json.dumps(value) + "\n").encode()
@@ -1665,7 +1666,9 @@ packages:
 snapshots:
   zod@4.5.4: {{}}
 """.encode(),
-        contract_path: json_bytes({"openapi": "3.1.0", "info": {"version": version}}),
+        contract_path: contract_bytes
+        if contract_bytes is not None
+        else json_bytes({"openapi": "3.1.0", "info": {"version": version}}),
         config_path: b'export const input = "../contract/openapi/iam.internal.v1.json";\n',
         "sdk/src/index.ts": b"export {};\n",
         sdk_manifest_path: json_bytes(
@@ -1925,6 +1928,133 @@ def test_capability_iam_archive_keeps_verified_release_after_private_runtime_cha
 
     assert current != release
     assert fixture.verify() == []
+
+
+def use_capability_iam_audit_compatibility(fixture: InventoryFixture) -> dict:
+    """Real Git/archive fixture; only the immutable release OIDs/digests are local."""
+    parent = {
+        "openapi": "3.1.0",
+        "info": {"version": "0.21.0"},
+        "paths": {
+            "/internal/v1/audit-events": {
+                "get": {
+                    "operationId": "listAuditEvents",
+                    "parameters": [{"name": "x-request-id", "in": "header"}],
+                    "security": [{"internalBearer": []}],
+                }
+            },
+            "/internal/v1/execution-authorizations/verify": {
+                "post": {
+                    "operationId": "verifyExecutionAuthorization",
+                    "responses": {"200": {"$ref": "#/components/schemas/Execution"}},
+                }
+            },
+        },
+        "components": {"schemas": {"Execution": {"type": "object"}}},
+    }
+
+    def encode(value: object) -> bytes:
+        return (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode()
+
+    edge = use_capability_iam_sdk_archive(fixture, contract_bytes=encode(parent))
+    release = edge["owner"]["repository_commit"]
+    child = copy.deepcopy(parent)
+    child["info"]["version"] = "0.22.0"
+    audit = child["paths"]["/internal/v1/audit-events"]["get"]
+    audit["parameters"].append({"name": "x-kokoro-actor-id", "in": "header"})
+    audit["security"].append({"bffUserContextServiceBearer": []})
+    audit["x-kokoro-identity-modes"] = ["oauth", "bff_user_context"]
+    audit["x-kokoro-bff-user-context"] = {"authorization": "current-platform-admin"}
+    manifest = json.loads(
+        fixture.module.git_blob(
+            fixture.root, "apps/kokoro-iam", release, "sdk/package.json"
+        )
+    )
+    manifest["version"] = "0.22.0"
+    current = advance_iam_archive_runtime(
+        fixture,
+        edge,
+        {
+            "contract/openapi/iam.internal.v1.json": encode(child),
+            "sdk/package.json": encode(manifest),
+            "sdk/src/api/sdk.gen.ts": b"export const listAuditEvents = () => {};\n",
+        },
+    )
+    edge["owner"]["contract_version"] = "0.22.0"
+    declaration = {
+        "profile": "iam-0.21-execution-to-0.22-audit-addition-v1",
+        "release_commit": release,
+        "release_version": "0.21.0",
+        "release_contract_sha256": sha256(encode(parent)).hexdigest(),
+        "owner_commit": current,
+        "owner_version": "0.22.0",
+        "owner_contract_sha256": sha256(encode(child)).hexdigest(),
+        "consumed_operation_ids": ["verifyExecutionAuthorization"],
+    }
+    # Production has one fixed approved tuple, not an inventory-controlled allowlist.
+    fixture.module.IAM_SDK_EXECUTION_AUDIT_COMPATIBILITY = copy.deepcopy(declaration)
+    edge["sdk_owner_compatibility"] = declaration
+    return edge
+
+
+def test_capability_iam_archive_keeps_independent_release_for_exact_audit_addition(
+    fixture,
+) -> None:
+    edge = use_capability_iam_audit_compatibility(fixture)
+    assert edge["runtime_package_version"] == "@kokoro/iam-client@0.21.0"
+    assert edge["owner"]["contract_version"] == "0.22.0"
+    assert fixture.verify() == []
+    advance_iam_archive_runtime(
+        fixture, edge, {"docs/merge.md": b"no protocol change\n"}
+    )
+    assert fixture.verify() == []
+
+
+@pytest.mark.parametrize("drift", ["missing", "release", "owner", "operation", "extra"])
+def test_capability_iam_audit_compatibility_requires_the_exact_declaration(
+    fixture, drift
+):
+    edge = use_capability_iam_audit_compatibility(fixture)
+    declaration = edge["sdk_owner_compatibility"]
+    if drift == "missing":
+        del edge["sdk_owner_compatibility"]
+    elif drift == "release":
+        declaration["release_commit"] = "0" * 40
+    elif drift == "owner":
+        declaration["owner_version"] = "0.23.0"
+    elif drift == "operation":
+        declaration["consumed_operation_ids"] = ["listAuditEvents"]
+    else:
+        declaration["extra"] = True
+    assert fixture.verify()
+
+
+@pytest.mark.parametrize("drift", ["execution", "schema", "other", "sdk", "ancestry"])
+def test_capability_iam_audit_compatibility_rejects_runtime_drift(fixture, drift):
+    edge = use_capability_iam_audit_compatibility(fixture)
+    current = edge["owner"]["repository_commit"]
+    contract = json.loads(
+        fixture.module.git_blob(
+            fixture.root, "apps/kokoro-iam", current, fixture.module.IAM_OPENAPI
+        )
+    )
+    if drift == "execution":
+        contract["paths"]["/internal/v1/execution-authorizations/verify"]["post"][
+            "security"
+        ] = []
+    elif drift == "schema":
+        contract["components"]["schemas"]["Execution"]["type"] = "string"
+    elif drift == "other":
+        contract["info"]["description"] = "unapproved"
+    files = {
+        fixture.module.IAM_OPENAPI: (json.dumps(contract, indent=2) + "\n").encode()
+    }
+    if drift == "sdk":
+        files["sdk/src/index.ts"] = b"export const changed = true;\n"
+    advance_iam_archive_runtime(fixture, edge, files, unrelated=drift == "ancestry")
+    errors = fixture.verify()
+    assert errors
+    assert not any("evidence sha256" in error for error in errors)
 
 
 @pytest.mark.parametrize(

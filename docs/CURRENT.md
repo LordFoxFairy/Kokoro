@@ -1,3 +1,15 @@
+## 2026-11-13 B13审计四仓源码已交付，精确组合门通过
+
+已提交推送：IAM `814ba4c4`（新增需求PR#9，原IAM PR均已闭）、BFF `bec8584f`（原#17）、Admin `61520c4f`（原#7）、App桥 `143b283c`＋门户 `0d38eec6`（原#49）。IAM0.22／Public29.1/228，Admin53项消费且原52前缀保值；门户222public/22生成/62页21556链接，六private继续排除。源码/构建/owner门及独审已验，真实正常浏览器分页/撤权未验，不把source发行为整链成功。
+
+Root按420个真实committed blobs重算391引用/34摘要，并在既有Web→BFF边补Admin3个精确commit证据；拓扑、15边/0违例兼容、原checkpoint均PASS。首次Root失败是旧规则强制Capability0.21 SDK整树等IAM当前0.22，现仅该exact声明用完整canonical父inverse和祖先/源码保值证明承接：旧archive/tar/SRI/sidecar按实际b6a发行全部验证，未改Capability/SDK或放宽任意版本。两Python独审CLEAR，writer完整162/0skip、主控相关38通过；原FAIL保留。
+
+本机仅IAM/BFF/Admin源码进程按原配置受控重载并恢复200，Admin构建前先正常停止，未覆盖在运行的输出。无Schema/卷/共享基础设施/模型/财务操作；App源桥HMR/Portal不需额外服务。原55Run终态、旧财务unknown不作结算。当前只进入真实审计浏览器验收，Goal active，PR仍Draft，不merge/deploy。
+
+### B13 审计 owner 发行检查点（2026-11-13，非正常组合验收）
+
+IAM `814ba4c423b631cab28929048c7203f2d14822fc`／OpenAPI+SDK0.22.0 已推该新增需求PR#9（原IAM PR均已闭，非重复开PR）。主控真实PG/Redis原audit HTTP10 PASS/0skip、测试DB库存保持；默认1656 PASS/0skip、固定父breaking通过，44停写输入逐SHA核等及独审CLEAR。原OAuth权限/游标/Schema不变。BFF新Public29.1/228完整逆证原29父13例由主控复验通过，现消费该正式IAM来源；Admin/App新回归实际RED→21/52定向及types/lint已通过。此时Root仍原gitlink组合，IAM正常进程未重载；Admin正式pin/构建、四仓最终配对与native分页/撤权仍待，不能把源码阶段冒整链已通。
+
 ## 2026-11-13 后继：事件回放恢复、真实装配取消与治理主片已验
 
 - 已提交推送的行为源：BFF `ef9e64e`（含replay修复`adf31d9`，原#17）、Agent `b61234b`（原#49）、App文档 `08bc30b6`（原#49）。当前精确gitlink为BFF `ef9e64e`／Agent `ce57f4d`／App `f942f35c`；Agent后继仅CURRENT记录，App新行为仅上述Project Skills词条组。Public29.0.0／227 owner操作、Agent8.18／canonical SQL不因本片改变。Goal实查 active，Task B整体未完成。

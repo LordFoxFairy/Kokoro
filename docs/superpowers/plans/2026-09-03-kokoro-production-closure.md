@@ -1,3 +1,25 @@
+## 2026-11-13 B13审计四仓源码已交付，精确组合门通过
+
+已提交推送：IAM `814ba4c4`（新增需求PR#9，原IAM PR均已闭）、BFF `bec8584f`（原#17）、Admin `61520c4f`（原#7）、App桥 `143b283c`＋门户 `0d38eec6`（原#49）。IAM0.22／Public29.1/228，Admin53项消费且原52前缀保值；门户222public/22生成/62页21556链接，六private继续排除。源码/构建/owner门及独审已验，真实正常浏览器分页/撤权未验，不把source发行为整链成功。
+
+Root按420个真实committed blobs重算391引用/34摘要，并在既有Web→BFF边补Admin3个精确commit证据；拓扑、15边/0违例兼容、原checkpoint均PASS。首次Root失败是旧规则强制Capability0.21 SDK整树等IAM当前0.22，现仅该exact声明用完整canonical父inverse和祖先/源码保值证明承接：旧archive/tar/SRI/sidecar按实际b6a发行全部验证，未改Capability/SDK或放宽任意版本。两Python独审CLEAR，writer完整162/0skip、主控相关38通过；原FAIL保留。
+
+本机仅IAM/BFF/Admin源码进程按原配置受控重载并恢复200，Admin构建前先正常停止，未覆盖在运行的输出。无Schema/卷/共享基础设施/模型/财务操作；App源桥HMR/Portal不需额外服务。原55Run终态、旧财务unknown不作结算。当前只进入真实审计浏览器验收，Goal active，PR仍Draft，不merge/deploy。
+
+### B13 精确组合补充：保真 SDK 发行来源证明（设计门通过，实施中）
+
+新IAM0.22只增audit BFF认证；Root原校验将Capability已发行0.21 archive来源强制等于当前owner整树，实际报FAIL，原件保留。主控/独审已从Git证明新canonical仅info.version与该audit操作的认证metadata变化，固定逆变换逐字恢复旧b6a/0.21/d279原件，execution path与全部components完全相同。限定EDGE-CAPABILITY-IAM一个明确profile/tuple/verifyExecutionAuthorization声明：旧tar/SRI/sidecar/manifest/config/lock/SDK白名单仍按真实b6a release全部校验，新owner完整fe0字节/版本/发行anchor祖先及current SDK整树另核；无声明/新digest/错tuple/其它变化仍FAIL。不更新Capability/旧tar/sidecar、不通用放宽版本，也不新增生产兼容路径/契约中心。writer仅Root现两Python文件，主控唯一inventory与台账；focused负控及三Root门通过后才作组合验收。
+
+### B13 审计 owner 发行检查点（2026-11-13，非正常组合验收）
+
+IAM `814ba4c423b631cab28929048c7203f2d14822fc`／OpenAPI+SDK0.22.0 已推该新增需求PR#9（原IAM PR均已闭，非重复开PR）。主控真实PG/Redis原audit HTTP10 PASS/0skip、测试DB库存保持；默认1656 PASS/0skip、固定父breaking通过，44停写输入逐SHA核等及独审CLEAR。原OAuth权限/游标/Schema不变。BFF新Public29.1/228完整逆证原29父13例由主控复验通过，现消费该正式IAM来源；Admin/App新回归实际RED→21/52定向及types/lint已通过。此时Root仍原gitlink组合，IAM正常进程未重载；Admin正式pin/构建、四仓最终配对与native分页/撤权仍待，不能把源码阶段冒整链已通。
+
+## 2026-11-13 B13 审计读闭环：设计门通过，实施中
+
+主控与独审已核IAM/BFF/Admin现三设计前缀一致；App具名桥同片承接。IAM writer `shared_project_pin_skills_review`，BFF writer `shared_project_run_display_audit`，主控负责Admin/App、Git/资源/停写验收与唯一台账。先IAM正式发行bff_user_context audit.list与同RR当前管理员资格/安全页，再BFF Public29.1/228固定消费和一项公开投影，后Admin53操作pin/zh-en页面＋App exact GET桥/门户增量；依赖未发行前不造假pin或消费WIP。
+
+复用旧OAuth审计/cursor/当前Admin准入、现有bounded transport与页面寿命；不新建服务/表/配置/缓存/内部OAuth/统一日志平台。不将Provider回执合成为审计，不扩用户团队批量写。唯一新增风险按IAM真PG/HTTP鲜验、BFF窄owner客户端/原生Account接线、Admin+App具名代理/取消及真实分页/撤权旅程验收；旧通过链不重复跑，源码和真实运行分开收据。当前尚未完成本片实现/发行/native，整体Goal active。
+
 ## 2026-11-13 后继：事件回放恢复、真实装配取消与治理主片已验
 
 - 已提交推送的行为源：BFF `ef9e64e`（含replay修复`adf31d9`，原#17）、Agent `b61234b`（原#49）、App文档 `08bc30b6`（原#49）。当前精确gitlink为BFF `ef9e64e`／Agent `ce57f4d`／App `f942f35c`；Agent后继仅CURRENT记录，App新行为仅上述Project Skills词条组。Public29.0.0／227 owner操作、Agent8.18／canonical SQL不因本片改变。Goal实查 active，Task B整体未完成。
