@@ -1,3 +1,11 @@
+## 2026-11-13 B14 双语随片交付，native接线准备完成
+
+Admin原#7后继87c228c只修两实际模型组件60个zh/en词条、现App上下文的发布确认，以及Shell现单一ConfigProvider跟随同一locale选择官方enUS/zhCN。用户模型名/协议、onPrepared/代际/CAS/null及目录不rebase保持；不加新Provider/解析层或逐组件重复覆盖。主控九输入冻结：全47文件367 PASS/0SKIP、完整lint、正常工作区build及构建后非增量types通过、独审CLEAR；原SSR/hydration/链接/监听回收覆盖保留。其它Models/Admin自定义旧文案未扩译，本片不冒全后台本地化/视觉完成。
+
+Root配对Admin87c228c；BFF396897b8/Appc1444ee0及机器契约不变，拓扑/15边0违例/原checkpoint通过，未重复后端全门。主控同配置恢复Admin，正常数据/角色/资金未改。
+
+新native driver仅ignored四文件静态准备并由主控纯检查/四SHA复验通过；draft-correction只同一r1创建→PATCH补齐(原CAS1)→publish(CAS2)→fresh版本3，原PATCH显式历史回执重放后仍须鲜读published3，不重复label/费率/模型/资金。新source复制遵rsync相同预检/实参、固定排除清单/提交blob核等，无旧依赖/cache复制；实际fixturepatch门批准后才按各owner engines/锁安装（Next22，其它24），8GiB启动预算/运行保底1GiB，拒复用run-id时不碰历史目录。正常pnpm/Corepack只读缓存可复用，不另备缓存。主控仅一次最小旧driver四源码备份69,265bytes，未带依赖；旧runs原失败/收据保持。尚未把静态检查当source复制、安装或native成功；下一步在新Root精确SHA上由主控启动并审实际patch。
+
 ## 2026-11-13 B13 当前草稿修正源码已交付，native补验排下一检查点
 
 原计划设计门落实：BFF原#17/396897b8固定Public28.38/217，System仍49a/既有845契约pin，只正规生成已有PATCH，源头草稿/不可变性/权限不变。现BFF现窄adapter+精确admin前缀/UUID/服务准入承接required key/CAS、closed非空partial、null/省略及同id草稿ACK。主控正常工作区build与五相关文件190 PASS/0SKIP；writer全lint/types/generator/semantic通过，独审CLEAR。原整contract1400PASS/2FAIL保留，准确修复原delete_series的16项exact enum与feedback负控误删无关Share项后两文件44 PASS；主控190已包含，但未拼成重跑全contract绿。

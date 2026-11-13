@@ -28,6 +28,7 @@
   - 最新实测：Root58215eca精确六owner第七run，r1空bounds发布409保留；r2显式8192/1024草稿201/发布200、label201→两次CAS200别名修改恢复、rate/policy各201、硬刷新/正式GET/原body-key replay通过，五表资金/Run均0。原driver恰1revision oracle FAIL保留、cleanup PASS；主控独立补充实录verifier PASS，不冒原driver或全部B13绿。正常数据/报价不变，无模型/Provider执行。前文ENOSPC与预算为第六次历史；当前容量恢复，未新复制源码/依赖。
   - [ ] 源码已交付、native补验待收口：BFF原#17/396897b8（Public28.38/217），主控真实Nest/loopback owner与契约190 PASS；原整contract1400/2旧oracle失败保留、两原oracle准确修正后不重跑全套。Admin原#7/df7883d固定46ops、退役旧唯一vendor，原草稿PATCH/CAS/unknown/onPrepared退休/取消/不rebase接通，最终全363/0skip、全lint/types/contract/build/post-types和独审通过。App原#49/c1444ee0桥接，主控56/build通过。三仓已推原PR，normal App/Admin/BFF按原配置恢复。Root精确组合拓扑/15边0违例/原checkpoint PASS，未合main/部署。
   - [ ] 下一检查点：隔离native真实同一草稿编辑补齐→publish→刷新（仅本缺口，不重复费率/模型/支付）；准备接线遵新轻量复制规则，不复用旧node_modules/venv复制配方。此前r2另建成功不代替该路径。
+  - [x] B14随片两组件/Ant默认双语：Admin原#7/87c228c，60自定义key zh/en，现Shell单一ConfigProvider随locale选择官方语言；主控全367/0skip、全lint/build/posttypes与九SHA独审通过，保护原业务，非整个后台文案/视觉完成。source-only native driver四ignored文件已纯检查/四SHA主控核等；实际sourcecopy/install/native仍待主控启动，不冒静态为成功。
 
 - [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消已随PERF-03收口，icon404已核为可选媒体缺省回退，见下；不为非缺陷新增代码。侧栏有限切片已沿App原#49提交推送00334cbe：32既有key/九语言、15实现测试输入冻结，主控160 focused/相关lint/完整非增量TS/正常production build、独审CLEAR；真实French项目标题与空态正确并恢复English。此次实际1000px，未冒新390通过；旧15-key阶段窄屏单列。无locale框架/导航资格/协议扩展，不冒全站翻译闭环。manifest caller取navigator而非设置locale另记事实，影响待定向核验，不冒System内容错误。
 
