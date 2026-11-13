@@ -2046,3 +2046,5 @@ Agent shared context由owner可选typed字段承载，BFF有权限后一致快�
 本检查点后继：多source真PG `2cd27860` 已通过三轮actor/同key/各自HWM/单public序/重复冲突/旧fence；此前b210是新fixture会话ID前缀不符、a125是query输出alias被text排序，并非生产序回退，原断言不变/失败原件保留，三个自有库均回收。Agent8.18正式owner `3e61c0a1` 已推原#49，canonical cc7b8e02，主控171contract/model＋2真Factory、契约与20SHA核等/独审通过；BFF开始正规固定消费，不再是WIP发行。下一只补shared冻结/精确父/资源安全SSE及产品native缺口，整体Goal仍active。
 
 并行接缝现已交接：Admin唯一writer负责Public29候选六操作/装配/API文档，B10原writer保8.18冻结/SQL/source/SSE。App只读识别peer busy/本人控制/合法错误三wire缺口，Root已裁决复用安全execution_head.can_control、Project消息can_regenerate、消息页project_access及原AGUI metadata；不猜creator、不暴露peer pause/process，未发行221 candidate允许修正后仍严格退已发行217/28.38，不造未发行假历史。真实BFF producer→peer projector错误经当前App mapper隔离验证时发现漏thread/run ID和错误新literal，最小保原公开身份/固定safe literal后通过；29新control flag仍须正式消费验，不把旧pin适配当native。当前Parent/Admin后继源码未整片提交，整体Goal active。
+
+新增控制/context实际SQL gate：366cc322真PG通过三轮payload历史0/2/4与当前own/peer/demotion/regen事实。37d0新query content歧义、d908 orphan漏subject导致误判peer起点两FAIL先后真实发现，限定列来源/actual subject后GREEN；未放宽orphan保护/断言，所有自有库回收。Admin19源码主控33及独审CLEAR，六B10source测试与两边界测试已追加现脚本；PG继续显式隔离资源入口，不造新编排。后继仅resources/Skill安装/exact-parent与完整native/UI。
