@@ -1,3 +1,13 @@
+## 2026-11-13 Task B 多语言与公开 API 文档已交付，Project 协作进入明确设计
+
+当前提交组合App58ba5ecf＋BFF33419a04：按413真实committed blobs重核383仓引用，仅两份BFF设计文档摘要变化；拓扑/15边0违例/原checkpointPASS。此门绑定已提交快照，不冒后继BFF正在写的Project源码已验；正常BFF仍原c403实现，334仅设计文档后继。主控明示ProjectGrant绑定稳定subject、每次当前tenant准入生效，不新加IAM成员代际协议；退出期间拒绝，同subject合法重新加入后原有效grant可再生效，owner仍可撤销/到期。
+
+App58ba5ecf已推原#49并正常源码激活：删除manifest写html.lang的重复effect，由LocaleProvider唯一维护。真实schema-valid迟到en-GB覆盖fr RED后修复；主控31 focused/非增量types/scopedlint/正式App build、六输入SHA核等及独审通过。正常native English→Français/html.lang=fr→硬刷新保持→原English/en恢复；不改manifest请求locale/scope/policy，不冒正常System支持en-GB或元数据请求语言映射已完成。只短停自己的App3310用于build，同配置恢复；53 Run全终态、派发无待办、原两财务unknown保留，不重跑模型/计费。
+
+公开门户固定已发布BFF396897b8/Public28.38/d6927c3a完整artifact，承接新增草稿条件PATCH；业务App client仍28.37。首页旧Bearer警告纠正、Secure/plain cookie互斥模式与名称明确。门户lint/provenance/55 tests/build/reference确定性211 public operations/architecture/62页20603链接通过；初始cwd路径错误、旧pin相对当前checkout不符、旧changelog空行和auth缺Secure名称断言失败保留，正规配对/正文修正后通过。无新框架/依赖/服务启动或部署，未跑全App默认，不冒全站/B14/B15完成。
+
+用户把Project产品选择委托主控。当前裁决：同tenant现成员显式viewer/editor、可到期/撤权；项目资料及明确项目聊天/任务安全结果共享，个人聊天/Secrets/Connection/资金不继承；owner独占授权与删除，执行始终当前actor自身资格。BFF三现设计为目标态未实施；独审发现editor改ScheduledTask可能沿原作者执行委托的P1，现三设计已一致明确先暂停/新actor显式委托/旧revision fence并获CLEAR，字段绑定依赖仍须过具体门后实施；现durable Message/FINAL Artifact及任务结果定位已证可复用既有BFF/Storage purpose=artifact，不新增接口；私人非FINAL workspace过程仍不整包开放，不代理creator。ProviderCRUD已存在，真实Custom API Admin及独立审计缺口已具体登记，不新造统一管理或审计平台。Docker恢复仍是共享资源单项待确认，QA保持quarantined/state8/原命令保留；未因此blocked整体Goal，Goal active、原PR继续Draft。
+
 ## 2026-11-13 B13 治理真实验收与资源故障边界
 
 B15旧Bearer元数据待办已核销：BFF28.38/217中210native、2health、2service-only、2webhook、1独立skill.list Key；Admin46项均native且canonical同SHA，App28.37/216同规则。主控现BFF已有contract102 PASS、App已有消费断言1 PASS，未改代码/generator/版本或机械更新pin；不保留已过时故障来拖延后继。

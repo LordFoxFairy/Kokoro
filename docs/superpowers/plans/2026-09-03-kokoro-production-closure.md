@@ -2012,3 +2012,15 @@ BFFc40315b9已推原#17并正常激活：Skills管理/包下载早拒绝缺reque
 B15旧Bearer元数据待办已核销：BFF28.38/217中210native、2health、2service-only、2webhook、1独立skill.list Key；Admin46项均native且canonical同SHA，App28.37/216同规则。主控现BFF已有contract102 PASS、App已有消费断言1 PASS，未改代码/generator/版本或机械更新pin；不保留已过时故障来拖延后继。
 
 组合收口：Admin44ec4e9f/BFF398cfe06已各推原PR；Root按413真实已提交blobs重核、仅290个仓commit引用更新，契约blob摘要零变化，未机械重发消费者pin。阶段先因旧inventory commit引用compatibility/checkpoint失败，精确更新后拓扑、15边0违例、原checkpoint全部PASS。App现next-env开发路由生成差异保留未提交。
+
+## 2026-11-13 Task B 多语言与公开 API 文档已交付，Project 协作进入明确设计
+
+App58ba5ecf已推原#49并正常源码激活：删除manifest写html.lang的重复effect，由LocaleProvider唯一维护。真实schema-valid迟到en-GB覆盖fr RED后修复；主控31 focused/非增量types/scopedlint/正式App build、六输入SHA核等及独审通过。正常native English→Français/html.lang=fr→硬刷新保持→原English/en恢复；不改manifest请求locale/scope/policy，不冒正常System支持en-GB或元数据请求语言映射已完成。只短停自己的App3310用于build，同配置恢复；53 Run全终态、派发无待办、原两财务unknown保留，不重跑模型/计费。
+
+公开门户固定已发布BFF396897b8/Public28.38/d6927c3a完整artifact，承接新增草稿条件PATCH；业务App client仍28.37。首页旧Bearer警告纠正、Secure/plain cookie互斥模式与名称明确。门户lint/provenance/55 tests/build/reference确定性211 public operations/architecture/62页20603链接通过；初始cwd路径错误、旧pin相对当前checkout不符、旧changelog空行和auth缺Secure名称断言失败保留，正规配对/正文修正后通过。无新框架/依赖/服务启动或部署，未跑全App默认，不冒全站/B14/B15完成。
+
+用户把Project产品选择委托主控。当前裁决：同tenant现成员显式viewer/editor、可到期/撤权；项目资料及明确项目聊天/任务安全结果共享，个人聊天/Secrets/Connection/资金不继承；owner独占授权与删除，执行始终当前actor自身资格。BFF三现设计为目标态未实施；独审发现editor改ScheduledTask可能沿原作者执行委托的P1，必须先明确暂停/新actor显式委托/旧revision fence，再闭门实施；必要Agent/Storage安全读取增量仍owner先发布，不代理creator。ProviderCRUD已存在，真实Custom API Admin及独立审计缺口已具体登记，不新造统一管理或审计平台。Docker恢复仍是共享资源单项待确认，QA保持quarantined/state8/原命令保留；未因此blocked整体Goal，Goal active、原PR继续Draft。
+
+B10本轮实际推进：BFF33419a04三目标设计已推原PR，独审ScheduledTask委托P1歧义已修复并CLEAR（代码/Schema仍未宣称完成）；FINAL结果范围以全部正式delivery/asset绑定复用当前Storage purpose=artifact，未设creator限制，不新增Agent/Storage接口。pricing_fixture_review现为BFF唯一生产/契约/SQL writer，先真实grant/CAS/幂等与访问规则，再逐现Project/Chat/结果入口承接；独立运行委托字段需具体设计过门，不代理creator，不只改finder。models_ui_review仅先写Capability Admin Custom API三设计，不碰BFF合同；主控保持Git/资源/唯一台账。
+
+当前提交组合App58ba5ecf＋BFF33419a04：按413真实committed blobs重核383仓引用，仅两份BFF设计文档摘要变化；拓扑/15边0违例/原checkpointPASS。此门绑定已提交快照，不冒后继BFF正在写的Project源码已验；正常BFF仍原c403实现，334仅设计文档后继。主控明示ProjectGrant绑定稳定subject、每次当前tenant准入生效，不新加IAM成员代际协议；退出期间拒绝，同subject合法重新加入后原有效grant可再生效，owner仍可撤销/到期。
