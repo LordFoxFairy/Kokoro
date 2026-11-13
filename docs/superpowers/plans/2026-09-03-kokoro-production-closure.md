@@ -2085,3 +2085,19 @@ BFF `fbc2025c`推原#17，16路径：pins沿当前read资格只写本人偏好�
 BFF `5cb7b13d`推原#17，8路径；主控按shared_project_run_display_audit最小方案实施并由同agent独审CLEAR：readable finder与Project edit gate同步接，exact Run actual actor不放宽，peer/viewer拒绝；verified spool与Agent后发头前鲜验保留。本人FINAL binder同原RR内核current/edit，SQL绑定dispatch.subject=actor=caller，去Conversation creator假设但保唯一completed slot/revision/durable-final/retired证据；selectedFinalAnswerInTransaction未改。新HTTP先404≠200、真实PG先editor binding null的RED保留；主控三完整文件123 PASS/0skip、creator→editor→creator真实PG完整1 PASS/0skip，build/lint/types/7路径format通过。c25e4c3a自有库DROP+absence、源码/dist输入SHA保持；HTTP Agent/Storage为明示fixture，未跑真实模型/native或旧parts全套，不拼全绿。
 
 接下去主控仅补Project aggregate删除与selected FINAL输入资格，再精确父演进/配对激活/真实双身份及Admin治理/Portal29产品和API文档/原PR整体交付。当前Goal active、正常资源未切换、原PR仍Draft、不合main/部署；其它已接受暂存边界不变。
+
+
+### 2026-11-13 已知共享输入/聚合删除源码已齐（最终完整门与正常组合仍待）
+
+BFF `6b1d8a4`原#17发布20路径：同Project当前read与唯一来源解析复用两处SQL，保source actor/Run/asset/digest；目标锁内edit与metadata后再验不变。真实输入PG暴露fresh latest/active预读阻断原key regen，分开不可变source读与新命令/UI资格，原receipt仍优先，fresh门未放宽。owner aggregate收全部canonical creator与own legacy，data creator/实际cleanup actor显式分开；已deleted child保原deleted_at但补fence，known-unsent全退休，peer admitted/unknown原事实保持，只给真实actor发取消；N+1仍owner服务断言，全部成员ACK齐才released。
+
+主控一次完整默认2556 PASS/21 FAIL/2条件SKIP，原日志保留。五失败组按真实readable/read/canonical Project/完整Task owner-executor修夹具，私有Prepare保持573独立feature pin并核573/efe两实际vendor bytes；SQL字符串排序/owner-only/FOR SHARE oracle不代表当前共享策略，风险由真实PG承接，不改gate或私有profile。独审另抓Project viewer新cancel仍发1次Agent，修为readable后保原安全ACK/replay分类，只有新cancel/resume需edit并释放未送claim；临时早拒误挡旧ACK也有RED并修。最终三独审CLEAR，11相关完整文件163 PASS/0skip、真实PG输入11与聚合完整1均0fail/0skip；build/lint/types/16路径format通过，16源码测试+8dist SHA保持；最终0e894ea0/b7c7ecd2自有DB DROP+absence。未重新跑完整默认，不拼最终全绿，不冒真实IAM/Storage/Agent/browser整链。
+
+已知六处源码入口收口不等于TaskB完成。接下来最终完整默认门→当次normal进程与quiet/确切catalog核验→仅本任务受管应用配对停启/具名owner演进/正式候选输出→真实双身份与Admin治理→Portal29/API/产品文档→原PR正常main及分支清理。受控activation清单已由只读agent交付；旧processes.json别名/快照不是当前运行证明，必须主控实查。Docker共享VM仍独立待答，不停他项目、不清卷，原两笔财务unknown保持；Goal active，各原PR Draft，不部署。
+
+
+### 2026-11-13 冻结源码最终完整默认通过，正常切换仅完成只读准备
+
+主控在已提交6b1d8a4源码上跑正式pnpm test，完整2580项：2578 PASS/0 FAIL/2条件SKIP；24源码/测试/compiled输入逐SHA保持。两跳过是owner schema coexist/rollback与R237 fresh catalog的需PG条件例，不冒全部integration。此前完整2556/21/2、修复后134定向/163相关及所有RED原件保留。BFF后继38e8e7a仅CURRENT收据，生产树等6b；doc-only Root组合重读417真实blobs/290引用/0摘要变化。用户不要求测试数量，不以这些数字称TaskB已完成。
+
+本轮正常资源只读实查（不是旧登记推断）：BFF53 dispatch均terminal、取消与scheduled dispatch空、enabled Task0、active consumer lease0；Agent53 Run全terminal、active lease0，历史claimed53均join到同tenant已terminal Run、event outbox全published；BFF/Cap/Agent HTTP/App各一个实际listener，受管Agent worker仍活。原数据未清状态、无模型/资金/服务重启、未执行normal evolve；旧processes别名仍须实际切换时复核。下一步当次quiet与exact父/catalog→停本任务受管调用方/owner并配对credential purpose/源码→具名演进→正式候选编译输出→真实双身份及Admin治理→Portal29文档→原PR/main/清理。全Goal仍active，Docker共享VM待答与两financial unknown保持原边界。
