@@ -6,10 +6,12 @@
 
 ### 当前最短收口队列（2026-11-13）
 
-1. **一个资源故障、多项受影响**：等待共享Docker VM重启单项确认；保原卷，恢复后鲜验Storage数据路径，只续Skills restore和Project install原body/key，再补共享Run→安全FINAL/Artifact缺失旅程。
-2. **已验与末端暂存分开**：Custom API冲突/撤权/迟到规则分层收口，当前IAM两条真实撤权补证通过。MCP本轮QA为example.com占位HTTP地址，非真实Provider；不对它伪造Prepare ready或把该样本当新产品故障。具体外部端点/授权末端沿已接受边界暂存，已验成功/取消链不重跑。
-3. **清理确认与交付**：本轮两个QA的不可逆动作各待原单项确认；完整需求收口后其余原PR→main、Root精确组合与自有分支清理。IAM新增审计需求PR#9已合main `71ad4ed5`，Agent原#49已合main `49901fd7`，各完整树等已验814/ce57，本轮各local/remote topic已清，不再列待合。
-4. **不新增功能**：原TaskB要求管理员边界/撤权/审计，未单列Provider专用事件库/reader/页面；本轮以已验IAM/Custom API具名审计如实交付，不新造Provider长期审计平台。Provider当前只有状态/receipt，仍不冒其为审计；将来需要可追责历史时另作owner-first增强，不作本轮新阻断。
+1. **资源恢复与原命令**：共享Docker `_ping` 于23:54 UTC仍4秒超时，等待单项重启确认；保原卷，恢复后鲜验Storage数据路径，只续Skills restore和Project install原body/key。
+2. **组合旅程**：资源恢复后只补共享Run→安全FINAL/Artifact/peer过程缺失旅程，不重跑已验模型、取消、权限矩阵。
+3. **确认与交付**：本轮两个QA的不可逆动作各待原单项确认；剩余原PR→main、Root精确组合及自有分支清理。IAM#9 main71ad4ed5、Agent#49 main49901fd7已交付并清各自topic，不再列待合。
+
+本轮确定代码差额已收口：Admin33bf2f0恢复页/菜单多语言，B02分层规则及当前IAM两条真实撤权。MCP QA是example.com占位HTTP地址，未Prepare/启用、不当新产品故障；真实外部端点/授权、完整云E2B和真实支付关闭沿已接受边界暂存。Provider状态/receipt不冒专用审计，原交接未单列长期Provider审计平台，不为此新扩建。
+
 
 
 用户已把 Task B 移交本主控，历史“Task B 不动”仅约束当时 Task A／UI 批次，不再排除本任务。沿[原功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)和[既有有效计划](docs/superpowers/plans/2026-09-03-kokoro-production-closure.md)推进，不重开已交付 Task A、不另起任务中心。以下是接管后的真实剩余队列，不把原15个功能域当15个新故障。
@@ -74,6 +76,7 @@
 - [x] B13 Provider元数据正常native补缺／主控浏览器、shared_project_run_display_audit独审CLEAR：唯一无凭据QA目录项POST201/v1，立即停用PUT200/v2，只改名PATCH200/v3，硬刷新保持，再启用/停用各200至v5。独立自有native Session经Admin BFF→Capability fresh GET200核exact key/name、disabled/v5、origins/scopes空且仍需授权；无OAuth/Prepare/Connection/工具调用，旧两项不改。临时admin原false/v10→true/v11→false/v12，撤权GET403/页面目录清退，自己的Session正式logout/Cookie回收。源码/Schema/协议未改，不重跑既有162恢复例。CDP正文eviction和首helper误读顶层字段KeyError保留，正式schema下仅重读GET成功。**本轮唯一QA仍disabled登记，永久移除未提交**；不冒Provider专用治理审计或外部授权端到端。
 - [x] B13 IAM审计窄接线／主控验收：Root `806cd1dd` 精确组合IAM814/BFFbec/Admin615/App0d38已完成真实Chrome原生链。25行首/次页共50个互异id与IAM当前tenant原事实逐项核等；键盘下一页、上一页原序、硬刷新恢复通过，native独立GET200仅14安全字段。临时平台admin false12→true13→原false14后，同一自建Session仍authenticated且审计403，Chrome刷新旧rows=0；自建Session正式logout/Cookie回收，原Chrome不注销。en/zh切换及中文390关闭菜单document390/390通过；**语言下拉展开397/390的7px越界为独立UI缺口，未冒通过**。四仓源码与Root门已验且推原PR，原FAIL保留；私有收据 `var/dev/task-b-takeover/b13-audit-native-receipt.private.json`。只闭合当前tenant IAM安全审计读，不冒Provider专用审计/全部后台或TaskB完成。
 - [x] B14 Admin语言菜单390px边界／主控：Admin `1ed8083`沿原#7已推。真实RED展开397/390后，仅现语言Select增横向shift；原hydration4/非增量types/单文件lint/Next build/posttypes及独审通过。真实Chrome en/zh展开popup right371、document390/390，键盘选择/关闭通过；en/default视口已恢复、自建页关闭。临时admin恢复原false/v16、仅自建Sessionlogout/Cookie回收。未重跑全默认/加组件/隐藏溢出；Root补同一Admin3个证据commit，原420blobs逐字核等。
+- [x] B14 Admin恢复页多语言／主控＋shared_project_pin_skills_review实现＋独审CLEAR：Admin `33bf2f0`沿原#7已推。四硬编码正文接现zh/en，两个互斥server失败分支包现Provider；AppShell/恢复effect/权限/取消保持，无新store/cookie/布局/协议。原两test先6FAIL后14PASS，主控独立14/完整默认388 PASS/0skip、types/scopedlint/Next build/posttypes过，7SHA核等。真实Chrome已准入→临时role恢复false→Refresh：English标题/提示/Retry/产品链接正确、private rows0；原false16→true17→false18，自建Session仍authenticated后正式logout/Cookie回收，原Chrome保持，自建页关闭。首cold非管理员直链本按原guard回产品，不冒该次触达恢复页；两个独立失败分支为layout测试/构建证明，未注入正常IAM故障。仅Admin构建前受控停止并恢复200。
 - [x] 最终默认门固定源码／主控：BFFbec `pnpm test` 2591 PASS/2条件SKIP（原schema安装/nullable tombstone条件例），1322 tracked起终SHA相同；App0d38 6885 PASS/0skip、1593输入核等；Admin1ed默认387 PASS/0skip（workers=2仅并发约束）、203输入核等；Agentce57原默认3650 PASS/955按原marker排除、541输入核等，3455 SDK实验/弃用warning保留。各为同一停写基线完整终态，不拼接旧focused，不冒真实integration全部通过。已有合同/构建/types/门户精确来源证据沿用，不重复跑。
 - [x] Agent独立owner PR出口／主控、b13_audit_independent_review CLEAR：原#49正常merge main `49901fd7`，完整树等已验ce57，无新source/Schema差额；本地未占用main先CAS前移再切同源码树，避免运行源短暂回到旧树；本轮local/remote topic已清。fast/service-acceptance实际未启动，annotation为账单/额度，未绕保护/伪报CI绿。正常进程同源码不重启；Root/BFF/Storage共享成功Run→FINAL仍待，不冒整个TaskB完成。
 - [x] B10 装配期取消缺陷与主路径／主控＋shared_project_pin_skills_review实现＋shared_project_run_display_audit独审：Agent `b61234b` 已推原 #49，仅现装配等待续租与listener时序，保 fence/manager/清理，不增状态表/框架。主控最终 test_main9、相关191 PASS/5integration未选、完整Ruff/Pyright0/wheel/sdist及独审通过；首次误选资源测试5 setup ERROR保留。正式 HTTP/Worker 成对重载后，新的真实 Run 在 Docker 装配时点击 Stop，175ms terminal cancelled、原命令 succeeded、model0/未绑sandbox、唯一 run.completed(cancelled)；硬刷新 Stopped。前一活跃 Run 期间修改运行源触发 StaticRecipeIncompatible 是真实失败，旧Stop仅admitted，不混为取消成功、不削弱配方门。后继只读 Worker Docker子进程0，但daemon version5秒超时，**未证容器不存在或共享Docker恢复**。

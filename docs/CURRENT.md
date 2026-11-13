@@ -1,3 +1,11 @@
+## 2026-11-13 B14恢复页多语言已修复并实际验收
+
+Admin `33bf2f0`已推原#7：7路径最小修复四处文案与两个互斥server失败分支的现LocaleProvider，不改AppShell/恢复effect/权限/取消，不新增store/cookie/协议。原两测试先6 FAIL/8 PASS，主控最终focused14/完整默认388 PASS/0skip、非增量types/scopedlint/Next build/posttypes通过，七源码SHA核等、独审CLEAR。为构建仅正常停止自己的Admin本地进程再恢复200，未碰其它owner/卷。
+
+真实Chrome保留既有English偏好：已准入→临时平台角色恢复原false→Refresh，英文标题/提示/Retry/产品链接正确、private rows0；原false/v16→true/v17→false/v18，自建Session角色撤回后仍authenticated，再正式logout/Cookie回收，原Chrome不注销、自建页关闭。首个cold非管理员直链按原guard回产品，未冒该次是恢复页；两个独立server失败分支由layout测试/构建验证，未制造正常IAM故障。截图/receipt只留ignored；旧中文截图/RED及首manifest解析器误读list的异常均保留，按实际结构重核七SHA通过。
+
+Root仅三项Admin evidence commit更新，420提交证据blob/全部摘要保持，拓扑/15边0违例兼容/原checkpoint通过。23:54 UTC一次Docker_ping仍4秒超时，未重启/清卷/重建；等待原单项资源与QA确认。最短剩余仅资源后原命令/共享FINAL旅程及其余原PR交付出口，Goal active，整体TaskB未完成。
+
 ## 2026-11-13 最终源码门与Agent独立PR出口完成
 
 - 原Agent PR#49已正常merge main `49901fd79426257ce2e20cec62afb68cce30cca7`，完整树等已验ce57；独立收口审查CLEAR。本地未占用main先CAS快进再切同一源码树，避免运行源码瞬时退回旧版本；本轮local/remote topic已清，无进程重启/部署。Root/BFF/Storage共享成功Run→FINAL/Artifact仍独立待验，不冒整个TaskB完成。CI fast/service-acceptance未启动，annotation明确账户账单/额度，未绕保护。

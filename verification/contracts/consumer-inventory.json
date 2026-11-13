@@ -688,19 +688,19 @@
         },
         {
           "repository_path": "apps/kokoro-admin",
-          "repository_commit": "1ed8083bdc851fe51139e144dff1a8bf940b247b",
+          "repository_commit": "33bf2f0c8124551cd17315252c88657938a47b25",
           "path": "contract/dependencies/bff-skills.json",
           "sha256": "6f86e6d81faed684798daac2e135f4d3c28d2c2e489259648ece3df0efb0cc8f"
         },
         {
           "repository_path": "apps/kokoro-admin",
-          "repository_commit": "1ed8083bdc851fe51139e144dff1a8bf940b247b",
+          "repository_commit": "33bf2f0c8124551cd17315252c88657938a47b25",
           "path": "lib/server/admin-admission.ts",
           "sha256": "1c3af30a7ad2447f2b2070add09bd99f9983276788a61460b13aa5355c1b6a76"
         },
         {
           "repository_path": "apps/kokoro-admin",
-          "repository_commit": "1ed8083bdc851fe51139e144dff1a8bf940b247b",
+          "repository_commit": "33bf2f0c8124551cd17315252c88657938a47b25",
           "path": "app/api/v1/admin/[...path]/route.ts",
           "sha256": "1edf4b5756bc9dce8920273b59ec2bb3f2c40305840372776ed6e8a8597657f2"
         }
