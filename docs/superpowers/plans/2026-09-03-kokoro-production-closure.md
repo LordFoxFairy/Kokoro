@@ -2101,3 +2101,14 @@ BFF `6b1d8a4`原#17发布20路径：同Project当前read与唯一来源解析复
 主控在已提交6b1d8a4源码上跑正式pnpm test，完整2580项：2578 PASS/0 FAIL/2条件SKIP；24源码/测试/compiled输入逐SHA保持。两跳过是owner schema coexist/rollback与R237 fresh catalog的需PG条件例，不冒全部integration。此前完整2556/21/2、修复后134定向/163相关及所有RED原件保留。BFF后继38e8e7a仅CURRENT收据，生产树等6b；doc-only Root组合重读417真实blobs/290引用/0摘要变化。用户不要求测试数量，不以这些数字称TaskB已完成。
 
 本轮正常资源只读实查（不是旧登记推断）：BFF53 dispatch均terminal、取消与scheduled dispatch空、enabled Task0、active consumer lease0；Agent53 Run全terminal、active lease0，历史claimed53均join到同tenant已terminal Run、event outbox全published；BFF/Cap/Agent HTTP/App各一个实际listener，受管Agent worker仍活。原数据未清状态、无模型/资金/服务重启、未执行normal evolve；旧processes别名仍须实际切换时复核。下一步当次quiet与exact父/catalog→停本任务受管调用方/owner并配对credential purpose/源码→具名演进→正式候选编译输出→真实双身份及Admin治理→Portal29文档→原PR/main/清理。全Goal仍active，Docker共享VM待答与两financial unknown保持原边界。
+
+
+### 2026-11-13 正常成对演进与双身份 ACL 主片已验
+
+主控按当次quiet/真实PID-cwd停6个自有应用，不动共享infra/其他owner；必要配置及两owner一致性dump私有保留。Capability718d精确父正常升级成功；BFF两次正式失败分别为物理列布局和13条合法queued无Agent source，两次均回滚且原36表SHA保持。演进工具1086a4f/509597f沿原#17交付，live语义仍精确、queued仅真正缺source并由原dispatch全闭集证明，已有矛盾source仍拒绝；不加通用fallback、不补source/HWM、不改canonical SQL或HTTP。既有真实PG用例补实际风险，RED→最终1 PASS/0skip、规则3、lint/format与独审CLEAR；原保值/负控/noop全保留。
+
+最终正常演进成功，BFF36/Capability25表原行SHA完全核等，cursor/HWM/state精确迁移；成对9项Platform/1项BFF admin配置保原8项，Cap/BFF readyz200、Agent正式Worker consuming。裸Agent readyz401不称ready已验。前端候选已受控激活；首次IAB登录502证实是本地HTTP与强制production/Secure Cookie模式不匹配，恢复App现私有环境对应源码next dev后真实普通账号登录通过，生产安全源码不改；Admin候选next start，旧输出保留。App自动next-env开发types路径未提交，后继收尾处理，不造源码副本。
+
+正常Chrome owner＋独立IAB普通成员完整执行专用QA Project创建→Viewer只读→Editor保存指令→owner刷新同值→降权真实native PATCH403/project_edit_forbidden且内容不变→撤权后列表/旧地址内容退休。初负控误期望404保留，按现正式403纠正；探测Session均正式注销。QA grant已撤销，项目/指令暂留后继，原私人资料/其他数据未动；无新模型/资金命令。只收ACL此片，不冒共享Run/安全FINAL/Artifact、到期或完整Admin完成。
+
+下一检查点：这些缺失旅程→公开Portal29/API/Project文档→原PR正常main及自有分支清理。Root417真实blobs/290引用重算、拓扑/15边0违例/原checkpoint通过。Goal保持active；两位只读agent审查，主控唯一资源/Git/台账，不把历史TaskA或旧财务unknown重开。

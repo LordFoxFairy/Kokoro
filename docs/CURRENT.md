@@ -1,4 +1,14 @@
-## 2026-11-13 当前推进：已知协作源码及完整默认门通过，正常组合待激活
+## 2026-11-13 当前推进：正常协作组合已激活，双身份 ACL 主路径已验
+
+- 当前BFF `509597f`、App `f32b707a`、Agent `3e61c0a1`、Capability `efe18a1f`、Admin `153c875`，均沿原Draft PR；Public29/227及Agent8.18/canonical SQL不因本片改变。Root按417个真实已提交blobs重算290处BFF引用，拓扑/15边0违例/原checkpoint通过；最终Root SHA以本次提交为准。
+- 主控当次quiet/实际PID-cwd核验后仅停6个本任务进程，复用原PG/Redis等。Capability精确718d父正式升级；BFF正常演进真实发现两处工具缺陷：物理列顺序/已退休槽误当结构漂移、合法BFF queued帧误要求Agent source行。分别修为live语义精确catalog、原immutable dispatch的具名queued来源证明；不加父版本/放宽真实列/手补正常数据。`1086a4f`/`509597f`推原BFF#17，最终真实隔离PG1/规则3/0skip、lint/format/diff及两独审CLEAR；旧错误和原负控/保值/noop保留，不重跑业务全默认来凑数量。
+- 最终正常升级后，BFF36表/Capability25表全部原列行摘要核等，来源cursor/HWM/state精确保值搬迁；不是删库/重建。必要私有配置副本、约1.93MB两owner一致性dump及旧前端输出保留，不自动恢复或做down-schema。专用Custom API Admin两端配置成对激活、原8项完整保留。Cap/BFF healthz/readyz200，Agent healthz200/正式Worker consuming；裸Agent readyz401属于未认证请求，未写成ready通过。其它owner/共享Docker/财务unknown不动。
+- 正常Chrome owner＋独立IAB普通成员：UI创建专用QA项目、Viewer只读、Editor保存指令、owner硬刷新回读、降权后真实native PATCH403 `project_edit_forbidden`且Project不变、撤权后成员列表消失/直达“项目不可用”/旧内容退休，均已验。仅新空QA项目，原私人内容不共享；grant已撤销，项目保留用于剩余验收；无新Run/资金调用。负控首脚本误期望404原件保留，现按正式403语义验证。
+- 运行模式纠偏：首次IAB新登录502，最小上游探测200并正常注销，证明本地HTTP/IAM普通Cookie与强制production App的Secure要求不匹配；App已按本地源码next dev恢复，独立真实登录成功，生产认证规则未改。已构建候选仍保留，Admin为本轮候选next start。App `next-env.d.ts`仅Next自动切dev types未提交；不冒全工作树clean或完整后台native通过。
+- 下一步仅补共享Run/安全FINAL/Artifact、到期及后台治理缺失旅程，随后公开Portal29/API/产品文档和原PR/main/分支清理。Goal active，整体TaskB未完成。QA收据与截图均local ignored；不将本阶段通过扩成全产品闭环。
+
+### 切换前源码证据（以下“未激活”为当时阶段事实）
+
 
 - BFF `38d47c958cecdc072ee60d5a96ad17c48ac691c6` 已提交推送原 Draft #17；135 个停写文件逐 SHA 核等。Public29 canonical `45c54365e75a31684e1dbf841a0c68cd554bf022643919cac591c78ed4499509`／227 operations，正规消费已发行 Agent `3e61c0a1`／HTTP8.18；不是工作树 pin。包括 Project Grant、当前读写资格与安全结果、按真实 subject 的来源游标、共享上下文冻结、Scheduled 执行人/修订和六项 Custom API Admin HTTP。
 - 主控最终 focused 240 PASS／0 FAIL／0 SKIP、历史契约 102 PASS／0 SKIP、正规 Agent generator check 通过，全部 135 输入前后核等；生产字节对应先前正式 build 通过。前一 focused 229 PASS／11 FAIL 保留，11 项是原 chat-service fixture 未承接可选 read lifetime、实际 RR lease 和两候选 Conversation 查询，修正夹具后复跑，不删除原 scope/keyset/六类非法头与回滚断言；未重跑全默认，不拼成全仓绿。
