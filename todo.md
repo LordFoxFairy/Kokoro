@@ -30,9 +30,11 @@
   - [x] 主控真实native收据 `9634eda90cfe493517b5394b`／Root`89de6a62`：唯一definition201、r1空bounds201；缺限额Publish仅本页反馈/零请求；同ID仅PATCH8192/1024、CAS1→200/version2；显式publish CAS2→200/version3；硬刷新详情同ID/digest/限额，Published且无编辑操作。原PATCH重放保持原version2回执，鲜读仍published3；owner读回/七Billing资金/计价表与BFF dispatch均0/正式logout/cleanup/credential-log-check均PASS。前两次安装请求超时及字体编译FAIL保留，均cleanup PASS，不拼旧证据；无模型/Provider执行或价格/资金写。
   - [x] B14随片两组件/Ant默认双语：Admin原#7/87c228c，60自定义key zh/en，现Shell单一ConfigProvider随locale选择官方语言；主控全367/0skip、全lint/build/posttypes与九SHA独审通过，保护原业务，非整个后台文案/视觉完成。source-only native driver四ignored文件已纯检查/四SHA主控核等；静态不冒native成功；实际English表单/确认/Ant默认文案随上项native已验；zh仍为原renderer证据，不冒全后台本地化。
 
+- [x] B14 Models展示源码片（原Admin #7/`79b14599`）：六现源码/两现测试补108 zh/en key，页头/说明/四tabs/表单/详情关闭/分页与状态提示接原LocaleProvider；用户/协议/技术字段与原始诊断不翻，未改生命周期/请求/CAS/journal。主控8输入核等、七文件46 PASS、非增量types/scopedlint、真实Turbopack build/posttypes与独审通过。正常Admin同配置恢复；本片浏览器/窄屏对照未新增，随后继真实后台旅程补，不冒全B14闭环。
+
 - [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消已随PERF-03收口，icon404已核为可选媒体缺省回退，见下；不为非缺陷新增代码。侧栏有限切片已沿App原#49提交推送00334cbe：32既有key/九语言、15实现测试输入冻结，主控160 focused/相关lint/完整非增量TS/正常production build、独审CLEAR；真实French项目标题与空态正确并恢复English。此次实际1000px，未冒新390通过；旧15-key阶段窄屏单列。无locale框架/导航资格/协议扩展，不冒全站翻译闭环。manifest caller取navigator而非设置locale另记事实，影响待定向核验，不冒System内容错误。
 
-- [ ] 下一实施／B-09：复用已准备的隔离fixture三命令，补真实owner邀请→独立recipient正式CSRF接受→成员读200→本人UI leave→目录消失；退出页401与另一仍有效Session的membership403分开证明。静态schema/TS语法及主控实际diff审查已通过，semantic types与真实双身份旅程未运行；不改生产认证/正常tenant，不重复B06/B07/模型。
+- [ ] 进行中／B-09（sidebar_i18n_finish私有接线、主控资源/验收、pricing_fixture_review核对协议）：仅IAM/BFF/App，复用已准备的隔离fixture三命令，补真实owner邀请→独立recipient正式CSRF接受→成员读200→本人UI leave→目录消失；退出页401与另一仍有效Session的membership403分开证明。静态schema/TS语法及主控实际diff审查已通过，semantic types与真实双身份旅程未运行；不改生产认证/正常tenant，不重复B06/B07/模型。
 
 - [x] 正常运行恢复：九个已登记owner监听及Agent正式Worker恢复；只读确认Run全终态/pending0，复用现有purpose凭据进程内配对后观察到正式consuming。不是本轮新模型全链验收；原配置/持久资源保留。App仅Next dev自动生成的next-env路径diff未提交，不是遗漏业务源码。
 
