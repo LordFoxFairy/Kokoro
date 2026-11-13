@@ -1,6 +1,6 @@
 ## 2026-11-13 后继：事件回放恢复、真实装配取消与治理主片已验
 
-- 已提交推送的行为源：BFF `adf31d9`（原#17）、Agent `b61234b`（原#49）、App文档 `08bc30b6`（原#49）；后继仅 CURRENT 记录提交以 Root gitlink 为准，生产源字节保持。Public29.0.0／227 owner操作、Agent8.18／canonical SQL不因本片改变。Goal实查 active，Task B整体未完成。
+- 已提交推送的行为源：BFF `ef9e64e`（含replay修复`adf31d9`，原#17）、Agent `b61234b`（原#49）、App文档 `08bc30b6`（原#49）。当前精确gitlink为BFF `ef9e64e`／Agent `ce57f4d`／App `9ccb19d1`；Agent/App两后继仅CURRENT记录，运行行为不变。Public29.0.0／227 owner操作、Agent8.18／canonical SQL不因本片改变。Goal实查 active，Task B整体未完成。
 - BFF真实native SSE503已定位为frame_page遗漏source_subject_id；仅一列修复。现有真PG replay先RED42703，最终1 PASS/0skip，四纯文件91 PASS/0skip、build/types/lint/format/独审通过，PG库回收。仅BFF受控重载后，正常native→Web→BFF SSE200、真实id/data帧，Chrome硬刷新恢复新Run Stopped并保留旧incompatible失败。测试原生Session正式退出，Cookie回收，原角色不变。
 - Agent现有装配等待补原fence续租与listener建立时序。主控test_main9／相关191 PASS、5资源integration未选，Ruff/Pyright0/wheel/sdist/独审通过；首次误选integration的5 setup ERROR保留。HTTP/Worker成对重载后，新Run在Docker装配时原生Stop→175ms cancelled、原命令succeeded、model0、未绑sandbox，唯一run.completed(cancelled)。旧Run在活跃期间编辑运行源触发配方不兼容是实际失败/主控时序失误，旧Stop仅admitted，不冒取消成功、不降低guard。
 - 正常Custom API Admin另发现已配purpose但缺正式custom-api-admin surface；备份后仅补flag并重载Capability，列表503→200。仅新QA配置随机假标记，真实quarantine v1→2／owner只读→restore v2→3／owner可编辑、七安全字段/两审计/actual actor/原命令核等；sealed材料保留、不解密值。临时admin已恢复原false/v10，自己的Session正式退出，原会话保持；永久revoke待本轮单项用户确认，尚未提交。
