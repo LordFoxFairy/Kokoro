@@ -1,6 +1,6 @@
 # Kokoro · 当前执行 TODO
 
-更新：2026-11-12。唯一执行清单；Task B接管基线Root `1092d99b`（当前候选沿原#67），不重开已交付Task A，不重复扫描凑问题。
+更新：2026-11-13。唯一执行清单；Task B接管基线Root `1092d99b`（当前候选沿原#67），不重开已交付Task A，不重复扫描凑问题。
 
 ## 当前任务：Task B 正式接管（2026-11-12）
 
@@ -24,8 +24,11 @@
 - [x] B-06当前会话管理缺失接线与实测（主控配置/正常native，app_merge_gate定位）：仅补normal IAM/BFF既有account_sessions专用路径，独立随机profile/固定正常tenant，原配置私有备份；源码/协议/Schema不改。原503复现后，两端受控重启healthz200，真实浏览器列表200→只撤本轮自建独立Session DELETE200→fresh列表200目标消失，原当前/原另一Session保持；被撤Session auth=false且业务GET401。另一新QA Session仅fixture缩短expires_at至8秒，正式GET先true/真实expiry一致→墙钟经过后false/业务401，无先logout/全局TTL改变；不是七天浸泡或浏览器自动倒计时实测。两测试Session均正式logout/自有Cookie回收，53Run终态/pending0、旧两财务记录保持，不新跑模型/全默认。
 - [x] B-07缺失双标签CAS主旅程（主控正常native，Root3389/Appbf8/BFF9cc，无源码变化）：两页同revision2，A PUT expected2→200，B PUT expected2→409且草稿保留；显式Reload→展示权威A→Use server profile→硬刷新仍A；按新revision3 PUT恢复原四空字段→200，原标签硬刷新核空；另新原生Session正式CSRF表单重登GET200/revision4全空，随后仅退出新Session/删除自有Cookie。原工作Session保持，无模型/工具/知识开关写。三个写阶段网络证据完整；首A读取collector未捕获、旧response body后被evict如实保留，A outgoing expected2及B初始GET2证明基线，不冒全程trace完整。只是本缺失旅程，不等于B06自然到期/独立设备或全TaskB完成。
 - [x] B-14 Skills语言本片（composer_ui_audit实现／api_perf_audit独审／主控验收）：en两现key补齐、两日期调用显式locale，其他八语言不改。主控5输入冻结41 PASS／types／build；正常英文桌面＋320px文本内收/日期正确、无横溢/长标签自然换行。原#49代码844fbbcb＋文档0c6078e3已推，正常App同源激活，不重跑全默认/九语截图矩阵。
-- [ ] B-13后台（主控验收；api_perf_audit实现/app_merge_gate独审）：当前成员目录读取片已验，Admin原PR7业务4241c2f/文档e7f2f79。真实GET200/3成员、users与teams一致/本页筛选、中英UTC通过；首轮390标题截断FAIL后两文件局部修复，最终390中英完整换行/无全页横溢，撤权刷新403立即清成员、显式重核回产品。主控最终2SHA/11相关测试/独审，前序35与writer完整355等分阶段保留，不拼成最终全量绿。临时角色恢复false/v6，六次CAS audit核等，新Session/Cookie均清，原工作会话保持；Admin已恢复3320。原B13按具名功能收口：Skills管理员审核→用户可见性、Provider/MCP/API管理、模型修订/标签与计价写后回读、用户/团队邀请角色操作及对应owner审计仍待；不把原文未要求的任意User360/全局画像/退款或统一跨owner审计平台列为隐含必交。成员目录读取片关闭，不替代这些动作；PR保持Draft。模型/计价真实隔离启动已通，原生浏览器登录PASS；首次Admin编译遇ENOSPC，**业务写旅程未运行**。自动回收收据写失败，主控人工回收后九业务表零行/自有DB与Redis/pgroup/副本/测试Cookie均核清，不冒自动PASS。仅私有Next资源配置关闭开发磁盘缓存并保Turbopack，启动需2GiB/运行保留1GiB；当前不足启动预算，先核明确owned可回收输出，不无预算重跑。正式Root Billing readiness旧module误判已修/主控41 PASS。原managed worktree工具超时且未重复创建。
-- [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消已随PERF-03收口，icon404已核为可选媒体缺省回退，见下；不为非缺陷新增代码。
+- [ ] B-13后台（主控验收；原Admin #7/e7f2f79）：成员目录读取/本页筛选/中英UTC、390px标题换行、撤权403清空及重新核对已验；原正常临时角色恢复false/v6，测试Session清理，原工作会话保持。模型/标签与计价写后回读的缺失旅程本轮已补，详见下一子项。剩余只按原具名范围：Skills管理员审核→用户可见性、Provider/MCP/API管理、用户/团队邀请角色及对应owner审计，以及本轮确定的草稿发布UX修复；不扩任意User360/退款/统一跨owner日志平台。PR继续Draft，整后台未宣称闭环。原第六次ENOSPC失败/人工回收记录留CURRENT与原计划，本轮第七次已自动回收，不再将旧磁盘预算列作现阻塞。
+  - 最新实测：Root58215eca精确六owner第七run，r1空bounds发布409保留；r2显式8192/1024草稿201/发布200、label201→两次CAS200别名修改恢复、rate/policy各201、硬刷新/正式GET/原body-key replay通过，五表资金/Run均0。原driver恰1revision oracle FAIL保留、cleanup PASS；主控独立补充实录verifier PASS，不冒原driver或全部B13绿。正常数据/报价不变，无模型/Provider执行。前文ENOSPC与预算为第六次历史；当前容量恢复，未新复制源码/依赖。
+  - [ ] 下一最小修复：Admin模型草稿两bounds“可空”须解释仅草稿，发布前应可补齐并提供确定反馈；当前只读详情导致用户只能另建修订。System正式完整bounds约束保持。该缺口已由真实409复现，不开展通用编辑框架。
+
+- [ ] B-14／B-15：视觉／多语言／性能与文档、原PR、精确组合随每片关闭。PERF-02已收口（见下）；模型目录取消已随PERF-03收口，icon404已核为可选媒体缺省回退，见下；不为非缺陷新增代码。侧栏有限切片已沿App原#49提交推送00334cbe：32既有key/九语言、15实现测试输入冻结，主控160 focused/相关lint/完整非增量TS/正常production build、独审CLEAR；真实French项目标题与空态正确并恢复English。此次实际1000px，未冒新390通过；旧15-key阶段窄屏单列。无locale框架/导航资格/协议扩展，不冒全站翻译闭环。manifest caller取navigator而非设置locale另记事实，影响待定向核验，不冒System内容错误。
 
 主控唯一管理Root台账／Git／资源／最终验收；两agents先独立调查，R-07单writer。每仓沿原PR，完整验收后正常合main并清本轮分支；不部署、不清卷、不删除归属未明worktree。用户2026-11-12已明确要求设置目标，机器Goal现为active：完成Task B已批准剩余功能及原PR/main/精确组合出口。按本TODO持续推进，局部依赖只约束对应动作，不自行暂停或误标整体完成。
 

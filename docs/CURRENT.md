@@ -1,3 +1,15 @@
+## 2026-11-13 Task B 当前收口：侧栏已交付、后台模型/计价后继旅程已验
+
+Goal实查active，整体Task B保持OPEN。App原#49新增00334cbe（基线bf8ef938，16路径含当前文档）：侧栏32个既有key九语言自有译文，补118缺译/7占位；拖动ARIA仅现有t向hook传必需label，两个真实caller承接，不改排序/权限/焦点/迟到逻辑、用户标题或locale框架。主控最终160 focused、相关ESLint、完整非增量TS、正常工作区production build通过，15输入前后SHA核等、独审CLEAR。最新真实French项目标题/空态正确并恢复English；实际目标视口1000×716/document1000，工具临时390 override未应用，不称本阶段新390验收。原15-key阶段窄屏证据仍单列，未重跑完整默认或模型/资金。
+
+B13第七次隔离run0eb09c8e843ee281ba2f37f4绑定Root58215eca/已提交六owner（Appbf8，不混后继侧栏提交）。六owner真实启动/native登录通过；definition201、r1草稿201后publish409。确定原因是旧测试recipe空bounds，但System正式publish要求完整；Admin“可空”未解释发布要求且详情只读，登记明确后续UI补口，不放宽owner约束。保原409，主控同一run显式创建r2(8192/1024)201→发布200；label201→两次CAS200别名修改/恢复原null/default revision不变；rate/policy各201，硬刷新与正式GET完整配置/精确r2 digest核等。两条计价命令由主控显式触发原body/key HTTP replay，data回执完全一致；不是浏览器ACK丢失验收。
+
+原driver只支持恰一个revision，其终态FAIL/exact_owned_browser_creations_required原样保留，cleanup PASS、credential log check PASS。独立补充verifier只核实录10命令、两个revision精确状态/两publish状态/CAS、fresh reads、原replay及五表零资金/Run，主控执行PASS；新增补充收据不覆盖原FAIL、不冒整个B13闭环。浏览器正式退出回landing，独占临时库/Redis/pgroup/源码输出由原helper回收；不可变配置随具名临时库清理不是产品retire/delete能力。正常账号/报价/资金/路由未动，无Provider/model请求。
+
+Root组合治理：App固定00334cbe；inventory核413个真实已提交blob/507个摘要引用（93处App组合pin更新），摘要与实物核等；拓扑PASS、15契约边/0违例、原checkpoint PASS。不重写独立历史消费者pin。
+
+后续只做已发现差额：B13草稿发布提示/可修正路径；原具名Skills审核、MCP/API管理、团队邀请/角色/审计等TODO仍OPEN，不扩User360/统一审计框架。共享移动侧栏primitive与manifest设置语言输入另列观察；不以有限词条齐备冒全站翻译完成。沿原PR，不部署、不提前合整PR。主控只短停自己的App3310用于build，同配置已恢复；本轮无源码/依赖副本新复制，原B13副本创建早于新备份规则，后继不得复用旧复制配方新建。
+
 ## 2026-11-12 native后台登录阶段通过，磁盘失败与恢复
 
 绑定Rootdf295dac/精确六owner的第六run：真实IAM/System/Billing/BFF/App/Admin启动，匿名Admin API401、正式/login303；CUA独立localhost原生账号实际登录进入工作台，无Bearer/假Cookie。访问/manage/models首次编译时Turbopack SST出现ENOSPC、owned_service_exited，尚无模型/标签/费率/政策业务写。本轮outcome FAIL；自动回收最终receipt同受ENOSPC影响，不能称自动cleanup PASS。

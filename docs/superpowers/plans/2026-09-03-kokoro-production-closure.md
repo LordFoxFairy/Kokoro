@@ -1912,3 +1912,19 @@ B09主动leave源码已具备，缺真实主动退出而非管理员移除证据
 主控查全注册pgroup已无进程，先仅删其生成.next释放空间，再沿具名资源marker/原helper回收同一测试库与Redis/origin键；库回收前九业务表（model definition/revision/label、费率/政策、账户/hold/journal、Agent outbox）均0。自有shorttmp/source/deps、账号/密钥文件回收，原生测试Cookie清除/页关，人工cleanup PASS独立留证。正常BFF随后发现旧进程exit1/无监听，旧log不足证根因；仅同aad/原配置恢复，healthz/readyz200。原工作台native刷新auth/session及models均200/189事件无截断，原会话保持，无新模型/资金动作；正常App200。未清正常数据、卷或他人资源。
 
 私有driver后继只增加容量控制：已锁Next16.2.6支持的dev磁盘缓存关闭，仍Turbopack；两private config独立记录原blob/补丁摘要，不混IAM三test-only接缝。启动要求2GiB/运行保底1GiB，低于则正常退出回收；错误记录失败不阻断finally。静态准备通过，未重跑；随后只回收原TaskA已终态私有qualification的两node_modules与一.next叶，保源码/收据/manifest；主控核七门终态、基线为当前App祖先、无活跃argv/正常依赖链接。allocated约2.35GiB因APFS共享实际仅增143MiB，现Data约1.38GiB仍低于2GiB预算，不拿逻辑大小冒实得、不继续无界扫描或删除正常输出。Goal持续active，完整后台写旅程和原TaskB其余具名残项仍OPEN；原PR不合main/不部署。
+
+### 2026-11-12 侧栏既有key缺译修复派工
+
+正常English截图的“新建任务/电脑/创作/自动化/任务/收起项目”等由App现t(key)直接产生，8个key仅中文源存在，非中文overlay缺席；不是这些标签来自System中文manifest，也未见第二LocaleProvider。composer_ui_audit单writer仅八非中文词典/两原测试及必要i18n INDEX，按所有9个上线语言补既有key，先RED再GREEN；不改中文源、key、Provider、导航资格、协议或CSS。主控管Git/验收/唯一台账。当前资源不足大隔离，只做focused/相关lint/非增量TS，不跑build/完整默认/资源，未冒已修/可合并。
+
+live与private fallback出现Agent/Library的差别来自现manifest featureFlags/navigation与既有fallback，不据截图认定版本或System发布错误。manifest hook取navigator.language而非Settings当前locale是另一具名事实，当前未留实际navigation响应正文，后继定向核验语言切换影响，不混本片改动或假修正常配置。Goal持续active。
+
+### 2026-11-13 当前阶段收口与下一差额
+
+Goal实查active，整体Task B保持OPEN。App原#49新增00334cbe（基线bf8ef938，16路径含当前文档）：侧栏32个既有key九语言自有译文，补118缺译/7占位；拖动ARIA仅现有t向hook传必需label，两个真实caller承接，不改排序/权限/焦点/迟到逻辑、用户标题或locale框架。主控最终160 focused、相关ESLint、完整非增量TS、正常工作区production build通过，15输入前后SHA核等、独审CLEAR。最新真实French项目标题/空态正确并恢复English；实际目标视口1000×716/document1000，工具临时390 override未应用，不称本阶段新390验收。原15-key阶段窄屏证据仍单列，未重跑完整默认或模型/资金。
+
+B13第七次隔离run0eb09c8e843ee281ba2f37f4绑定Root58215eca/已提交六owner（Appbf8，不混后继侧栏提交）。六owner真实启动/native登录通过；definition201、r1草稿201后publish409。确定原因是旧测试recipe空bounds，但System正式publish要求完整；Admin“可空”未解释发布要求且详情只读，登记明确后续UI补口，不放宽owner约束。保原409，主控同一run显式创建r2(8192/1024)201→发布200；label201→两次CAS200别名修改/恢复原null/default revision不变；rate/policy各201，硬刷新与正式GET完整配置/精确r2 digest核等。两条计价命令由主控显式触发原body/key HTTP replay，data回执完全一致；不是浏览器ACK丢失验收。
+
+原driver只支持恰一个revision，其终态FAIL/exact_owned_browser_creations_required原样保留，cleanup PASS、credential log check PASS。独立补充verifier只核实录10命令、两个revision精确状态/两publish状态/CAS、fresh reads、原replay及五表零资金/Run，主控执行PASS；新增补充收据不覆盖原FAIL、不冒整个B13闭环。浏览器正式退出回landing，独占临时库/Redis/pgroup/源码输出由原helper回收；不可变配置随具名临时库清理不是产品retire/delete能力。正常账号/报价/资金/路由未动，无Provider/model请求。
+
+后续只做已发现差额：B13草稿发布提示/可修正路径；原具名Skills审核、MCP/API管理、团队邀请/角色/审计等TODO仍OPEN，不扩User360/统一审计框架。共享移动侧栏primitive与manifest设置语言输入另列观察；不以有限词条齐备冒全站翻译完成。沿原PR，不部署、不提前合整PR。主控只短停自己的App3310用于build，同配置已恢复；本轮无源码/依赖副本新复制，原B13副本创建早于新备份规则，后继不得复用旧复制配方新建。
