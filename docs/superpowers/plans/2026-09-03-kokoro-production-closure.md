@@ -2042,3 +2042,5 @@ B13消费补证：主控对84路径停写BFF消费区正式build、29source/8原
 B10共享read/FINAL真PG先42P18（共享query漏$6）失败，经原LIMIT承接修正后通过；失败与回收原件保留。多人Run必须真实actor/subject，按subject源cursor唯一事实→单public序，旧stream HWM/state退役不双写、不reset；旧origin只精确已证绑定回填，矛盾拒绝，Chat同key隔离与现HTTP actor scope一致，旧ID/payload不改。新多source真PG首ACK null尚失败正定位；reader旧阶段不冒新source schema通过。
 
 Agent shared context由owner可选typed字段承载，BFF有权限后一致快照冻结whole-message bounded suffix与确认FINAL/显式has_earlier，不传creator checkpoint、不拼input；Agent current本人材料、Run级thread/workspace、同Run恢复、私密/完整window守卫；不加摘要服务/cache/SDK/重复entry凭证。20路径已停写通过主控171+2及契约/独审，8.18尚未发行，BFF不得消费WIP作正式pin。旧FINAL adjunct支持锚不改，新recipe不满足旧形状仍unknown，正式durable FINAL已验证。继续Goal active/原PR Draft，未merge/部署。
+
+本检查点后继：多source真PG `2cd27860` 已通过三轮actor/同key/各自HWM/单public序/重复冲突/旧fence；此前b210是新fixture会话ID前缀不符、a125是query输出alias被text排序，并非生产序回退，原断言不变/失败原件保留，三个自有库均回收。Agent8.18正式owner `3e61c0a1` 已推原#49，canonical cc7b8e02，主控171contract/model＋2真Factory、契约与20SHA核等/独审通过；BFF开始正规固定消费，不再是WIP发行。下一只补shared冻结/精确父/资源安全SSE及产品native缺口，整体Goal仍active。
