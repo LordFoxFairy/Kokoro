@@ -1,3 +1,13 @@
+## 2026-11-13 后继：事件回放恢复、真实装配取消与治理主片已验
+
+- 已提交推送的行为源：BFF `adf31d9`（原#17）、Agent `b61234b`（原#49）、App文档 `08bc30b6`（原#49）；后继仅 CURRENT 记录提交以 Root gitlink 为准，生产源字节保持。Public29.0.0／227 owner操作、Agent8.18／canonical SQL不因本片改变。Goal实查 active，Task B整体未完成。
+- BFF真实native SSE503已定位为frame_page遗漏source_subject_id；仅一列修复。现有真PG replay先RED42703，最终1 PASS/0skip，四纯文件91 PASS/0skip、build/types/lint/format/独审通过，PG库回收。仅BFF受控重载后，正常native→Web→BFF SSE200、真实id/data帧，Chrome硬刷新恢复新Run Stopped并保留旧incompatible失败。测试原生Session正式退出，Cookie回收，原角色不变。
+- Agent现有装配等待补原fence续租与listener建立时序。主控test_main9／相关191 PASS、5资源integration未选，Ruff/Pyright0/wheel/sdist/独审通过；首次误选integration的5 setup ERROR保留。HTTP/Worker成对重载后，新Run在Docker装配时原生Stop→175ms cancelled、原命令succeeded、model0、未绑sandbox，唯一run.completed(cancelled)。旧Run在活跃期间编辑运行源触发配方不兼容是实际失败/主控时序失误，旧Stop仅admitted，不冒取消成功、不降低guard。
+- 正常Custom API Admin另发现已配purpose但缺正式custom-api-admin surface；备份后仅补flag并重载Capability，列表503→200。仅新QA配置随机假标记，真实quarantine v1→2／owner只读→restore v2→3／owner可编辑、七安全字段/两审计/actual actor/原命令核等；sealed材料保留、不解密值。临时admin已恢复原false/v10，自己的Session正式退出，原会话保持；永久revoke待本轮单项用户确认，尚未提交。
+- Public29门户九路径已交付：221公开操作／22生成文件，六browser-private排除；Project/Scheduled产品分层与API概念同步，writer门户门与62页21475链接通过，主控九SHA及provenance/reference/links核等。固定已发行BFF509的wire pin有效，runtime后继不机械浮动；整TaskB或全站翻译未冒完成。
+- 新补grant真实墙钟到期：原QA/普通成员正式viewer到期前两GET200，20秒UTC实际经过后404/列表退休、owner200；原grant恢复revoked，两个测试Session正式退出，无DB/系统时钟更改。随后Scheduled原生创建暴露现middleware owner-only lookup遗漏，404且未建任务；两具名agents已完成仅READ预检＋锁内EDIT两路径修复/回归，`ef9e64e` 推原#17；主控15 PASS/0skip、types/lint/build、两SHA及独审CLEAR，正常重载/native仍待，不新增权限框架。private清理wire role键误用已纠正并恢复原grant，失败与回收均保留，正常协作任务链仍待本片修复实测。
+- 当前55Run全终态、dispatch pending0、历史两笔财务unknown保持；该Worker Docker子进程0，但daemon version仍5秒超时，容器不存在／Storage数据面恢复未证，不重启共享VM、不清卷。共享成功Run／安全FINAL/Artifact／peer过程、到期/Scheduled协作及后台其余具名缺口继续；原PR保持Draft，未merge main或部署，next-env.d.ts已知Next自动生成diff不提交。唯一TODO已按本轮事实纠偏，不重开旧链或新建任务中心。
+
 ## 2026-11-13 当前推进：正常协作组合已激活，双身份 ACL 主路径已验
 
 - 当前BFF `509597f`、App `f32b707a`、Agent `3e61c0a1`、Capability `efe18a1f`、Admin `153c875`，均沿原Draft PR；Public29/227及Agent8.18/canonical SQL不因本片改变。Root按417个真实已提交blobs重算290处BFF引用，拓扑/15边0违例/原checkpoint通过；最终Root SHA以本次提交为准。
