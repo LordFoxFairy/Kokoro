@@ -1928,3 +1928,5 @@ B13第七次隔离run0eb09c8e843ee281ba2f37f4绑定Root58215eca/已提交六owne
 原driver只支持恰一个revision，其终态FAIL/exact_owned_browser_creations_required原样保留，cleanup PASS、credential log check PASS。独立补充verifier只核实录10命令、两个revision精确状态/两publish状态/CAS、fresh reads、原replay及五表零资金/Run，主控执行PASS；新增补充收据不覆盖原FAIL、不冒整个B13闭环。浏览器正式退出回landing，独占临时库/Redis/pgroup/源码输出由原helper回收；不可变配置随具名临时库清理不是产品retire/delete能力。正常账号/报价/资金/路由未动，无Provider/model请求。
 
 后续只做已发现差额：B13草稿发布提示/可修正路径；原具名Skills审核、MCP/API管理、团队邀请/角色/审计等TODO仍OPEN，不扩User360/统一审计框架。共享移动侧栏primitive与manifest设置语言输入另列观察；不以有限词条齐备冒全站翻译完成。沿原PR，不部署、不提前合整PR。主控只短停自己的App3310用于build，同配置已恢复；本轮无源码/依赖副本新复制，原B13副本创建早于新备份规则，后继不得复用旧复制配方新建。
+
+正常Agent Worker恢复补记：只读预检53 Run全终态、dispatch pending0（claimed53为历史）。Worker此前缺席，Agent.env.local本身缺BFF模型准入map；沿已登记launch_worker.py从BFF purpose凭据文件精确匹配当前tenant/caller/surface，进程内复用原secret/System角色并移除HTTP-only字段，不新增凭据或改生产配置。正式AppConfig/签名/Platform文件通过，主控启动原正式worker入口并观察到consuming日志；登记实际PID/exec及九个正常listener。此为消费就绪，不冒本轮新模型端到端成功，未提交新Run；旧财务未知项保持原正式恢复边界。
