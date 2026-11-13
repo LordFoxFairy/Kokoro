@@ -2062,3 +2062,12 @@ Agent shared context由owner可选typed字段承载，BFF有权限后一致快�
 BFF `690a787` 推原#17，具名evolve仅精确d875/28.38或current，主控pure3与真实PG完整1项均0skip/0fail；原ID/payload/executor/revision/public序保值、unknown/mixed拒绝、来源矛盾回滚/noop通过，冻结scripts/dist输入无漂移，aeab6b95自有库DROP+absence确认。正常库只读核29streams无缺Conversation/错owner、Scheduled dispatch0；未对正常库演进。Admin `153c875` 推原#7，52正式消费和Hub治理/审计/原命令恢复；主控focused9/1真实暴露拒绝tuple缺口，修后10PASS，完整默认380/0skip、lint/types/contract/实际Next build/posttypes通过。旧normal编译输出在build前移动、后恢复，Hub200且原SHA保持，无源码/依赖复制；候选编译输出本地待真实组合验收。最新Root源码配对重读413 blobs，更新290引用/18摘要，不机械升级其它独立pins。
 
 三个writer均因执行额度终止，主控接管WIP，不把其退出视为生产阻塞或Goal暂停。App正规29候选/AI SDK单轨终态/Grant角色片仍未提交，主控已补六Admin桥、member/迟到ACK、原命令刷新恢复/身份退休、canonical Project和Scheduled CAS接线；保持为WIP直到最终停写门。BFF剩余Skills/pin/删除/结果/本人RunDisplay、组合激活/native/文档/原PR总收尾仍OPEN。Goal active，原PR Draft，不合main/部署/清卷，原两财务unknown与Docker独立待答保持。
+
+
+### 2026-11-13 App Public29 协作源交付（正常组合/native 仍 OPEN）
+
+App `f32b707a` 推原#49，143paths包含正式Public29生成消费、Grant真实成员/角色与同tab原命令恢复、peer safe controls/原snapshot→AI SDK终态恢复、current Scheduled revision/executor与原CAS及六具名Admin桥。主控补错member/迟到ACK和401集合退休实际缺口，403/404只退休目标并保其它Project。29→已发行28.37叶逆证逐字等Git原件，原sealed父SHA不变；只更新当前pin/negative needle，独立private profile不浮动。原私人URL复制专属测试退休，由实际Grant组件/未知恢复/角色退休承接；仅自比常量的伪pin断言删除，真整个artifact与生成检查保留。
+
+首完整默认6771/94FAIL保留（新合同/pin/fixture及实际401缺口），修后相关focused逐项通过；最终停写142输入逐SHA保持，完整默认380文件6865 PASS/0skip、完整lint、正规生成checks、Next生产build/posttypes通过。提交前仅一处测试行尾空格和两份进度文档变动，生产字节不改；正常3310/3320仍各自旧已验编译输出，未热激活新WIP。新Root inventory417真实committed blobs/93引用/31摘要，注册四个真实Project消费输入；源码溯源不代表双身份/native完成。
+
+主控继续已知BFF剩余Skills安装/包/spec、本人pins、聚合删除、selected FINAL及本人RunDisplay，然后原地演进/精确组合/真实两身份与Admin治理/Portal29产品/API文档/原PR收尾。无新扫描轮、TaskA回开、认证/SDK/第二stream；Goal active、原PR Draft，不提前合main/部署/清卷。
