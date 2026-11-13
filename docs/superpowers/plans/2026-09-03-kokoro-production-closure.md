@@ -2024,3 +2024,11 @@ App58ba5ecf已推原#49并正常源码激活：删除manifest写html.lang的重�
 B10本轮实际推进：BFF33419a04三目标设计已推原PR，独审ScheduledTask委托P1歧义已修复并CLEAR（代码/Schema仍未宣称完成）；FINAL结果范围以全部正式delivery/asset绑定复用当前Storage purpose=artifact，未设creator限制，不新增Agent/Storage接口。pricing_fixture_review现为BFF唯一生产/契约/SQL writer，先真实grant/CAS/幂等与访问规则，再逐现Project/Chat/结果入口承接；独立运行委托字段需具体设计过门，不代理creator，不只改finder。models_ui_review仅先写Capability Admin Custom API三设计，不碰BFF合同；主控保持Git/资源/唯一台账。
 
 当前提交组合App58ba5ecf＋BFF33419a04：按413真实committed blobs重核383仓引用，仅两份BFF设计文档摘要变化；拓扑/15边0违例/原checkpointPASS。此门绑定已提交快照，不冒后继BFF正在写的Project源码已验；正常BFF仍原c403实现，334仅设计文档后继。主控明示ProjectGrant绑定稳定subject、每次当前tenant准入生效，不新加IAM成员代际协议；退出期间拒绝，同subject合法重新加入后原有效grant可再生效，owner仍可撤销/到期。
+
+本轮先前分工：pricing_fixture_review写BFF ProjectGrant/逐入口ACL，models_ui_review写Capability Custom API治理（owner已交付，后继消费分工见最新检查点）；主控Git/资源/验收。ScheduledTask已压到Task.execution_actor_id＋dispatch.task_revision，复用已有revision、subject、digest、proof和opaque Scheduler callback task_revision，不另造授权ref/第二版本；跨actor执行配置编辑先暂停清executor，同执行人原native CAS可沿自己的委托。精确旧Schema中owner原即executor，合法回填保等原执行事实，不索取逐行历史登录日志、不暂停所有已验旧任务；未知父或非法/矛盾数据仍拒绝演进。以上是正在实施的目标，不冒新源码已验收。
+
+### 2026-11-13 本轮实际交付与下一检查点
+
+Capability Custom API owner `efe18a1f` 已推原#12，主控60路径核等，真实PG6项及HTTP/composition/正式contract通过；owner完整门通过，条件资源/外部E2E未跑分列，不激活未配对normal组合。BFF Project协作先两阶段真实PG通过，后继actor-key/immutableACK独有真实PG再通过；全部自有库回收，原expiry时间舍入与receiptfixture失败保留。此为源码/隔离PG阶段证据，不冒native Project协作闭环。
+
+pricing_fixture_review继续B10 canonical/业务/SQL，models_ui_review独立消费Capability固定artifact/generated与个人窄投影，公共API/模块/Git/正常资源不并发修改。主控验收与串行发布；下一B10共享安全投影/精确父演进，再BFF统一发布、App/Admin消费与真实双身份。Goal active、原PR Draft、不merge/部署；共享DockerVM重启仍待独立确认。

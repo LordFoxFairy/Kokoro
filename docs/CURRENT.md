@@ -1,6 +1,15 @@
+## 2026-11-13 当前推进：Custom API owner 已提交，Project 协作继续实施
+
+- Capability `efe18a1f` 已推原 PR #12（未激活）：Custom API 隔离／恢复／永久撤权与独立安全审计，非 active 配置拒绝材料读取和个人修改。主控真实 PG 通过状态/CAS/并发、审计原子回滚、显式过期回执和精确 718d 父演进；自有测试库均已回收。最终 60 路径停写 SHA 核等，主控 HTTP/composition 与正式契约检查通过；owner 完整默认通过，条件资源/E2E 跳过不冒真实集成。初次过期 fixture 的两次失败保留，不修改生产回执过期规则。
+- B10 新补缺主控真实 PG 已通过：不同 actor 使用相同 ScheduledTask 幂等键独立提交；原 actor 重放仍是原 immutable ACK，历史持久 outbox ID 仍可恢复。原权限／revision／未知投递测试为独立阶段证据，不拼成全链路通过；fixture 库已 DROP 且核不存在。生产唯一执行人、creator 归属、已发送/未知投递的恢复边界保持。
+- 并行写区：pricing_fixture_review 继续 BFF Project/Conversation/FINAL 与 Public29.0；models_ui_review 只消费已发布 Capability 的固定 artifact/generated 与个人 API 窄投影，不碰公共 canonical、B10、Git或正常服务。主控唯一资源/Git/台账/验收。历史个人写 ACK 缺治理状态不推断 active，当前状态以 fresh GET 为准。
+- 下一检查点：B10 共享安全投影和精确父演进 → BFF 消费统一验收/发布 → App/Admin 正规消费及真实双身份旅程。Capability 正常服务仍是573a8f00，Root gitlink 暂不切到未配齐组合；不冒后台或整个 Task B 完成。Goal active，原 PR 保持 Draft，不 merge/部署；Docker 共享 VM 重启仍是独立待确认，不阻塞当前源码推进。
+
 ## 2026-11-13 Task B 多语言与公开 API 文档已交付，Project 协作进入明确设计
 
 当前提交组合App58ba5ecf＋BFF33419a04：按413真实committed blobs重核383仓引用，仅两份BFF设计文档摘要变化；拓扑/15边0违例/原checkpointPASS。此门绑定已提交快照，不冒后继BFF正在写的Project源码已验；正常BFF仍原c403实现，334仅设计文档后继。主控明示ProjectGrant绑定稳定subject、每次当前tenant准入生效，不新加IAM成员代际协议；退出期间拒绝，同subject合法重新加入后原有效grant可再生效，owner仍可撤销/到期。
+
+本轮先前分工：pricing_fixture_review写BFF ProjectGrant/逐入口ACL，models_ui_review写Capability Custom API治理（owner已交付，后继消费分工见最新检查点）；主控Git/资源/验收。ScheduledTask已压到Task.execution_actor_id＋dispatch.task_revision，复用已有revision、subject、digest、proof和opaque Scheduler callback task_revision，不另造授权ref/第二版本；跨actor执行配置编辑先暂停清executor，同执行人原native CAS可沿自己的委托。精确旧Schema中owner原即executor，合法回填保等原执行事实，不索取逐行历史登录日志、不暂停所有已验旧任务；未知父或非法/矛盾数据仍拒绝演进。以上是正在实施的目标，不冒新源码已验收。
 
 App58ba5ecf已推原#49并正常源码激活：删除manifest写html.lang的重复effect，由LocaleProvider唯一维护。真实schema-valid迟到en-GB覆盖fr RED后修复；主控31 focused/非增量types/scopedlint/正式App build、六输入SHA核等及独审通过。正常native English→Français/html.lang=fr→硬刷新保持→原English/en恢复；不改manifest请求locale/scope/policy，不冒正常System支持en-GB或元数据请求语言映射已完成。只短停自己的App3310用于build，同配置恢复；53 Run全终态、派发无待办、原两财务unknown保留，不重跑模型/计费。
 
