@@ -1990,3 +1990,25 @@ B09复用ignored现driver新增team-invitation，仅IAM/BFF/App，原source/审�
 run497bcd810c3f33b82fe06ce8绑定Root5097b9b0/IAM40c/BFF396/Appc144，三owner source3318/累计三fixture+一Next patch主控核验，实际副本原tsconfig strict semantic PASS。owner UI invite200→recipient原生邀请signin/CSRF accept→Product login/本人member→UI Confirm leave DELETE200 exact member/status:left→自动signout及浏览器members401（CDP未截断）→owner fresh login目录目标缺席/owner保留→正式logout通过。独立observer before/after同Session摘要、expiry未来且真实IAM native200；原Product资格200→403 product_tenant_forbidden；owner鲜读/dispatch0/credential-log/cleanup PASS。仅本次两业务写，无roles替换/普通member remove/模型/资金或正常tenant变更；原旧角色分页移除等证据不拼成新全套。
 
 B09此具名缺口关闭，整体Task B/原PR/原件核验仍OPEN。下一实际面为B13现Skills治理→用户可见性，先定位当前active/verified immutable包，不造版本/执行模型；旧approvals网页指向不存在接口，不能作为审核成功，若要求独立待审审批流程须先owner状态/权限/审计/契约门，不把quarantine冒批准工作流。
+
+
+### 2026-11-13 B13 失效全局审批入口退役设计门
+
+- 基线/owner：Admin79b1459，旧approvals整页内联请求/api/approvals*，Admin/BFF/Capability无正式队列/approve/reject接口；它不是现Skills审核治理owner。TaskB仍承接原Hub Skills的正式发布/受众/隔离/恢复及用户回读，不以删除旧入口替代此验收。
+- 选定边界：删除旧app/(console)/approvals/page.tsx、Shell菜单/Overview卡和唯一nav.approvals双语key；不新增重定向/alias/“审批成功”stub或独立审批状态机。已有效/manage/hub及Skill正式操作保持，用户/资金/全局审计不扩。
+- 无Schema/契约/认证/状态机变更；旧URL采用Next标准404，未知旧API仍404。无数据迁移/清理，恢复仅Git回退该完整source片，不复活第二owner。
+- sidebar_i18n_finish只读核运行配置/凭据字段；pricing_fixture_review唯一Admin writer（5生产路径+原hydration测试+现TECH/API/README短说明），主控唯一Git/正常服务/验收/台账。原SSR/hydration/locale/监听风险保留，新增真实导航/overview无审批且保Hub；主控focused/lint/types/build与正式同源404/Hub可达，wire不变不重跑模型/资金/全owner合同。
+
+## 2026-11-13 B13 治理真实验收与资源故障边界
+
+Admin44ec4e9f已推原#7：退役无owner的全局Approvals页与两处入口，主控21 focused/ESLint/Next build/后置非增量types通过；正常同源旧页面与API404，native Hub16项及真实技能治理保持。原生成类型引用已删页的失败保留，正规build更新后通过。Models79b显示片另补正常en/zh目录/修订/详情关闭、390px中文空表单取消；page/main390无横溢，未创建配置/调用模型，原en和默认视口已恢复。
+
+BFFc40315b9已推原#17并正常激活：Skills管理/包下载早拒绝缺request-id导致网关502，现两wrapper各加一行现ID设置；主控65 focused/非增量types/正式build/独审通过。真实原普通角色恢复后Admin403 skill_forbidden，响应UUID/JSON/no-store正确。首轮用外部ID断言回显失败保留；Admin源码每次自产UUID，纠正测试断言而非放宽生产adapter。原node --test漏--import tsx的加载失败也保留，不拼成全默认通过。
+
+正常native对既有QA pin consistency current v5：audience catalog→owner→catalog两次UI POST200；非owner Product目录隐藏/详情404，恢复后同series/current版本200/原checksum可见；quarantine UI200，目录空/详情404。restore UI503，Storage同刻GetPackageReference503/186.757ms，不是5秒超时；S3 HeadBucket200而List500 InternalError/0 drives provided。Docker daemon本机unix _ping/version/containers各4秒timeout；现VM日志于11-12 22:53记录I/O/journal中止/只读重挂载，日志无05:44新事件。共享Docker VM重启已询问，尚未执行；不清卷/重建/重启他人资源。
+
+**未闭环项**：QA仍quarantined/state8；原restore正文/幂等键已私有登记，资源恢复后原命令重放并鲜读，不用新版本填补。治理期间主体非owner但临时具平台管理员，Product读链不使用该资格旁路；已正式CAS恢复原false/v8，再实测Admin403/普通目录空200/详情404，浏览器重载退出管理页回/app，注销本轮新Session，用户原会话不动。完整B13/Task B仍OPEN、Goal active；下一按此最小缺口恢复，独立元数据台账核验继续，原PR保持Draft、不merge/部署。
+
+B15旧Bearer元数据待办已核销：BFF28.38/217中210native、2health、2service-only、2webhook、1独立skill.list Key；Admin46项均native且canonical同SHA，App28.37/216同规则。主控现BFF已有contract102 PASS、App已有消费断言1 PASS，未改代码/generator/版本或机械更新pin；不保留已过时故障来拖延后继。
+
+组合收口：Admin44ec4e9f/BFF398cfe06已各推原PR；Root按413真实已提交blobs重核、仅290个仓commit引用更新，契约blob摘要零变化，未机械重发消费者pin。阶段先因旧inventory commit引用compatibility/checkpoint失败，精确更新后拓扑、15边0违例、原checkpoint全部PASS。App现next-env开发路由生成差异保留未提交。

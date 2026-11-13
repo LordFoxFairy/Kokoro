@@ -36,7 +36,12 @@
 
 - [x] B-09本人leave缺口（主控真实native／Root`5097b9b0`／run`497bcd810c3f33b82fe06ce8`）：仅IAM40c/BFF396/Appc144。owner正式invite200→recipient邀请原生登录/CSRF接受→Product登录/本人Member→原生独立observer鲜读有效且业务200→UI Confirm leave DELETE200 exact member_id/status:left→自动退出/浏览器团队GET401→owner重新登录鲜读目标消失且owner保留。另一同ID未过期observer Session仍真实native200，但原业务资格403 product_tenant_forbidden；不以401代替撤权。strict真实副本tsconfig通过，owner读回/dispatch0/正式退出/cleanup/凭据日志PASS，不改生产认证/正常tenant，无模型/资金。此片只补当前缺口，旧roles/分页/移除/重发撤销记录及原件边界仍分列，不冒全B09/Task B完成。
 
-- [ ] 下一实施／B-13 Skills治理→用户可见性：先从正式管理列表绑定现存active/已验证包的不可变身份，复用现audience/quarantine/restore及用户目录/直接详情回读；不重复模型或造版本凑证据。旧`/manage/approvals`仍指不存在的`/api/approvals*`，目前不是正式Skill审核成功入口；不得以它假成功或擅造新待审队列，按原owner设计门处理。
+- [x] B13 旧全局Approvals伪入口退役（pricing_fixture_review实现／models_ui_review独审／主控验收）：Admin `44ec4e9f` 已推原#7；无owner接口的旧页/菜单/overview卡/nav词条删除，不造审批队列或alias。主控相关21 PASS、ESLint、正式Next build/后置非增量types通过，旧同源页面/API均404；native Hub16项、原技能详情/治理控件可用，无旧侧栏入口。原生成路由类型失败留存，正式build刷新后通过；不等于整个B13完成。
+
+- [x] B15 认证元数据旧账纠偏（models_ui_review只读／主控验收）：BFF28.38/217、Admin同SHA/46消费、App28.37/216逐操作静态核等，普通业务native、skill.list独立Key例外；主控现BFF已有contract102 PASS、App已有消费断言1 PASS。不新增认证代码/契约版本/pin更新；整个B15文档与交付仍随其它片推进。
+- [x] B13 Skills早拒绝网关修复：BFF `c40315b9` 原#17已推/正常激活，两native wrapper各提前设现request-id；主控65 focused/非增量types/正式build及独审通过。正常无管理资格由旧502恢复403 skill_forbidden、UUID响应ID/JSON/no-store完整；Admin服务端自产新ID，首个外部ID回显断言错误保留并按现adapter规则纠正，不放宽生产校验。
+- [x] B14 Admin Models显示补验：既有79b源片补正常native en/zh目录/修订/详情关闭及390px中文空表单取消；page/main均390无横溢，原技术键/用户名保持，未新增模型或扣费。截图留ignored，恢复en/默认视口；不冒全后台翻译。
+- [ ] 当前／B-13 Skills治理→用户可见性：正常native既有QA current v5已完成audience catalog→owner→catalog三端鲜读，quarantine200后非owner目录200空/详情404；restore503明确来自Storage GetPackageReference196ms内依赖失败。S3 HeadBucket200但List500 InternalError/0 drives provided，Docker daemon _ping/version/containers各4秒timeout；当前VM日志含11-12 22:53 I/O/journal中止/只读重挂载（不冒05:44新内核事件）。等待共享Docker VM受控重启裁决；不清卷/重建，不新发版本。QA当前仍quarantined/state8，原restore正文/key已私有登记，恢复资源后只重放原命令并鲜读同id。临时平台管理员true/v7已正式恢复原false/v8并注销自建Session，原工作会话保持。其余独立工作继续，Goal active，不把整体标blocked。
 
 - [x] 正常运行恢复：九个已登记owner监听及Agent正式Worker恢复；只读确认Run全终态/pending0，复用现有purpose凭据进程内配对后观察到正式consuming。不是本轮新模型全链验收；原配置/持久资源保留。App仅Next dev自动生成的next-env路径diff未提交，不是遗漏业务源码。
 
@@ -130,7 +135,7 @@ App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分
 | R-03 Admin菜单／旧页面正式接线 | Task B Admin owner；沿原后台PR完成真实业务，不接管、不造成功页 |
 | R-07 Capability contract-check写副作用余项 | Capability owner／Task B #12；normalizer与现组合生成物相连，需在该组合做只读check。Storage部分已完成，不重复修 |
 | R-14 MCP OAuth DNS pin生命周期 | Capability owner／Task B #12；client无直接hunk不代表composition无依赖，不从独立main小补丁冒称Root组合已修 |
-| BFF canonical认证metadata／README／INDEX清理 | Task B BFF owner／#17；普通产品security仍是旧Bearer，与native Cookie／Origin运行不符；版本行及部分文档有实际重叠hunk，交原PR版本化纠正。本轮门户显式披露，不手改生成security，不按旧清库指导操作数据 |
+| BFF canonical认证metadata／README／INDEX清理 | 2026-11-13已核销旧待办：Public28.36起已纠正，当前28.38/217操作和Admin46消费均正确native；App28.37同样正确。主控现BFF contract102 PASS/App消费1 PASS，普通业务无旧Bearer，唯一skill.list为独立User API Key/OpenApp例外。历史inverse保持，不再重复改认证或机械升级pin；门户其它文档随原B15范围收口 |
 | Admin回环／Hub职责收敛 | Task B App／BFF／Admin owner；需统一共享登录、管理权限和路由映射，不加Admin BFF或万能proxy |
 
 Capability Root pin `24094960`来自已交付#13，已合入#12头`e068fcaa`但未合main；比main多37提交。仅看同名文件或零patch都不足以判定可独立交付；本轮不动其PR／分支／工作树，也不把Task B带入main。
