@@ -1,3 +1,17 @@
+## 2026-11-13 B14 语言菜单7px缺口已修复
+
+Admin `1ed8083`已推原#7，仅现语言Select补popupAlign横向shift（保原adjustX/Y、shiftY和placement），无新组件/CSS隐藏/认证或API变化。复用已有壳hydration4 PASS、非增量types/文件lint/Next build/posttypes通过，独审CLEAR；真实Chrome390px en/zh展开popup right371、document390/390，键盘选择及关闭通过。原RED397/390保留。恢复en/default视口并关闭自建页；本轮临时admin原false/v14→true/v15→false/v16，自建Sessionlogout/Cookie回收，原Chrome保持。
+
+Root仅将原三项Admin evidence commit更新至该后继；420个真实提交blob逐字核等、摘要均未变。暂存新gitlink后拓扑/15边0违例兼容/原checkpoint均PASS；此前未暂存时的gitlink不匹配检查FAIL保留，不是源码回归。Docker本轮一次只读_ping仍4秒超时；Storage readiness200不当数据路径恢复。共享VM重启会影响另一项目，已单项询问，未擅自重启/清卷/重建；其它独立项照常推进，Goal active。
+
+## 2026-11-13 B13 原生审计读链已验收，临时权限已回收
+
+验收绑定Root `806cd1dd`（IAM814/BFFbec/Admin615/App0d38），未改生产源码。Chrome原native登录→App同源→Admin→BFF→IAM真实分页：两页各25行/零重叠，与IAM owner只读原事实50行的tenant/actor/method/route/result/resource/operation/request逐项对应；键盘下一页、上一页原序及硬刷新恢复通过。独立自建native GET200并验证仅14安全字段，不读details或secret。
+
+临时平台管理员原false/v12→true/v13→原false/v14；撤权后同一自建Session仍authenticated，审计GET403，Chrome刷新旧表0行，非强制logout。只注销本轮自建Session并删除自己的Cookie，原Chrome登录保留。语言与视口已恢复en/default；中文390px关闭菜单document390/390通过，但展开语言菜单397/390的7px越界另列B14，不冒全菜单视觉通过。私有收据及截图留ignored `var/dev/task-b-takeover/b13-audit-*`，未将Cookie/原始行/运行日志入Git。
+
+本片B13 IAM审计读闭环；Provider专用审计、Storage依赖的Project Skills/共享Run FINAL等仍按todo OPEN。Goal active，各原PR仍Draft，未merge/deploy；无新模型/资金/Schema/卷操作，不重跑旧门。
+
 ## 2026-11-13 B13审计四仓源码已交付，精确组合门通过
 
 已提交推送：IAM `814ba4c4`（新增需求PR#9，原IAM PR均已闭）、BFF `bec8584f`（原#17）、Admin `61520c4f`（原#7）、App桥 `143b283c`＋门户 `0d38eec6`（原#49）。IAM0.22／Public29.1/228，Admin53项消费且原52前缀保值；门户222public/22生成/62页21556链接，六private继续排除。源码/构建/owner门及独审已验，真实正常浏览器分页/撤权未验，不把source发行为整链成功。
