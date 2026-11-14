@@ -1,3 +1,9 @@
+## 2026-11-14 两笔历史unknown只读调查完成，未做处置
+
+本轮仅原登记attempt6b56cb40…/a16926cd…，Agent严格证据均terminal、not_dispatched/requested_unknown、dispatch/admission/ACK空；Billing原attempt/run/request对应admission/receipt/key/hold为0行，未发现本轮对象的可退扣款。原SDK诊断仅connection_error→runtime_error，不能归为另一Run的overload；历史30积分资金事项与此两恢复候选不同，不清零、不扩查。
+
+机制原因是原ACK recover miss后保留无ACK候选，现无无reservation终局关闭入口；[调查报告](reports/2026-11-14-historical-financial-unknown-readonly.md)列已知、未知及最小后续方案。只读结论不冒处置完成；原命令防迟到终局＋Agent审计关闭未实施，涉及资金操作先确认。各owner独立RR READ ONLY、rollback；无模型/恢复/结算请求、源码/Schema/gitlink变更或业务测试。唯一TODO已更新，其他已交付Task A/B和暂存边界不动。
+
 ## 2026-11-14 最终交付后核对与下一轮入口
 
 Root原#67已正常MERGED至main `91b54d7405b042d82ac71457306e424c3e8a11e3`，完整树等已验候选aef65511；Root及六相关owner main干净、gitlink精确，本轮Root topic远近已清，原Goal已完成。IAM#9、Agent#49、Capability#12、Admin#7、BFF#17、App#49/#63均已MERGED。本次一次性查询Root＋12子仓、作者LordFoxFairy的OPEN PR为0，不动其他作者PR；仅查Git/交付资料，未扫描业务源码、重跑测试、启动资源或扩大功能。
