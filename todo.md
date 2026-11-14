@@ -6,7 +6,7 @@
 
 ### 当前最短收口队列（2026-11-13）
 
-1. **资源恢复与原命令**：共享Docker `_ping` 于23:54 UTC仍4秒超时，等待单项重启确认；保原卷，恢复后鲜验Storage数据路径，只续Skills restore和Project install原body/key。
+1. **待确认：资源恢复与原命令**：01:00 UTC Docker_ping仍4秒超时；实际S3元数据读取经SDK原生校时后仍500，服务Date落后宿主约81分钟，未改生产客户端/系统时钟。共享VM重启确认待答；保原卷，恢复后鲜验Storage数据路径，只续Skills restore和Project install原body/key。
 2. **组合旅程**：资源恢复后只补共享Run→安全FINAL/Artifact/peer过程缺失旅程，不重跑已验模型、取消、权限矩阵。
 3. **确认与交付**：本轮三项已登记QA（Custom API治理、Provider目录、MCP重授权占位）的不可逆动作待合并清理确认（原来“两项”漏计MCP；并非新增数据）；六个owner原PR均已main：IAM#9/71ad4ed5、Agent#49/49901fd7、Capability#12/448a8804、Admin#7/cf71291a、BFF#17/c43457ba、App#49/f7ccd733；仅Root#67仍OPEN，待组合/清理收据后交付。当前相关十个owner仓OPEN均0。远端各自topic已清；本地App旧feat/mcp-api-management因既有rail-test-scope worktree占用保留（bf8已合/clean），不碰未交接工作区，其余本轮local topic已清。
 
