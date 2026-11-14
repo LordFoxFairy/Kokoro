@@ -1466,32 +1466,38 @@ def test_generated_agent_storage_accepts_exact_owner_and_direct_uv_runtime(
     assert fixture.verify() == []
 
 
-def advance_storage_runtime(
-    fixture: InventoryFixture, files: dict[str, bytes], *, unrelated: bool = False
+def advance_agent_connect_runtime(
+    fixture: InventoryFixture,
+    files: dict[str, bytes],
+    *,
+    unrelated: bool = False,
+    platform: bool = False,
 ) -> None:
-    repository = fixture.root / "apps/kokoro-storage"
+    owner_repo = "apps/kokoro-capability" if platform else "apps/kokoro-storage"
+    repository = fixture.root / owner_repo
     if unrelated:
         run(repository, "git", "checkout", "--orphan", "unrelated-runtime")
     for relative, content in files.items():
         path = repository / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content)
-    run(repository, "git", "add", *files)
-    run(repository, "git", "commit", "-m", "test: advance Storage runtime")
+    if files:
+        run(repository, "git", "add", *files)
+        run(repository, "git", "commit", "-m", "test: advance Connect owner runtime")
     current = run(repository, "git", "rev-parse", "HEAD")
     edge = fixture.data["edges"][0]
     edge["owner"]["repository_commit"] = current
     edge["owner"]["contract_sha256"] = sha256(
         fixture.module.git_blob(
-            fixture.root, "apps/kokoro-storage", current, edge["owner"]["contract_path"]
+            fixture.root, owner_repo, current, edge["owner"]["contract_path"]
         )
     ).hexdigest()
     for reference in edge["evidence"]:
-        if reference["repository_path"] == "apps/kokoro-storage":
+        if reference["repository_path"] == owner_repo:
             reference["repository_commit"] = current
             reference["sha256"] = sha256(
                 fixture.module.git_blob(
-                    fixture.root, "apps/kokoro-storage", current, reference["path"]
+                    fixture.root, owner_repo, current, reference["path"]
                 )
             ).hexdigest()
     run(
@@ -1502,7 +1508,7 @@ def advance_storage_runtime(
         "--cacheinfo",
         "160000",
         current,
-        "apps/kokoro-storage",
+        owner_repo,
     )
 
 
@@ -1514,7 +1520,7 @@ def test_generated_agent_storage_keeps_release_after_private_runtime_change(
     consumer = run(agent, "git", "rev-parse", "HEAD")
     receipt = (agent / fixture.module.AGENT_STORAGE_PIN).read_bytes()
 
-    advance_storage_runtime(
+    advance_agent_connect_runtime(
         fixture, {"src/private.ts": b"export const fixed = true;\n"}
     )
 
@@ -1536,7 +1542,7 @@ def test_generated_agent_storage_rejects_runtime_release_input_drift(
 ) -> None:
     use_generated_agent_connect(fixture)
     content = (fixture.root / "apps/kokoro-storage" / path).read_bytes()
-    advance_storage_runtime(fixture, {path: content + b"\n"})
+    advance_agent_connect_runtime(fixture, {path: content + b"\n"})
 
     errors = fixture.verify()
     assert any("release" in error and path in error for error in errors), errors
@@ -1547,7 +1553,7 @@ def test_generated_agent_storage_requires_release_to_be_runtime_ancestor(
     fixture: InventoryFixture,
 ) -> None:
     use_generated_agent_connect(fixture)
-    advance_storage_runtime(
+    advance_agent_connect_runtime(
         fixture, {"src/private.ts": b"export const unrelated = true;\n"}, unrelated=True
     )
 
@@ -1605,6 +1611,89 @@ def test_generated_agent_platform_checks_all_current_vendor_inputs(
         assert all("evidence sha256" not in error for error in errors)
     else:
         assert any("exact semantic version" in error for error in errors), errors
+
+
+@pytest.mark.parametrize("merge", [False, True], ids=["doc-only", "merge"])
+def test_generated_agent_platform_keeps_release_after_compatible_runtime_change(
+    fixture: InventoryFixture, merge: bool
+) -> None:
+    use_generated_agent_connect(fixture, platform=True)
+    agent = fixture.root / "apps/kokoro-agent"
+    owner = fixture.root / "apps/kokoro-capability"
+    consumer = run(agent, "git", "rev-parse", "HEAD")
+    receipt = (agent / fixture.module.AGENT_PLATFORM_PIN).read_bytes()
+    release = run(owner, "git", "rev-parse", "HEAD")
+    if merge:
+        run(owner, "git", "checkout", "-b", "compatible-topic")
+    advance_agent_connect_runtime(
+        fixture, {"README.md": b"Compatible owner documentation.\n"}, platform=True
+    )
+    if merge:
+        run(owner, "git", "checkout", "-b", "compatible-runtime", release)
+        advance_agent_connect_runtime(
+            fixture, {"CURRENT.md": b"Runtime release notes.\n"}, platform=True
+        )
+        run(owner, "git", "merge", "--no-ff", "compatible-topic", "-m", "test: merge")
+        advance_agent_connect_runtime(fixture, {}, platform=True)
+        assert (
+            len(run(owner, "git", "rev-list", "--parents", "-n", "1", "HEAD").split())
+            == 3
+        )
+
+    assert fixture.verify() == []
+    assert run(agent, "git", "rev-parse", "HEAD") == consumer
+    assert (agent / fixture.module.AGENT_PLATFORM_PIN).read_bytes() == receipt
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "contract/proto/kokoro/common/v1/common.proto",
+        "contract/proto/kokoro/platform/v1/platform_runtime.proto",
+        "contract/proto/kokoro/platform/v1/mcp_runtime.proto",
+        "contract/proto/kokoro/platform/v1/custom_api_runtime.proto",
+        "contract/provenance.json",
+    ],
+)
+def test_generated_agent_platform_rejects_runtime_release_input_drift(
+    fixture: InventoryFixture, path: str
+) -> None:
+    use_generated_agent_connect(fixture, platform=True)
+    content = (fixture.root / "apps/kokoro-capability" / path).read_bytes()
+    advance_agent_connect_runtime(fixture, {path: content + b"\n"}, platform=True)
+
+    errors = fixture.verify()
+    assert any("release" in error and path in error for error in errors), errors
+    assert all("evidence sha256" not in error for error in errors)
+
+
+def test_generated_agent_platform_requires_release_to_be_runtime_ancestor(
+    fixture: InventoryFixture,
+) -> None:
+    use_generated_agent_connect(fixture, platform=True)
+    advance_agent_connect_runtime(
+        fixture,
+        {"README.md": b"Unrelated runtime with identical contract inputs.\n"},
+        unrelated=True,
+        platform=True,
+    )
+
+    errors = fixture.verify()
+    assert any("ancestor" in error for error in errors), errors
+
+
+@pytest.mark.parametrize("release", ["0" * 40, "HEAD", "--all", "b60931e"])
+def test_generated_agent_platform_rejects_unknown_or_unsafe_release(
+    fixture: InventoryFixture, release: str
+) -> None:
+    use_generated_agent_connect(fixture, platform=True, release_commit=release)
+
+    errors = fixture.verify()
+    assert any(
+        diagnostic in error
+        for error in errors
+        for diagnostic in ("ancestor", "canonical")
+    ), errors
 
 
 def use_capability_iam_sdk_archive(

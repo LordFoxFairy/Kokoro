@@ -577,41 +577,38 @@ def _verify_agent_connect_codegen(
         ) != (owner_name, owner_repo):
             raise ValueError("Agent Connect receipt owner pin differs")
         release = pin.get("owner_commit")
-        if platform:
-            if release != owner_commit:
-                raise ValueError("Agent Connect receipt owner pin differs")
-        else:
-            if not isinstance(release, str):
-                raise ValueError(
-                    "Agent Storage release requires a canonical commit OID"
-                )
-            release = _canonical_object_id(release)
-            owner_commit = _canonical_object_id(owner_commit)
-            ancestry = subprocess.run(
-                [
-                    "git",
-                    "--no-replace-objects",
-                    "merge-base",
-                    "--is-ancestor",
-                    release,
-                    owner_commit,
-                ],
-                cwd=root / owner_repo,
-                capture_output=True,
-                check=False,
+        owner_label = "Platform" if platform else "Storage"
+        if not isinstance(release, str):
+            raise ValueError(
+                f"Agent {owner_label} release requires a canonical commit OID"
             )
-            if ancestry.returncode:
-                raise ValueError("Agent Storage release must be a runtime ancestor")
-            for path in (
-                *(f"contract/proto/{source}" for source in inputs),
-                CONTRACT_PROVENANCE,
+        release = _canonical_object_id(release)
+        owner_commit = _canonical_object_id(owner_commit)
+        ancestry = subprocess.run(
+            [
+                "git",
+                "--no-replace-objects",
+                "merge-base",
+                "--is-ancestor",
+                release,
+                owner_commit,
+            ],
+            cwd=root / owner_repo,
+            capture_output=True,
+            check=False,
+        )
+        if ancestry.returncode:
+            raise ValueError(f"Agent {owner_label} release must be a runtime ancestor")
+        for path in (
+            *(f"contract/proto/{source}" for source in inputs),
+            CONTRACT_PROVENANCE,
+        ):
+            if git_blob(root, owner_repo, release, path) != git_blob(
+                root, owner_repo, owner_commit, path
             ):
-                if git_blob(root, owner_repo, release, path) != git_blob(
-                    root, owner_repo, owner_commit, path
-                ):
-                    raise ValueError(
-                        f"Agent Storage runtime differs from release: {path}"
-                    )
+                raise ValueError(
+                    f"Agent {owner_label} runtime differs from release: {path}"
+                )
         agent_commit = assertion["repository_commit"]
         sources = []
         combined = hashlib.sha256()

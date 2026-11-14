@@ -1,3 +1,19 @@
+## 2026-11-13 六owner原PR已main，Root组合治理已通过
+
+Capability原#12→main `448a88044123fa95415bf17711e45f9bb85e28eb`、Admin#7→`cf71291a42b95fca54a28de23d438d36a0fd1476`、BFF#17→`c43457ba59f7ca52c62aed56fbcb950276533286`、App#49→`f7ccd73391e1451b1efac4fd3404a480fecc9a0d`。各自完整owner范围只读收口CLEAR；前继只分别补CURRENT/README一份旧状态说明，最终merge完整树等该Doc候选，业务源码仍等已验efe/33/bec/0d38，未重跑相同默认/模型/PG链。与前已合IAM71/Agent499合计六owner原PR已main。gh真实核相关十owner仓OPEN均0，唯一Root#67仍OPEN；未查/动Mori或其它PR。
+
+各远端本轮topic已清，主要checkout均local main；Cap/Admin/BFF本轮local topic已清，App旧feat/mcp-api-management因既有rail-test-scope worktree占用保留（bf8已合/当前clean），未改变/移除该工作区或其它未交接分支。local main先CAS快进再切同一源码树，正常进程不短暂退旧源、不重启，卷/Schema/配置/资金未动。
+
+Root按420真实提交证据blob重读，426引用只更新四owner main，全部摘要保持。原真实兼容FAIL揭示Platform receipt真实发行efe被错误强制等runtime merge448；两合法doc/真实双父merge先RED后，现只将既有Storage严格祖先/全部Proto与owner provenance保值规则用于Platform，原owner=index约束、vendor/combined/codegen配置/精确版本/全部负控保留，未改Agent receipt/生成物/SDK/契约。主控停写两SHA核等、完整相关174 PASS/0skip、Ruff/格式通过，独审CLEAR；真实拓扑/15边0违例兼容/原checkpoint PASS，原FAIL保留。README同步解释发行来源与运行组合，不新增兼容profile/semver豁免。
+
+最短剩余仍为共享Docker恢复后的原Skills restore/Project install body-key及共享成功Run→安全FINAL/Artifact组合旅程、QA确认和Root最终出口。已登记待不可逆清理实际三项：Custom API治理QA、Provider目录QA、MCP重新授权占位QA；旧“两项”漏计既有MCP，未新增数据。已合并列明三项重新确认，不重复使用已执行的旧三项授权；未执行清理/VM重启/部署，Goal active，整体TaskB未完成。
+
+## 2026-11-13 Connect发行来源与main组合：最小治理修复门
+
+四owner原PR已实际merge main，Root index精确gitlink：Capability448a8804、Admincf71291a、BFFc43457ba、Appf7ccd733；各merge完整树等最终Doc候选，业务源码等已验efe/33/bec/0d38。主控重读420提交证据blob，426引用仅更新对应当前owner/evidence提交，所有摘要不变。真实兼容CLI仍FAIL：Agent Connect Platform receipt.owner_commit为真实发行efe，而当前实现错误强制等runtime merge448。
+
+设计门：owner声明继续严格等Root index gitlink，不回退inventory、不浮动或重签Agent生成物。只在现 _verify_agent_connect_codegen 沿用已对Storage成立的同强度规则到Platform：真实canonical发行SHA必须是当前runtime祖先，四Proto及owner contract/provenance逐字相同；原vendor/combined/codegen配置/生成器与runtime版本、来源/反控全部保留。无新schema/服务/兼容profile/semver豁免。writer shared_project_run_display_audit仅现两Python；主控唯一README/台账/inventory/Git，先复现合法doc/merge后继RED，完整相关测试及真实15边/checkpoint通过再验收；资源/共享FINAL/QA确认仍OPEN。
+
 ## 2026-11-13 B14恢复页多语言已修复并实际验收
 
 Admin `33bf2f0`已推原#7：7路径最小修复四处文案与两个互斥server失败分支的现LocaleProvider，不改AppShell/恢复effect/权限/取消，不新增store/cookie/协议。原两测试先6 FAIL/8 PASS，主控最终focused14/完整默认388 PASS/0skip、非增量types/scopedlint/Next build/posttypes通过，七源码SHA核等、独审CLEAR。为构建仅正常停止自己的Admin本地进程再恢复200，未碰其它owner/卷。
