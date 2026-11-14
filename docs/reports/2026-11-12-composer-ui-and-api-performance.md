@@ -48,3 +48,33 @@
 App [#62](https://github.com/LordFoxFairy/kokoro-app/pull/62)正常合main `59d412c9`，树核等已验 `179b6412`；实际CI annotation是账户账单／额度导致任务未启动，不冒测试绿、不付费或绕保护。Root只更新该精确gitlink，并从85个已提交Git blobs重算93个App声明引用，其他owner不动。
 
 Root最终暂存组合的拓扑／兼容15边0违例／原checkpoint全部PASS。初次调用尚未暂存新gitlink导致旧index与新inventory不配对；暂存唯一App gitlink后原命令重跑通过，没有改验证规则或其他owner。Root自有 [#90](https://github.com/LordFoxFairy/Kokoro/pull/90)负责最终main出口与topic清理，实际状态以MERGED／clean核验为准。
+
+
+## PERF-02 既定余项实施边界（2026-11-12）
+
+当前BFF abbfd78（业务树143）具名链仍为ProjectsModule→ProjectPinMiddleware→project-native首准入→project-pin store前/后两次currentAdmission，GET共3次verify/6次IAM HTTP。不是额外OAuth：每次包含原生Session鲜验与current_membership，保第一套完整准入，不把登录当权限。
+
+仅GET收敛为一次完整准入，原本owner SQL保tenant/本人/未删除Project同谓词，不动分页、cursor或PUT的三次校验/未知ACK。两次额外网络检查替换为本请求的断连、绝对预算与已有Session真实expiresAt检查，接监听后立即采样已退休/零预算，不新增cache/token/SDK/跨服务session引用/认证层。传递expiresAt只属于本次HTTP已准入结果，不跨请求保存；期限或资格格式异常fail closed。符合ADR-035“撤权后下次在线判断拒绝”，不承诺跨owner在途原子撤权，两次附加查询也不能提供该保证。
+
+沿现project-pin-http真实localhost IAM peer＋正式SessionAdmissionClient补最低回归：原成功6跳RED→2跳GREEN、membership无Cookie/Origin；同cookie下一请求撤权拒绝/零store，错身份/租户闭合；首次Session、membership或store延迟时断连/绝对预算/真实Session到期不得迟到返回成功或再开store；PUT原post-write revoke/unknown保障保持。旧“store后更改double即必须拒绝”断言迁移到真正承诺的下次请求撤权，不删除权限风险。只覆盖该GET，不做全站扫描/延长预算或从次数推p95。唯一source writer api_perf_audit，主控管本报告/台账/资源/Git/最终验收，停写后按当前源重跑相关HTTP/IAM client/pin repository及types/build，真实IAM与peer证据分列。
+
+
+### PERF-02 实际交付
+
+BFF原#17源码9cc7171已推，主控四SHA核等，51 focused/完整types通过，writer最终build与scoped lint-format通过、独审CLEAR。HTTP peer实测6→2；PUT三verify及post-write revoke保持，下一请求撤权、expiry/断连/零预算无迟到成功由原路由最低层级回归承接。正常源同原配置受控激活，53终态/无新pending；未测真实IAM或p95，不重复模型/PG/全默认。Root精确组合门记录在唯一TODO/当前事实，不冒整TaskB交付。
+
+## PERF-03 模型目录请求生命周期实施边界（2026-11-12）
+
+当前BFF9cc7171的唯一GET /v1/models，SystemModelCatalogMiddleware用独立10秒准入signal，route→liveOwnerRequest→proxyUpstream不传本方断连/共同期限，owner transport又领新相对预算；并非OAuth或缺新认证。沿现handler/client/transport修，不改模型选择/目录wire、owner、Schema、权限、token/SDK或缓存。
+
+仅4生产写区：SystemModelCatalogMiddleware建立一次绝对deadline（沿Project pin既有上限模式取min(config.upstreamTimeoutMs,10000)），接监听后立即采样aborted/destroyed/已结束/零预算；首准入仍完整一次Session+membership。GET route在owner调用和最终投影/回包前核该生命周期，将signal和绝对deadline透传现liveOwnerRequest；后者仅为该调用增可选参数并将剩余预算传现proxyUpstream。transport仅增可选caller signal，预取消不发HTTP，在途取消destroy本方请求且清listener/timer；原配置更窄timeout/response限额/可信header/错误映射与其它未传参调用保持，不加重试。不承诺取消可回滚System已处理业务。
+
+唯一writer api_perf_audit在现干净隔离BFF checkout；只补现bff.test.ts与upstream.test.ts缺失HTTP peer回归：正常投影/身份/分页原断言、准入中断连零后续System、在途实际socket关闭、准入耗时扣减绝对余量、预退休/零预算零发送/无迟到成功或重试。先RED后GREEN，停写后主控重跑相关门/冻结/独审；System和IAM为明确HTTP peer不冒真实owner。无PG/模型/全默认或正常服务操作，Git/资源/Root台账主控串行处理。此片完成不等于整体Task B完成。
+
+### PERF-03实际交付
+
+BFF原PR17提交aad81e7。真实逻辑RED1/9（首轮另含fixture提前回收错误）→原相关34 PASS；主控最终六SHA/同34/完整types通过，独审原六文件CLEAR。主控发现零预算header缺口，原子例真实RED后outer catch沿原requestId/503/code补header，增量已核、其他四SHA不变。writer最终build/scoped lint通过；两测试基线全文件format告警保留，未刷原prefix换绿。正常原配置受控激活healthz200，原数据保持；真实IAM/System或p95不因HTTP peer/取消socket证据冒通过，不承诺System回滚。Root精确组合与后继native读取见唯一TODO/当前事实，整个TaskB仍OPEN。
+
+### 当前native补读及icon观察结论
+
+Root0b725116/BFFaad：正常认证目录GET200/菜单可用，未新发模型/资金操作。当前Context7 exact server详情200且无icon绑定、独立media404、本挂载一次GET，详情不重读，首字母C/Connected保持；与正式optional契约及已有fallback/no-retry行为一致，无必要代码修复。旧测量仅布尔，未倒填历史根因；本次media body已被CDP回收，状态/详情字段与UI证据保留。此观察收口，不新增cache/代理/协议，不冒全站p95或TaskB完成。

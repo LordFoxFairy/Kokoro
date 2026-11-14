@@ -27,7 +27,6 @@ BILLING_AUDIENCE = "https://kokoro.dev/resources/billing"
 READY_TIMEOUT_SECONDS = 30.0
 READY = {
     "data": {
-        "module": "kokoro-billing",
         "status": "ready",
         "dependencies": {"postgres": "ok"},
     }

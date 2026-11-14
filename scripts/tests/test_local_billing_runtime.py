@@ -16,6 +16,9 @@ sys.path.insert(0, str(ROOT / "scripts/e2e"))
 import local_billing_runtime as billing
 import serve_local_login as launcher
 
+# The current Billing ReadyResponse, independent of the launcher's expectation.
+OWNER_READY = {"data": {"status": "ready", "dependencies": {"postgres": "ok"}}}
+
 
 @pytest.fixture
 def owned(monkeypatch):
@@ -204,22 +207,47 @@ def test_credential_collision_fails_closed_and_registers_generated_values(monkey
     assert registry.add.call_count == 3
 
 
-@pytest.mark.parametrize("mode", ["ready", "malformed", "unavailable", "exited"])
+@pytest.mark.parametrize(
+    "mode",
+    [
+        "ready",
+        "malformed",
+        "not-ready",
+        "postgres-unavailable",
+        "legacy-module",
+        "unavailable",
+        "exited",
+    ],
+)
 def test_readiness_is_finite_and_uses_only_the_owner_shape(monkeypatch, mode):
     process = Mock()
     process.poll.return_value = 1 if mode == "exited" else None
-    now = iter([0, 1, 31, 31])
+    now = iter([0, 1, 2, 31, 31])
     monkeypatch.setattr(billing.time, "monotonic", lambda: next(now))
     monkeypatch.setattr(billing.time, "sleep", Mock())
-    request = Mock(
-        return_value=billing.READY if mode == "ready" else {"status": "ready"}
-    )
+    body = {
+        "ready": OWNER_READY,
+        "not-ready": {
+            "data": {"status": "not_ready", "dependencies": {"postgres": "ok"}}
+        },
+        "postgres-unavailable": {
+            "data": {"status": "ready", "dependencies": {"postgres": "unavailable"}}
+        },
+        "legacy-module": {
+            "data": {
+                "module": "kokoro-billing",
+                "status": "ready",
+                "dependencies": {"postgres": "ok"},
+            }
+        },
+    }.get(mode, {"status": "ready"})
+    request = Mock(return_value=body)
     if mode == "unavailable":
         request.side_effect = OSError("private")
     monkeypatch.setattr(billing, "_billing_ready_body", request)
     if mode == "ready":
         # One extra absolute-time check after receiving the response.
-        values = iter([0, 1, 2])
+        values = iter([0, 1, 2, 31, 31])
         monkeypatch.setattr(billing.time, "monotonic", lambda: next(values))
         billing.wait_billing_ready("http://127.0.0.1:43182", process)
         request.assert_called_once_with("http://127.0.0.1:43182", 30.0)
@@ -427,7 +455,7 @@ def test_readiness_slow_body_has_absolute_deadline(monkeypatch, slow_phase):
     listener.settimeout(2)
     stopped = threading.Event()
     disconnected = threading.Event()
-    payload = json.dumps(billing.READY).encode()
+    payload = json.dumps(OWNER_READY).encode()
 
     def serve():
         try:
