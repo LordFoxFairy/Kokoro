@@ -1,21 +1,21 @@
 # Kokoro · 当前执行 TODO
 
-更新：2026-11-14。唯一执行清单；Task B接管基线Root `1092d99b`（当前候选沿原#67），不重开已交付Task A，不重复扫描凑问题。
+更新：2026-11-14。唯一执行清单；Task A及Task B本轮批准范围已交付，Root #67已合main `91b54d74`。下面当前遗留表为下一轮入口；历史片段中的“待合并／active／待确认”只代表当时状态。
 
-## 当前任务：Task B 正式接管（2026-11-12）
+## 已交付：Task B（2026-11-14）
 
 ### 本轮批准功能验收已齐（2026-11-14）
 
 1. **资源、原命令与三QA清理已收口**：保全部Docker数据卷恢复原服务，真实S3写/读/删与Scanner通过；原body/key恢复Skills和Project安装成功，默认选择保存/刷新/清空均已验。三项登记QA已按明确授权清理，安全counts通过；Context7、原两Provider目录项及其他数据保持。
 2. **成员成功执行已收口**：正式赠送1积分后因现行每次调用固定预占10仍被拒，失败保留；用户另明确授权29，共30积分。沿正式赠送接口ACK，不改计费政策、不借creator。原失败消息正式重新生成，Run `run_bff_95be02b6ab5ee5bb60e582f40d4eaffba1c19a92694ea3ddb4359b462ba797c5` 实际读取共享Artifact，写本人私人文件，生成FINAL并硬刷新恢复；3次调用封存/财务ACK、新unknown0，实扣9、释放21、余额21、冻结0。本人display/workspace200/28B，Project owner同路径404；owner在Recent选择该无delivery的FINAL成功，移除恢复空草稿。该FINAL仅证明UI选择，不冒再次模型消费。
-3. **交付入口**：六owner原PR及App实际补缺PR#63均已main，本轮子仓topic已清；原Root [#67](https://github.com/LordFoxFairy/Kokoro/pull/67)交付精确组合及最终收据，不新建文档收尾PR。Root拓扑/兼容/原checkpoint按本提交复核，Git最终状态以原PR的MERGED和本地main核验为准，机器Goal只在该后置核验完成后标complete。被既有worktree占用的已合App旧topic和未交接WIP保留。
+3. **实际Git出口已完成**：六owner原PR及App补缺#63均已main；原Root [#67](https://github.com/LordFoxFairy/Kokoro/pull/67)已MERGED，main `91b54d74`完整树等已验候选 `aef65511`。Root及六owner main干净、gitlink精确，当前Root topic远近已清，原Goal已完成。被既有worktree占用的已合App旧topic和未交接WIP保留；不将保留的证据、数据或旧工作区称为待删垃圾。
 4. **测试现场已恢复**：临时Project editor恢复原revoked，临时平台admin恢复原false/v24，自建Session全部注销，成员IAB正式退出；原Chrome会话保持、项目选择/草稿恢复原空。21测试积分余额按授权保留，不自动追加或回收，不改两笔历史财务unknown。独立最终审查CLEAR，无新增批准功能缺口。
 
 本轮确定代码差额已收口：Admin33bf2f0恢复页/菜单多语言，B02分层规则及当前IAM两条真实撤权。MCP QA是example.com占位HTTP地址，未Prepare/启用、不当新产品故障；真实外部端点/授权、完整云E2B和真实支付关闭沿已接受边界暂存。Provider状态/receipt不冒专用审计，原交接未单列长期Provider审计平台，不为此新扩建。
 
 
 
-用户已把 Task B 移交本主控，历史“Task B 不动”仅约束当时 Task A／UI 批次，不再排除本任务。沿[原功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)和[既有有效计划](docs/superpowers/plans/2026-09-03-kokoro-production-closure.md)推进，不重开已交付 Task A、不另起任务中心。以下是接管后的真实剩余队列，不把原15个功能域当15个新故障。
+用户已把 Task B 移交本主控，历史“Task B 不动”仅约束当时 Task A／UI 批次，不再排除本任务。沿[原功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)和[既有有效计划](docs/superpowers/plans/2026-09-03-kokoro-production-closure.md)推进，不重开已交付 Task A、不另起任务中心。以下保留接管过程的逐片交付记录；其阶段性待办由上方最终交付及下方当前遗留表覆盖，不把原15个功能域当15个新故障。
 
 - [x] B-T0 接管：确认原 Root #67、App #49、BFF #17、Capability #12 及当前 main；主控保原PR历史、全部12个已验 main gitlink和正常运行源，不盲激活旧组合。Root原分支已合入当前main；原468行Task B记录保留。
 - [x] B-T1／R-07（writer api_perf_audit；主控验收，独审 app_merge_gate）：Capability contract check 改为只读；显式generate仍能写。临时生成后完整集合／字节比较，覆盖漂移与异常回收；不改 wire、Schema、生成器算法或正常服务。已沿原Capability #12提交推送 `c040dda8`；主控8 PASS／真实contract check、类型／相关lint／格式通过，803个输入SHA／mtime／mode不变，四实现测试输入冻结核等。本片源码及后继候选组合已验收待PR合并，不冒整PR／Task B验收或merge。
@@ -173,32 +173,36 @@ GitHub App本次CI annotation明确任务因账户账单／额度问题未启动
 
 App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分支／预览与临时目录，证据归档。门户产品/API分层、来源/生成/示例/导航与实际浏览器已验；A-15当前Project两对与阶段补口已验，冷rAF252～276ms未达100ms。它是后续体验余量，不挡本轮真实Agent主线，也不冒性能达标。详情见[报告§23](docs/reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。
 
-## 接管前遗留归属（Task B已接管项以上方当前队列为准）
+## 下一轮遗留 TODO（本次只整理，不自动开工）
 
-| 项目 | 负责人／阻断点与下一动作 |
-| --- | --- |
-| R-06在用i18n正式迁移 | shared发行owner＋App consumer owner；先确认`@kokoro`包scope／现有registry／不可变版本和读权限／发布授权，再原子切manifest-lock-Docker并删i18n副本；当前不以本地bridge冒正式发行 |
-| R-03 Admin菜单／旧页面正式接线 | Task B Admin owner；沿原后台PR完成真实业务，不接管、不造成功页 |
-| R-07 Capability contract-check写副作用余项 | Capability owner／Task B #12；normalizer与现组合生成物相连，需在该组合做只读check。Storage部分已完成，不重复修 |
-| R-14 MCP OAuth DNS pin生命周期 | Capability owner／Task B #12；client无直接hunk不代表composition无依赖，不从独立main小补丁冒称Root组合已修 |
-| BFF canonical认证metadata／README／INDEX清理 | 2026-11-13已核销旧待办：Public28.36起已纠正，当前28.38/217操作和Admin46消费均正确native；App28.37同样正确。主控现BFF contract102 PASS/App消费1 PASS，普通业务无旧Bearer，唯一skill.list为独立User API Key/OpenApp例外。历史inverse保持，不再重复改认证或机械升级pin；门户其它文档随原B15范围收口 |
-| Admin回环／Hub职责收敛 | Task B App／BFF／Admin owner；需统一共享登录、管理权限和路由映射，不加Admin BFF或万能proxy |
+不是新增故障清单；不重开已交付Task A/B，不重复扫描或重跑旧成功链。
 
-Capability Root pin `24094960`来自已交付#13，已合入#12头`e068fcaa`但未合main；比main多37提交。仅看同名文件或零patch都不足以判定可独立交付；本轮不动其PR／分支／工作树，也不把Task B带入main。
+| 项目／状态 | owner | 下一动作与完成边界 |
+| --- | --- | --- |
+| 两笔历史财务unknown／需专项处置 | Billing＋Agent | 优先只读按原Run/attempt/evidence/hold对账，确定每笔已知与未知事实；有供应商证据后按正式结算/释放流程处理。未获明确资金动作授权前不猜零、不退款、不重写历史；本次成功QA的30赠送、9实扣、21余款/held0另案已闭合 |
+| R-06在用i18n正式发行／技术债暂存 | shared发行＋App消费 | 补齐既有registry、scope、不可变版本及读/发布权限，再原子切manifest/lock/Docker并删在用副本；无发行出口时不建新包平台、不称本地bridge为正式发行。已删除的无消费者web-core不重做 |
+| 真实MCP／Provider授权末端／条件暂存 | Capability＋目标Provider | 有真实端点及账号授权后，只补真实授权→调用→撤权末端；占位QA已删，不拿example.com造故障。已验控制面/材料边界不重跑 |
+| A-13外部渠道／条件暂存 | 渠道owner | Telegram/LINE/Slack按实际使用的渠道，账号授权齐备后补收发/撤权；本地协议证据不冒供应商实测 |
+| A-14本人语音／用户择时 | App＋用户 | 用户主动口述→编辑→显式发送；不保留录音或口述原文，沿“稍后验收”安排 |
+| 完整E2B生命周期／可选运行环境 | Agent＋环境owner | 确认实际采用云或完整自托管后补创建/重连/独立回收；官方envd Docker已有证据保留，不当完整云验收也不重复跑 |
+| A-15冷启动体验余量／后续优化 | App＋BFF | 原Project冷rAF252～276ms、100ms旧目标未达是历史测量，不冒当前性能结论；只有确定体验目标后再定点量测hydration/首GET，不扩全站性能工程 |
+| IAM共享源IP额度／非合作取消语义／容量边界 | IAM及对应写入owner | 有代表负载再核容量；不随意抬限流，不将HTTP取消等同事务硬回滚，不为已验功能再造组合矩阵 |
+| 远端CI账单／额度／运维事项 | GitHub账户管理员 | 处理Actions账户条件后让正常CI运行；既存“未启动”不改写绿色、不绕分支保护、不重复push等CI |
+| Provider专用长期审计／可选增强 | Capability＋Admin | 只有明确产品需求后立项；当前状态/receipt不称长期审计，现IAM/CustomAPI审计不重做 |
 
-原审计15项主线编号仍为**11项收口／4项遗留**（R-03、R-14待原owner，R-06／R-07部分完成）；上表两条文档／链路交接与编号存在重叠，不叠加成新故障总数。Mori R-05不属本轮。
+**保持关闭／不纳入本轮**：真实支付未接入、未部署；Mori无本轮任务。以上条件项和增强项不等于已批准产品功能有10个新故障。下一轮建议先选“两笔历史财务unknown只读对账”一个目标；R-06可另作独立发行切片，不与产品扩建捆绑。
 
-## 已接受边界与产品暂存
+### 已从遗留表核销
 
-| 项目 | owner／恢复前置 |
-| --- | --- |
-| A-13真实外部渠道 | 渠道owner；Telegram／LINE／Slack真实账号授权、收发、撤权条件齐备后验收，当前本地协议证据不冒真实供应商 |
-| A-14本人语音 | 用户＋App owner；用户方便时主动口述、编辑并显式发送，沿此前“稍后验收”，不保留录音／原文 |
-| 可选完整E2B生命周期 | Agent／运行环境owner；实际采用云或完整自托管时补创建／重连／独立回收，既有官方envd Docker证据不重跑 |
-| A-15体验余量 | App owner；当前Project两对冷rAF252～276ms，100ms冷目标未达。保留已定位DCL→hydration／首GET区间，本轮只随首页真实影响补验，不抢Agent闭环主线 |
-| IAM共享源IP额度／非合作写入取消 | 原owner容量与运行语义边界；代表性负载核验另定，不随意抬限流，不宣称HTTP取消等于事务硬回滚 |
+R-03 Admin真实接线／Hub边界、R-07 contract-check只读、R-14 OAuth操作级DNS pin，以及BFF认证metadata／门户文档均已由Task B原PR与具名收据承接。旧“11项收口／4项遗留”和Capability #12未合main的描述已失效，不继续计数或重做。
 
-真实支付关闭，未部署；上述不作为本轮独立代码故障或新增阻塞。
+### 本地保留与清理边界
+
+Root＋12子仓交付checkout均无本轮未提交改动且精确配对；Mori/System/Billing按固定gitlink处于detached，并非脏仓，不为整理擅自切main。本次只核Git状态和本轮分支，不删除ignored运行配置、验证收据、数据库/数据卷、聊天记录或归属未明的旧worktree。
+
+- App旧`feat/mcp-api-management`及BFF旧`codex/task-b-owner-current`均已包含于main，但被既有worktree占用，保留待交接；它们不是未结束的远端PR。
+- BFF归档`codex/archive-bff-mcp-closure-777325d`仍含main未包含的提交，保留，不当已合分支删除。
+- 其他旧App/Storage工作区有未交接diff或独有提交；本次不改、不提交、不删除。清洁范围是当前交付checkout，不声称整台机器所有旧工作区为空。
 
 ## 已交付事实入口
 
