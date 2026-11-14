@@ -4,11 +4,12 @@
 
 ## 当前任务：Task B 正式接管（2026-11-12）
 
-### 当前最短收口队列（2026-11-14）
+### 本轮批准功能验收已齐（2026-11-14）
 
-1. **已收口：资源与原命令**：用户明确授权后，官方重启优雅停止超时，官方force-stop/start均0；原Docker.raw inode/卷保留，另一项目PostgreSQL恢复healthy。只启动原MinIO/Scanner/Mailpit，旧同卷MinIO保持停止。真实S3自有桶write/read字节核等/delete及Scanner PING通过。缺失的Storage/System/Billing原进程已按原源码/原env恢复，未改数据。Skills原raw body/key restore200，fresh active/catalog/v9、目录/作者详情200；Project原body/key install200，fresh exact source/revision1、installation b647844f-4234-4b53-aabb-1d79afd8905a，selection仍空。
-2. **剩余：成员本人成功执行条件**：owner真实模型→Docker→安全FINAL/Artifact、peer刷新/预览/下载/Recent与ProjectLibrary输入选择及私人过程/工作区404均已验。peer本人余额0，一次正式不足积分拒绝且未调用模型；已单独询问是否仅向现QA成员正式非现金赠送1测试积分，补本人成功执行/自己工作区及无文件FINAL选择。未获决定前不动资金，不借creator。
-3. **剩余：Root最终出口**：三QA清理＋owner安全counts全部PASS，临时平台角色恢复false/v20，自建管理Session注销；六owner原PR均main，App本次实际修复PR#63亦main522b3ea3且本轮topic已清。Root配对420真实blobs/97引用、摘要/版本不变，拓扑/15边0违例/原checkpointPASS。仍沿原#67，最后条件处置和组合收据后合main/清本轮Root分支；既有占用worktree的已合App旧topic保留。临时Project editor grant已恢复原revoked、自建成员IAB正式退出，原Chrome会话保留。Goal active，未标整个TaskB完成。
+1. **资源、原命令与三QA清理已收口**：保全部Docker数据卷恢复原服务，真实S3写/读/删与Scanner通过；原body/key恢复Skills和Project安装成功，默认选择保存/刷新/清空均已验。三项登记QA已按明确授权清理，安全counts通过；Context7、原两Provider目录项及其他数据保持。
+2. **成员成功执行已收口**：正式赠送1积分后因现行每次调用固定预占10仍被拒，失败保留；用户另明确授权29，共30积分。沿正式赠送接口ACK，不改计费政策、不借creator。原失败消息正式重新生成，Run `run_bff_95be02b6ab5ee5bb60e582f40d4eaffba1c19a92694ea3ddb4359b462ba797c5` 实际读取共享Artifact，写本人私人文件，生成FINAL并硬刷新恢复；3次调用封存/财务ACK、新unknown0，实扣9、释放21、余额21、冻结0。本人display/workspace200/28B，Project owner同路径404；owner在Recent选择该无delivery的FINAL成功，移除恢复空草稿。该FINAL仅证明UI选择，不冒再次模型消费。
+3. **交付入口**：六owner原PR及App实际补缺PR#63均已main，本轮子仓topic已清；原Root [#67](https://github.com/LordFoxFairy/Kokoro/pull/67)交付精确组合及最终收据，不新建文档收尾PR。Root拓扑/兼容/原checkpoint按本提交复核，Git最终状态以原PR的MERGED和本地main核验为准，机器Goal只在该后置核验完成后标complete。被既有worktree占用的已合App旧topic和未交接WIP保留。
+4. **测试现场已恢复**：临时Project editor恢复原revoked，临时平台admin恢复原false/v24，自建Session全部注销，成员IAB正式退出；原Chrome会话保持、项目选择/草稿恢复原空。21测试积分余额按授权保留，不自动追加或回收，不改两笔历史财务unknown。独立最终审查CLEAR，无新增批准功能缺口。
 
 本轮确定代码差额已收口：Admin33bf2f0恢复页/菜单多语言，B02分层规则及当前IAM两条真实撤权。MCP QA是example.com占位HTTP地址，未Prepare/启用、不当新产品故障；真实外部端点/授权、完整云E2B和真实支付关闭沿已接受边界暂存。Provider状态/receipt不冒专用审计，原交接未单列长期Provider审计平台，不为此新扩建。
 
@@ -45,7 +46,7 @@
 
 - [x] B14 Models展示源码片（原Admin #7/`79b14599`）：六现源码/两现测试补108 zh/en key，页头/说明/四tabs/表单/详情关闭/分页与状态提示接原LocaleProvider；用户/协议/技术字段与原始诊断不翻，未改生命周期/请求/CAS/journal。主控8输入核等、七文件46 PASS、非增量types/scopedlint、真实Turbopack build/posttypes与独审通过。正常Admin同配置恢复；本片浏览器/窄屏对照未新增，随后继真实后台旅程补，不冒全B14闭环。
 
-- [ ] B-14／B-15 最终出口：已列菜单/多语言/恢复页/性能缺陷及Portal29/API/产品导航由本轮具名修复和检查承接，不冒全站九语言视觉矩阵或100ms目标已达。App最后共享picker修复已沿实际新需求PR#63正常main522b3ea3并清本轮分支；Root仍沿原#67，待最后成员执行条件处置、完整组合收据与Root/main/分支出口。
+- [x] B-14／B-15 批准交付包：菜单/多语言/恢复页/实测性能缺陷及Portal29/API/分层产品导航已有具名证据，App共享picker补缺#63已main522b3ea3；最终成员native旅程/财务/清理已验，原Root#67负责组合入main。Git出口以后置实际核验为准，不冒全站九语言视觉矩阵或100ms目标达标。
 
 - [x] B-09本人leave缺口（主控真实native／Root`5097b9b0`／run`497bcd810c3f33b82fe06ce8`）：仅IAM40c/BFF396/Appc144。owner正式invite200→recipient邀请原生登录/CSRF接受→Product登录/本人Member→原生独立observer鲜读有效且业务200→UI Confirm leave DELETE200 exact member_id/status:left→自动退出/浏览器团队GET401→owner重新登录鲜读目标消失且owner保留。另一同ID未过期observer Session仍真实native200，但原业务资格403 product_tenant_forbidden；不以401代替撤权。strict真实副本tsconfig通过，owner读回/dispatch0/正式退出/cleanup/凭据日志PASS，不改生产认证/正常tenant，无模型/资金。此片只补当前缺口，旧roles/分页/移除/重发撤销记录及原件边界仍分列，不冒全B09/Task B完成。
 
@@ -56,7 +57,7 @@
 - [x] B14 Admin Models显示补验：既有79b源片补正常native en/zh目录/修订/详情关闭及390px中文空表单取消；page/main均390无横溢，原技术键/用户名保持，未新增模型或扣费。截图留ignored，恢复en/默认视口；不冒全后台翻译。
 - [x] B14 文档语言唯一writer（sidebar_i18n_finish实现／models_ui_review独审／主控验收）：App58ba5ecf已推原#49，删除Runtime Manifest覆盖html.lang的effect，现LocaleProvider唯一维护；原manifest请求locale/scope/取消/期限不改。真实迟到en-GB受控RED→31 PASS，主控31/types/scopedlint/正式App build、六输入SHA核等；正常native French/fr→硬刷新保持→原English/en恢复。不冒正常System支持en-GB或已解决metadata请求语言映射。
 - [x] B15 前阶段公开API门户（28.38，后继 Public29 见下）：App58ba5ecf消费已发布BFF396897b8/Public28.38原blob，App业务client保持28.37；修正首页过时Bearer警告及明确Secure/plain互斥cookie，补模型草稿条件PATCH参考。主控门户lint/provenance/55 tests/正式build/确定性reference211 public operations/architecture/62页20603links通过；初始路径、旧pin相对当前checkout、旧空白及缺Secure例失败留存，未删断言。
-- [ ] B10 真实Project协作最后验收：既有双身份ACL/expiry/Scheduled及owner真实成功Run→安全FINAL/Artifact/peer读取、下载与输入选择均已证；private display/workspace执行者200、peer404，owner3次模型attempt sealed、unknown0、write_file/deliver成功，Storage FINAL/CLEAN/53B/SHA精确绑定。成员本人模型尝试因余额0正确拒绝且未派发；仅“成员本人有合法资金后成功执行/自己workspace及无文件FINAL候选”剩余实测待新赠送1测试积分确认，未借creator或擅自补资金。
+- [x] B10 真实Project协作最后验收：双身份ACL/expiry/Scheduled、owner成功FINAL/Artifact与peer刷新/预览/下载/两种输入选择均已证。现peer本人正式资金30积分，原消息regenerate成功，真实read_file读取53B共享Artifact、write_file产生28B本人文件、无delivery的FINAL硬刷新恢复；反向私人display/workspace隔离200/404，owner Recent可选择该FINAL但未再次发送。三次调用封存/ACK、新unknown0，实扣9/余21/held0。余额0及余额1不足固定预占10的正式拒绝保留，不改计费政策。
   - [x] BFF已知源码与完整默认收口／主控（非正常激活或native收口）：精确父演进`690a787`已提交，主控真实PG保值/拒绝未知混态/矛盾回滚/noop通过、输入SHA保持且自有库回收；正常库未演进。pins/Skills源码片`fbc2025`已沿原#17提交推送（见下）；本人RunDisplay后继`5cb7b13`及输入/聚合后继`6b1d8a4`均已验推原#17；原六处已知源码接线已齐，该阶段正常库未演进/新源未激活，现由下方正常切换收据覆盖。Public29稳定；不新owner/认证层。
   - [x] BFF pins／Skills源码片／主控实施、shared_project_pin_skills_review独审CLEAR：`fbc2025c`推原#17，个人pins复用read资格、只改本人偏好、锁后鲜验grant；Skills GET/包/spec/exact download走read，安装四写走edit且body解析后RPC前重验，真实actor不变，无Schema/协议增量。主控focused183、Nest/DI74、真实PG2均0失败/0跳过；build/lint/types/12路径format通过，自有PG库DROP+absence。PG先1/1、接线2失败、半包竞态及DI两轮失败原件保留，不冒全默认或native。shared_project_run_display_audit已只读给最小后继方案，主控接着实施，正常资源未激活。
   - [x] BFF本人RunDisplay源码片／主控实施、shared_project_run_display_audit独审CLEAR：`5cb7b13d`推原#17，readable lookup与Project edit gate同时接入，exact actual Run actor不变；RR内FINAL binder核current/edit并绑dispatch.subject=actor=caller，不借creator。原verified spool/Agent后发头前鲜验保留；peer/viewer/迟到降权零私人内容。主控相关三文件123 PASS/0skip、creator→editor→creator真实PG完整片1 PASS/0skip、build/lint/types/7路径format通过，c25e4c3a库已DROP+absence、SHA保持；新HTTP404和PG editor final=null的RED保留。selected FINAL函数未改，无协议/Schema/认证增量；native仍待。
@@ -66,7 +67,7 @@
   - [x] Admin／主控：原153c875及后继cf71291a正式main，正常CustomAPI列表/详情/Q/restore/revoke/删除后审计及原命令恢复由本轮native验收；本次永久revoke CAS3→4、正式fresh安全详情和新审计核等，环境材料0行，不读秘密。对应原“浏览器/owner仍待”已被后继收据覆盖。
   - [x] 正常owner演进与配对激活／主控：受控停6个本任务进程前复核当次quiet与实际PID/cwd；必要配置/两owner私有备份完成，不复制依赖/缓存。Capability正式精确父升级成功；BFF实库先暴露物理列布局误判，再暴露合法queued帧无Agent source行，两次均整事务拒绝且原36表摘要不变。只修owner演进工具，`1086a4f`/`509597f`已推原#17；既有真实PG用例增量RED→GREEN、最终1 PASS/0skip＋规则3 PASS、lint/两文件format及两独审CLEAR，原负控/保值/noop保留，不改canonical SQL/HTTP/认证。最终正常升级成功：BFF36/Capability25表原行SHA核等，来源cursor保值精确搬迁。正式9项Platform/1项BFF专用admin配置成对安装，原8项保留；Cap/BFF readyz200、Agent正式Worker consuming，其裸readyz401为未认证响应。旧App/Admin产物保留，进程登记当场核验；共享Docker/其他owner和两笔财务unknown未动。
   - [x] 正常双身份ACL主片／主控：原Chrome owner＋独立IAB真实普通成员，UI创建专用QA Project→Viewer鲜读/指令readonly→Editor实际保存→owner硬刷新回读同值→降Viewer→真实native Session PATCH精确403/project_edit_forbidden且Project完全不变→owner撤销→成员硬刷新列表消失/直达“项目不可用”且旧名/指令退休。首次负控把应有403误期望404，原件保留后按现contract核对；无模型/资金调用、未把mock当native。QA Project/指令保留供剩余链，唯一grant已撤销，不共享原个人资料。初始强制production前端与本地HTTP/IAM普通Cookie不匹配导致502；已恢复原环境对应的App源码next dev，真实登录通过，生产Secure规则未改。App仅Next自动生成next-env.d.ts开发types路径未提交；Admin现候选next start，后续完整管理native仍待。
-  - [ ] 主控剩余：仅成员合法测试资金条件处置后的最后本人成功执行/FINAL引用实测（其余共享/权限/Artifact主片已验）→Root#67精确组合最终交付/main/本轮Root分支清理。Portal29/API/Project文档已交付；不重跑旧模型/财务/权限矩阵，不新增层。
+  - [x] 主控最终验收包：最后本人成功执行、私人workspace和无文件FINAL选择已实测，清理权限/Session/草稿完毕，独立审查CLEAR。原Root#67为唯一Git出口；main/分支及Goal完成由实际合并后核验，不重跑旧模型/财务/权限矩阵，不新增层。
 - [x] B13 真实管理员CustomAPI及审计：已发efe owner/当前448 main及BFF/Admin精确组合，原Q/restore和两安全事件已验；本次按用户明确确认永久revoke active3→revoked4，fresh详情/审计新增revoked核等，env0行；Provider和MCP登记QA亦清理与fresh404、安全counts通过。原“待确认”关闭，不建设未承诺的长期Provider审计。
 - [x] B15 Public29 门户后继：App `08bc30b6` 已推原 #49，九个门户路径消费 BFF `509597f` 的正式 Public29；221 个 public 操作／22 个生成文件，六个 browser-private 排除（完整 owner 227，勿混计）。Project/Scheduled API 概念、产品分层导航与可用边界已同步；writer lint/types/55 tests/provenance/reference/examples/architecture/build、62页21475链接通过，主控九 SHA 核等和 provenance/reference/links 独立复验。后继 BFF runtime 不改 wire，门户 pin 不浮动；原大 chunk 警告保留，不重跑全 App 门。
 - [x] B13 正常 Custom API 可逆治理主片／主控：仅新建 `Task B governance QA 20261113`，一项随机假标记，无真实凭据/外部调用。原 purpose 配对后还缺正式 `custom-api-admin` surface，私有备份并仅追加该 flag、重载 Capability 后列表由503恢复200。真实 Admin quarantine security_review：v1→2／owner硬刷新只读；restore review_completed：v2→3／owner硬刷新可编辑。fresh safe 七字段/两条具名审计/真实actor与owner/独立原命令核等，owner只读确认原sealed材料仍活跃，不解密或回显值。临时平台管理员 false8→true9→原false10、仅本轮Session正式logout及Cookie回收；旧工作会话保持，撤权后台GET403。**永久 revoke 尚未提交，待本轮针对唯一新QA配置的用户确认**；不挪用已用过的三项删除授权。其余后台原范围仍OPEN。

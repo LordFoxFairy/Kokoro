@@ -1,4 +1,20 @@
-## 2026-11-14 共享成功链与最后 App PR 已交付
+## 2026-11-14 Task B 批准范围最终验收包
+
+本节替代下方历史“资金待确认/blocked/本人成功执行待验”状态。用户先授权正式非现金赠送1积分，后明确追加29、共30；两原命令均正式201，唯一QA成员资金不混creator、不支付、不改计费政策。首个赠送503定位为正常BFF缺既有operator proxy配置；仅在ignored原env配对Billing既有值，同原源码重启BFF并续原body/key ACK，未新增秘密/生产代码/协议。余额1仍不足现行每次调用固定预占10，正式拒绝保留，不伪称短提示词即可执行。
+
+用户追加授权后，原失败消息正式regenerate成功：Run `run_bff_95be02b6ab5ee5bb60e582f40d4eaffba1c19a92694ea3ddb4359b462ba797c5` 真实读取所选owner共享Artifact（53B/SHA e32dbaa2…ecece），写本人`/outputs/task-b-peer-read.txt`（28B/SHA d3e86ade…9e1df），不deliver，确认FINAL `TASK_B_SHARED_FINAL_20261114` 经AI SDK展示及硬刷新恢复。BFF持久Message/Run、Agent原Redis读取事件/写文件和Storage CLEAN私有版本逐owner只读绑定核等；readonly工具无effect journal不被误判缺执行。
+
+正式native双身份反向核验：本人Run display/workspace均200，私人文件28B/hash精确相同；Project owner同Run两项404。owner Chrome Recent可以选择该成员无delivery的Final answer，chip确认后移除恢复空草稿；仅证明FINAL原生UI选择，未宣称该引用再次提交或模型消费，提交/权限规则沿已验BFF真实PG承接。原owner共享FINAL/Artifact53B的刷新/下载/Recent/Project Library链和原双身份ACL记录仍有效，不重复模型。
+
+财务独立核验PASS：两正式gift合计30积分，3调用均dispatched/sealed、每项financial ACK、新unknown0；累计预占30、实际结算9、释放21，当前available21/held0，与grant/journal/allocations守恒。余额快照是执行后读取，未冒实际观测执行前30；两次先前denial和两笔历史财务unknown不重算、不退款、不自动追加。
+
+现场清理已验：唯一临时Project editor按原subject/expiry和fresh CAS恢复revoked，临时platform admin恢复原false/v24，自建管理/探针Session正式注销、成员IAB Sign out至公开首页；原Chrome登录/Context7/另两Provider项保持，默认选择/草稿空。三QA安全counts与原资源恢复/原Skills restore/Project install均已有具名ACK，用户授权保留余21测试积分。原raw receipts/截图/进程记录仅本地ignored，未进Git；独立最终验收CLEAR。
+
+交付组合：IAM71ad4ed5、Agent49901fd7、Capability448a8804、Admincf71291a、BFFc43457ba、App522b3ea3；各自原PR（App补缺#63）已main。Root沿原[#67](https://github.com/LordFoxFairy/Kokoro/pull/67)交付，不再扩展功能或另起文档收尾PR。当前源码复用停写验证，本次仅补三台账；Root拓扑/15边兼容/原checkpoint按最终提交核验，实际MERGED/main clean/本轮Root分支清理是机器Goal complete的后置条件，不以本节代替Git核验。App已合旧topic因既有worktree占用保留，其他未交接工作区不动。
+
+已接受后续边界不变：真实支付关闭；完整云E2B及缺外部端点/授权的供应商末端暂存；Provider独立长期审计属于后续增强。不冒全产品全外部供应商、九语言全部视觉矩阵、100ms性能或远端CI绿；CI原账户账单/额度未启动记录保留，正常PR流程不绕分支保护。此前失败/blocked记录保留为历史，不再当当前阻塞。
+
+## 历史阶段：2026-11-14 共享成功链与最后 App PR 已交付
 
 App三路径修复主控停写SHA核等，原focused22 PASS/0skip、完整lint/非增量types/production build均通过，独审CLEAR。原PR49已main后的本次实际缺口单独PR63正常merge main522b3ea3，merge完整树等96cb111a；本轮新topic远近分支已清，已合但被rail-test-scope worktree占用的旧topic继续保留。正常App仅停自己的dev进程独占build后恢复原Next dev模式；一次错误launcher把--env-file传播到Node22子进程NODE_OPTIONS导致启动失败，改回原Next原生.env.local装载后HTTP200，未改配置/业务。当前源码main与已验候选逐字相同。
 
@@ -6,7 +22,7 @@ App三路径修复主控停写SHA核等，原focused22 PASS/0skip、完整lint/�
 
 Project默认选择真实保存200、硬刷新1/16选中、清空保存恢复空选且原安装保持；中途读取429/Retry-After60保留，未抬配额，窗口后fresh成功。三QA owner安全counts已PASS：API env0行；MCP两代connector revoked/disabled、配置秘密/注册/凭据0行；Provider deleted/v6、另两指定目录项disabled/v2及v4保持。原所有不可逆确认与Docker阻塞均已解除。
 
-唯一新增环境条件：peer本人余额0，其一次模型尝试由正式Billing不足积分拒绝，模型未派发、admission0，不借creator资金。已单独询问是否正式非现金赠送1测试积分以补本人成功执行/自己workspace及无文件FINAL选择；未获决定前不写资金。Root已按420真实提交blob重读/97 App提交引用配对main，摘要/操作/版本0变更；拓扑/15边0违例兼容/原checkpointPASS，Root#67最终出口仍保留，Goal active。
+唯一新增环境条件：peer本人余额0，其一次模型尝试由正式Billing不足积分拒绝，模型未派发、admission0，不借creator资金。已单独询问是否正式非现金赠送1测试积分以补本人成功执行/自己workspace及无文件FINAL选择；未获决定前不写资金。Root已按420真实提交blob重读/97 App提交引用配对main，摘要/操作/版本0变更；拓扑/15边0违例兼容/原checkpointPASS，Root#67最终出口仍保留；新的成员资金确认条件连续三个Goal回合未解除，机器Goal已返回blocked（非完成）。Docker/三QA旧阻塞已解除，不再重复探针或模型。
 
 共享本片结束后，临时Project editor grant已按本次原目标/到期值与fresh CAS恢复原revoked状态；自建owner探针Session注销，peer独立IAB通过正式Sign out回到公开首页（等待登录表单是reader预期错误，实际正常出口为首页），原Chrome会话未注销。最后资金条件未决不留额外共享权限或后台角色。
 
