@@ -2,6 +2,12 @@
 
 更新：2026-11-14。唯一执行清单；Task A及Task B本轮批准范围已交付，Root #67已合main `91b54d74`。下面当前遗留表为下一轮入口；历史片段中的“待合并／active／待确认”只代表当时状态。
 
+## 当前轮：两笔历史unknown只读调查（2026-11-14）
+
+- [x] 精确定位原登记两attempt，分别核Agent/Billing/BFF事实与规范摘要；查清恢复候选保留机制，纠正overload及held30混同。
+- [x] [原因、证据缺口与处置方案](docs/reports/2026-11-14-historical-financial-unknown-readonly.md)已整理；本轮未改资金、源码或运行状态，物理故障细因不猜测。
+- [ ] 后续小切片（仅方案，未实施）：原预算无reservation的防迟到终局＋Agent终态恢复候选审计关闭。不能仅凭本次SELECT无行伪造零费用ACK；若涉及实际资金效果，先重新确认。
+
 ## 已交付：Task B（2026-11-14）
 
 ### 本轮批准功能验收已齐（2026-11-14）
@@ -179,7 +185,7 @@ App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分
 
 | 项目／状态 | owner | 下一动作与完成边界 |
 | --- | --- | --- |
-| 两笔历史财务unknown／需专项处置 | Billing＋Agent | 优先只读按原Run/attempt/evidence/hold对账，确定每笔已知与未知事实；有供应商证据后按正式结算/释放流程处理。未获明确资金动作授权前不猜零、不退款、不重写历史；本次成功QA的30赠送、9实扣、21余款/held0另案已闭合 |
+| 两笔历史unknown／只读核对完成，恢复残留未处置 | Billing＋Agent | U-01/02均terminal、not_dispatched/requested_unknown、admission/ACK空；严格证据有效，Billing原admission/receipt/key/hold均0行，无现存可退扣款。原因是recover miss保留候选，非已证overload；物理runtime_error细因未留充分证据。后续仅拟原命令防迟到终局＋Agent审计关闭，不实施/不改钱，见[报告](docs/reports/2026-11-14-historical-financial-unknown-readonly.md) |
 | R-06在用i18n正式发行／技术债暂存 | shared发行＋App消费 | 补齐既有registry、scope、不可变版本及读/发布权限，再原子切manifest/lock/Docker并删在用副本；无发行出口时不建新包平台、不称本地bridge为正式发行。已删除的无消费者web-core不重做 |
 | 真实MCP／Provider授权末端／条件暂存 | Capability＋目标Provider | 有真实端点及账号授权后，只补真实授权→调用→撤权末端；占位QA已删，不拿example.com造故障。已验控制面/材料边界不重跑 |
 | A-13外部渠道／条件暂存 | 渠道owner | Telegram/LINE/Slack按实际使用的渠道，账号授权齐备后补收发/撤权；本地协议证据不冒供应商实测 |
@@ -190,7 +196,7 @@ App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分
 | 远端CI账单／额度／运维事项 | GitHub账户管理员 | 处理Actions账户条件后让正常CI运行；既存“未启动”不改写绿色、不绕分支保护、不重复push等CI |
 | Provider专用长期审计／可选增强 | Capability＋Admin | 只有明确产品需求后立项；当前状态/receipt不称长期审计，现IAM/CustomAPI审计不重做 |
 
-**保持关闭／不纳入本轮**：真实支付未接入、未部署；Mori无本轮任务。以上条件项和增强项不等于已批准产品功能有10个新故障。下一轮建议先选“两笔历史财务unknown只读对账”一个目标；R-06可另作独立发行切片，不与产品扩建捆绑。
+**保持关闭／不纳入本轮**：真实支付未接入、未部署；Mori无本轮任务。以上条件项和增强项不等于已批准产品功能有10个新故障。本轮“两笔unknown只读对账”调查已完成、残留关闭未实施；历史30积分资金事项另案保留，不能同这两条无admission候选混算。本轮不自动扩查或清账；R-06仍单列，不捆绑扩建。
 
 ### 已从遗留表核销
 
