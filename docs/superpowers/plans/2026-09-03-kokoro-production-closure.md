@@ -1,3 +1,147 @@
+## 2026-11-14 共享成功链与最后 App PR 已交付
+
+App三路径修复主控停写SHA核等，原focused22 PASS/0skip、完整lint/非增量types/production build均通过，独审CLEAR。原PR49已main后的本次实际缺口单独PR63正常merge main522b3ea3，merge完整树等96cb111a；本轮新topic远近分支已清，已合但被rail-test-scope worktree占用的旧topic继续保留。正常App仅停自己的dev进程独占build后恢复原Next dev模式；一次错误launcher把--env-file传播到Node22子进程NODE_OPTIONS导致启动失败，改回原Next原生.env.local装载后HTTP200，未改配置/业务。当前源码main与已验候选逐字相同。
+
+正常owner原生Chrome已完成真实模型→Docker write_file/deliver→确认FINAL“共享产物已交付”及53B文本Artifact；peer独立原生IAB登录→硬刷新同FINAL→预览/下载53B，SHA e32dbaa2d747dfa80ee0eaffd89b936d252a7709c358153f7f17394c738ecece核等；Recent和Project Library两分支均能选择共享Artifact、移除恢复空草稿且不自动发送。相同Run private display/workspace：实际执行者200/53B同SHA，peer404/404，UI不显示peer私人Process/控制。BFF/Agent/Storage各owner单库只读核terminal/双message completed/正规FINAL映射/FINAL-CLEAN exact；3模型attempt dispatched=sealed、unknown0、write_file/deliver均成功，3最新evidence各有财务ACK，partial分类保真，不补缓存零或重算旧账。reader的两次字段/ID映射假设误判留私有原件，不冒生产FAIL。
+
+Project默认选择真实保存200、硬刷新1/16选中、清空保存恢复空选且原安装保持；中途读取429/Retry-After60保留，未抬配额，窗口后fresh成功。三QA owner安全counts已PASS：API env0行；MCP两代connector revoked/disabled、配置秘密/注册/凭据0行；Provider deleted/v6、另两指定目录项disabled/v2及v4保持。原所有不可逆确认与Docker阻塞均已解除。
+
+唯一新增环境条件：peer本人余额0，其一次模型尝试由正式Billing不足积分拒绝，模型未派发、admission0，不借creator资金。已单独询问是否正式非现金赠送1测试积分以补本人成功执行/自己workspace及无文件FINAL选择；未获决定前不写资金。Root已按420真实提交blob重读/97 App提交引用配对main，摘要/操作/版本0变更；拓扑/15边0违例兼容/原checkpointPASS，Root#67最终出口仍保留，Goal active。
+
+共享本片结束后，临时Project editor grant已按本次原目标/到期值与fresh CAS恢复原revoked状态；自建owner探针Session注销，peer独立IAB通过正式Sign out回到公开首页（等待登录表单是reader预期错误，实际正常出口为首页），原Chrome会话未注销。最后资金条件未决不留额外共享权限或后台角色。
+
+## 2026-11-14 已授权恢复资源与清理；原未知命令已 ACK
+
+用户明确允许共享Docker重启、保留全部卷及三项登记QA清理。官方restart优雅停止超时后，官方stop --force/start均exit0，原Docker.raw inode保持；另一项目chatnest-postgres恢复healthy，原MinIO recovery/Scanner/Mailpit恢复，旧同卷MinIO未启动。真实自有S3探针创建/写入/字节读回/删除对象与桶全部通过、Scanner PONG；首个probe仅脚本async语法失败未发送资源请求，修正后通过。原Storage进程缺失（TCP拒绝）及System/Billing配置端口无listener，已同原main源码/原env恢复，health/ready200，未改Schema/凭据/资金。
+
+Skills原字符串body/key初次仍503（Storage进程缺失），原服务恢复后同一命令200；fresh为active/catalog/state9，目录/作者详情200。Project原body/key安装200，fresh source skill:ad113677-5332-4246-815d-2a445bc3f998/revision1、installation b647844f-4234-4b53-aabb-1d79afd8905a；旧空列表不再被当原写结论，默认选择仍空。仅续原命令，未新建包/版本/项目。
+
+三QA实际清理：MCP原server确认后删除、硬刷新无且Context7保持；CustomAPI永久撤销active3→revoked4，fresh详情及新增安全审计核等；Provider精确v5 DELETE200、列表3→2且fresh404，另两原目录项保留。Provider首语义点击被浏览器翻译扩展浮层截获，截图定位后点未遮挡区才有实际DELETE/200；不是凭闭框宣称成功，未为此改业务源码。临时管理员原false/v18恢复false/v20，自建Session正式注销/cookie回收。
+
+最终旅程窄核发现App确定接线缺口：共享Project peer FINAL/Artifact输入已被BFF设计与真实PG承接，App仍按private owner/Library枚举误挡。既有范围三路径修复已停写、focused22/type/lint及独审CLEAR；主控独占停App→验证/build→恢复，再补正常双身份成功FINAL/Artifact/输入及项目选择缺失收据。Goal active，未合Root#67/未称TaskB完成。所有私有收据保留ignored，不反复全门或扩大设计。
+
+## 2026-11-14 恢复后阻塞复核；共享 Docker 故障已定位
+
+用户再次恢复后，本次阻塞审计从零独立计满三个回合；13:43 UTC 最后鲜验 Docker `_ping` 仍 4 秒超时，独立子代理均已完成，无活跃测试句柄，同一共享资源和具名不可逆动作确认均未解除。机器 Goal 已返回 blocked，非完成；完整目标及未验收项保持。停止重复轮询，等待明确决定，不把恢复 active 视为具体操作授权。05:44 UTC 单次 Docker `_ping` 4 秒超时；原桶有界只读元数据请求按 SDK 原生校时后仍为 500 InternalError。`docker desktop --help` 正常返回，但 `docker desktop status` 10 秒超时，尚无资源恢复证据。
+
+独立只读核验确认：11-12 22:53:41 UTC 的 Docker 共享磁盘日志有宿主 ENOSPC、vda 写 I/O 错误、journal 中止及 vda1 只读重挂载；这是历史故障证据，不冒今天新的内核观测。未发现 Kokoro 独占恢复入口。共享 Desktop 重启会中断另一项目的容器，已明确影响重新请求确认；未重启、清卷、重建或修改生产客户端/系统时钟。三项具名 QA 不可逆清理仍待原确认，旧已删除三项的授权不复用。
+
+当前仅更新事实，未新增实现或重复全量测试。六 owner main、Root `4d046b76` 组合证据不变；Root #67 仍待原 Skills restore/Project install 和共享成功 Run→安全 FINAL/Artifact 缺失旅程。恢复后按原 body/key 继续，不创建替代命令。
+
+## 2026-11-13 资源等待核验：控制面与实际S3均未恢复
+
+主控01:00 UTC单次Docker_ping仍4秒超时。另直接只读当前配置桶、未知前缀/MaxKeys1、不读对象内容：首次403 RequestTimeTooSkewed；按现已安装SDK自带时钟校正有界两次元数据读取后仍500 InternalError。S3返回Date为11-13 23:46:51 GMT，宿主机观测为11-14 01:07:50 UTC，SDK偏移约-4859秒；只证明服务返回时间落后，不冒已进入VM确认内核时钟。未改生产客户端/系统时钟、写业务、重启或变更卷。
+
+同一共享资源/审批条件已跨三个连续Goal回合保留；六owner已main、Root代码/组合门已收口，目前没有独立代码或验证任务需要继续制造。原Skills restore/Project install及共享成功FINAL仍未验，Root#67保持Draft。现等待已发出的共享VM重启和三项具名QA永久动作确认；不把等待用户视为后台任务仍运行，也不以重复扫描/测试维持假推进。机器Goal按阻塞审计同步，不缩小完整TaskB目标。
+
+## 2026-11-13 六owner原PR已main，Root组合治理已通过
+
+Capability原#12→main `448a88044123fa95415bf17711e45f9bb85e28eb`、Admin#7→`cf71291a42b95fca54a28de23d438d36a0fd1476`、BFF#17→`c43457ba59f7ca52c62aed56fbcb950276533286`、App#49→`f7ccd73391e1451b1efac4fd3404a480fecc9a0d`。各自完整owner范围只读收口CLEAR；前继只分别补CURRENT/README一份旧状态说明，最终merge完整树等该Doc候选，业务源码仍等已验efe/33/bec/0d38，未重跑相同默认/模型/PG链。与前已合IAM71/Agent499合计六owner原PR已main。gh真实核相关十owner仓OPEN均0，唯一Root#67仍OPEN；未查/动Mori或其它PR。
+
+各远端本轮topic已清，主要checkout均local main；Cap/Admin/BFF本轮local topic已清，App旧feat/mcp-api-management因既有rail-test-scope worktree占用保留（bf8已合/当前clean），未改变/移除该工作区或其它未交接分支。local main先CAS快进再切同一源码树，正常进程不短暂退旧源、不重启，卷/Schema/配置/资金未动。
+
+Root按420真实提交证据blob重读，426引用只更新四owner main，全部摘要保持。原真实兼容FAIL揭示Platform receipt真实发行efe被错误强制等runtime merge448；两合法doc/真实双父merge先RED后，现只将既有Storage严格祖先/全部Proto与owner provenance保值规则用于Platform，原owner=index约束、vendor/combined/codegen配置/精确版本/全部负控保留，未改Agent receipt/生成物/SDK/契约。主控停写两SHA核等、完整相关174 PASS/0skip、Ruff/格式通过，独审CLEAR；真实拓扑/15边0违例兼容/原checkpoint PASS，原FAIL保留。README同步解释发行来源与运行组合，不新增兼容profile/semver豁免。
+
+最短剩余仍为共享Docker恢复后的原Skills restore/Project install body-key及共享成功Run→安全FINAL/Artifact组合旅程、QA确认和Root最终出口。已登记待不可逆清理实际三项：Custom API治理QA、Provider目录QA、MCP重新授权占位QA；旧“两项”漏计既有MCP，未新增数据。已合并列明三项重新确认，不重复使用已执行的旧三项授权；未执行清理/VM重启/部署，Goal active，整体TaskB未完成。
+
+## 2026-11-13 Connect发行来源与main组合：最小治理修复门
+
+四owner原PR已实际merge main，Root index精确gitlink：Capability448a8804、Admincf71291a、BFFc43457ba、Appf7ccd733；各merge完整树等最终Doc候选，业务源码等已验efe/33/bec/0d38。主控重读420提交证据blob，426引用仅更新对应当前owner/evidence提交，所有摘要不变。真实兼容CLI仍FAIL：Agent Connect Platform receipt.owner_commit为真实发行efe，而当前实现错误强制等runtime merge448。
+
+设计门：owner声明继续严格等Root index gitlink，不回退inventory、不浮动或重签Agent生成物。只在现 _verify_agent_connect_codegen 沿用已对Storage成立的同强度规则到Platform：真实canonical发行SHA必须是当前runtime祖先，四Proto及owner contract/provenance逐字相同；原vendor/combined/codegen配置/生成器与runtime版本、来源/反控全部保留。无新schema/服务/兼容profile/semver豁免。writer shared_project_run_display_audit仅现两Python；主控唯一README/台账/inventory/Git，先复现合法doc/merge后继RED，完整相关测试及真实15边/checkpoint通过再验收；资源/共享FINAL/QA确认仍OPEN。
+
+## 2026-11-13 B14恢复页多语言已修复并实际验收
+
+Admin `33bf2f0`已推原#7：7路径最小修复四处文案与两个互斥server失败分支的现LocaleProvider，不改AppShell/恢复effect/权限/取消，不新增store/cookie/协议。原两测试先6 FAIL/8 PASS，主控最终focused14/完整默认388 PASS/0skip、非增量types/scopedlint/Next build/posttypes通过，七源码SHA核等、独审CLEAR。为构建仅正常停止自己的Admin本地进程再恢复200，未碰其它owner/卷。
+
+真实Chrome保留既有English偏好：已准入→临时平台角色恢复原false→Refresh，英文标题/提示/Retry/产品链接正确、private rows0；原false/v16→true/v17→false/v18，自建Session角色撤回后仍authenticated，再正式logout/Cookie回收，原Chrome不注销、自建页关闭。首个cold非管理员直链按原guard回产品，未冒该次是恢复页；两个独立server失败分支由layout测试/构建验证，未制造正常IAM故障。截图/receipt只留ignored；旧中文截图/RED及首manifest解析器误读list的异常均保留，按实际结构重核七SHA通过。
+
+Root仅三项Admin evidence commit更新，420提交证据blob/全部摘要保持，拓扑/15边0违例兼容/原checkpoint通过。23:54 UTC一次Docker_ping仍4秒超时，未重启/清卷/重建；等待原单项资源与QA确认。最短剩余仅资源后原命令/共享FINAL旅程及其余原PR交付出口，Goal active，整体TaskB未完成。
+
+## 2026-11-13 最终源码门与Agent独立PR出口完成
+
+- 原Agent PR#49已正常merge main `49901fd79426257ce2e20cec62afb68cce30cca7`，完整树等已验ce57；独立收口审查CLEAR。本地未占用main先CAS快进再切同一源码树，避免运行源码瞬时退回旧版本；本轮local/remote topic已清，无进程重启/部署。Root/BFF/Storage共享成功Run→FINAL/Artifact仍独立待验，不冒整个TaskB完成。CI fast/service-acceptance未启动，annotation明确账户账单/额度，未绕保护。
+- 本轮各owner当前停写源码各补一次完整默认终态：BFFbec2591 PASS/2条件SKIP（原schema安装/tombstone两条件例）、1322输入SHA保持；App0d38 6885 PASS/0skip、1593输入保持；Admin1ed387 PASS/0skip（仅workers=2）、203输入保持；Agentce57原默认3650 PASS/955按原marker排除、541输入保持，3455实验/弃用warning保留。原FAIL已由具名后继覆盖，不重新开故障；这些结果不拼成真实integration/完整产品闭环。原合同/构建/types/门户精确来源门沿用，不再重复跑。
+- B02冲突/缺失/迟到规则：主控核既有真实PG4原件与当前四条verifier/binding/environment/test源码逐字承接；当前治理PG6原件的35输入SHA全等、库清理/正常数据保留，承接Q/restore/revoke双runtime gate。另在IAM当前main71只筛原正式HTTP permission撤权/成员移除两case，真实PG/Redis2 PASS、10筛除，526输入起终exact、DB库存无新增或缺失；JWKS/BFF binding为明确本地HTTP peer，无Docker/模型/供应商。只证明分层风险，不冒本轮正常CustomAPI+IAM+Docker联合撤权、完整E2B/任意编码DLP或永久QA清理。旧“4次verify”原件未定位；另找到8次真实历史原件但旧worktree已缺，未当当前冻结证明。
+- MCP原生Chrome仅鲜读本轮QA：HTTP endpoint为example.com占位地址，无query/userinfo；读编辑视图后Cancel，原配置与Context7保持，未Prepare/Save/Enable/OAuth。Prepare ready会实际active/enabled，并非只读，未用占位目标制造成功/新故障。真实外部端点/授权末端沿已接受边界暂存。
+- Root只将57项当前Agent evidence commit更新到main后继；420个真实提交blob逐字核等，全部摘要保持；拓扑/15边0违例兼容/原checkpoint PASS。资源重启和原两项不可逆QA动作仍待单项确认，保原卷，不重试旧unknown写，Goal active。
+
+## 2026-11-13 IAM独立需求已通过原PR交付main
+
+IAM审计PR#9已正常merge为 `71ad4ed5935ac7ccae0dc82129d1ba2934868465`。merge完整树逐字等已验 `814ba4c4`，44冻结输入核等；原main是其祖先，无新增冲突或来源差异，未重跑相同全门。local main已ff，同一topic无新增提交/无人占用后local及remote分支已清；其它仓原PR保持未合，整TaskB未完成。GitHub verify实际未启动，annotation为账户账单/额度限制，未绕保护或称CI绿。
+
+Root只将IAM当前evidence从814更新到main后继，独立旧发行来源/SDK profile anchor814继续保真；420真实提交blob核等，全部摘要不变，拓扑/15边0违例兼容/原checkpoint通过。正常IAM不重启：main与正在运行814完整源码相同，不涉及Schema/配置/凭据。
+
+主控按原TaskB交接与Provider旧三设计裁决：原范围要求管理员边界/撤权/审计，未独立承诺Provider长期事件库/reader/审计页。本轮不因后继细化假设再造跨仓功能；已验IAM安全事件与Custom API治理审计照实交付，Provider状态/receipt仍不叫审计，专用可追责历史列后续增强而非新增本轮阻断。最短剩余队列置于todo顶部；Goal active，资源确认待回复，未部署。
+
+## 2026-11-13 B14 语言菜单7px缺口已修复
+
+Admin `1ed8083`已推原#7，仅现语言Select补popupAlign横向shift（保原adjustX/Y、shiftY和placement），无新组件/CSS隐藏/认证或API变化。复用已有壳hydration4 PASS、非增量types/文件lint/Next build/posttypes通过，独审CLEAR；真实Chrome390px en/zh展开popup right371、document390/390，键盘选择及关闭通过。原RED397/390保留。恢复en/default视口并关闭自建页；本轮临时admin原false/v14→true/v15→false/v16，自建Sessionlogout/Cookie回收，原Chrome保持。
+
+Root仅将原三项Admin evidence commit更新至该后继；420个真实提交blob逐字核等、摘要均未变。暂存新gitlink后拓扑/15边0违例兼容/原checkpoint均PASS；此前未暂存时的gitlink不匹配检查FAIL保留，不是源码回归。Docker本轮一次只读_ping仍4秒超时；Storage readiness200不当数据路径恢复。共享VM重启会影响另一项目，已单项询问，未擅自重启/清卷/重建；其它独立项照常推进，Goal active。
+
+## 2026-11-13 B13 原生审计读链已验收，临时权限已回收
+
+验收绑定Root `806cd1dd`（IAM814/BFFbec/Admin615/App0d38），未改生产源码。Chrome原native登录→App同源→Admin→BFF→IAM真实分页：两页各25行/零重叠，与IAM owner只读原事实50行的tenant/actor/method/route/result/resource/operation/request逐项对应；键盘下一页、上一页原序及硬刷新恢复通过。独立自建native GET200并验证仅14安全字段，不读details或secret。
+
+临时平台管理员原false/v12→true/v13→原false/v14；撤权后同一自建Session仍authenticated，审计GET403，Chrome刷新旧表0行，非强制logout。只注销本轮自建Session并删除自己的Cookie，原Chrome登录保留。语言与视口已恢复en/default；中文390px关闭菜单document390/390通过，但展开语言菜单397/390的7px越界另列B14，不冒全菜单视觉通过。私有收据及截图留ignored `var/dev/task-b-takeover/b13-audit-*`，未将Cookie/原始行/运行日志入Git。
+
+本片B13 IAM审计读闭环；Provider专用审计、Storage依赖的Project Skills/共享Run FINAL等仍按todo OPEN。Goal active，各原PR仍Draft，未merge/deploy；无新模型/资金/Schema/卷操作，不重跑旧门。
+
+## 2026-11-13 B13审计四仓源码已交付，精确组合门通过
+
+已提交推送：IAM `814ba4c4`（新增需求PR#9，原IAM PR均已闭）、BFF `bec8584f`（原#17）、Admin `61520c4f`（原#7）、App桥 `143b283c`＋门户 `0d38eec6`（原#49）。IAM0.22／Public29.1/228，Admin53项消费且原52前缀保值；门户222public/22生成/62页21556链接，六private继续排除。源码/构建/owner门及独审已验，真实正常浏览器分页/撤权未验，不把source发行为整链成功。
+
+Root按420个真实committed blobs重算391引用/34摘要，并在既有Web→BFF边补Admin3个精确commit证据；拓扑、15边/0违例兼容、原checkpoint均PASS。首次Root失败是旧规则强制Capability0.21 SDK整树等IAM当前0.22，现仅该exact声明用完整canonical父inverse和祖先/源码保值证明承接：旧archive/tar/SRI/sidecar按实际b6a发行全部验证，未改Capability/SDK或放宽任意版本。两Python独审CLEAR，writer完整162/0skip、主控相关38通过；原FAIL保留。
+
+本机仅IAM/BFF/Admin源码进程按原配置受控重载并恢复200，Admin构建前先正常停止，未覆盖在运行的输出。无Schema/卷/共享基础设施/模型/财务操作；App源桥HMR/Portal不需额外服务。原55Run终态、旧财务unknown不作结算。当前只进入真实审计浏览器验收，Goal active，PR仍Draft，不merge/deploy。
+
+### B13 精确组合补充：保真 SDK 发行来源证明（设计门通过，实施中）
+
+新IAM0.22只增audit BFF认证；Root原校验将Capability已发行0.21 archive来源强制等于当前owner整树，实际报FAIL，原件保留。主控/独审已从Git证明新canonical仅info.version与该audit操作的认证metadata变化，固定逆变换逐字恢复旧b6a/0.21/d279原件，execution path与全部components完全相同。限定EDGE-CAPABILITY-IAM一个明确profile/tuple/verifyExecutionAuthorization声明：旧tar/SRI/sidecar/manifest/config/lock/SDK白名单仍按真实b6a release全部校验，新owner完整fe0字节/版本/发行anchor祖先及current SDK整树另核；无声明/新digest/错tuple/其它变化仍FAIL。不更新Capability/旧tar/sidecar、不通用放宽版本，也不新增生产兼容路径/契约中心。writer仅Root现两Python文件，主控唯一inventory与台账；focused负控及三Root门通过后才作组合验收。
+
+### B13 审计 owner 发行检查点（2026-11-13，非正常组合验收）
+
+IAM `814ba4c423b631cab28929048c7203f2d14822fc`／OpenAPI+SDK0.22.0 已推该新增需求PR#9（原IAM PR均已闭，非重复开PR）。主控真实PG/Redis原audit HTTP10 PASS/0skip、测试DB库存保持；默认1656 PASS/0skip、固定父breaking通过，44停写输入逐SHA核等及独审CLEAR。原OAuth权限/游标/Schema不变。BFF新Public29.1/228完整逆证原29父13例由主控复验通过，现消费该正式IAM来源；Admin/App新回归实际RED→21/52定向及types/lint已通过。此时Root仍原gitlink组合，IAM正常进程未重载；Admin正式pin/构建、四仓最终配对与native分页/撤权仍待，不能把源码阶段冒整链已通。
+
+## 2026-11-13 B13 审计读闭环：设计门通过，实施中
+
+主控与独审已核IAM/BFF/Admin现三设计前缀一致；App具名桥同片承接。IAM writer `shared_project_pin_skills_review`，BFF writer `shared_project_run_display_audit`，主控负责Admin/App、Git/资源/停写验收与唯一台账。先IAM正式发行bff_user_context audit.list与同RR当前管理员资格/安全页，再BFF Public29.1/228固定消费和一项公开投影，后Admin53操作pin/zh-en页面＋App exact GET桥/门户增量；依赖未发行前不造假pin或消费WIP。
+
+复用旧OAuth审计/cursor/当前Admin准入、现有bounded transport与页面寿命；不新建服务/表/配置/缓存/内部OAuth/统一日志平台。不将Provider回执合成为审计，不扩用户团队批量写。唯一新增风险按IAM真PG/HTTP鲜验、BFF窄owner客户端/原生Account接线、Admin+App具名代理/取消及真实分页/撤权旅程验收；旧通过链不重复跑，源码和真实运行分开收据。当前尚未完成本片实现/发行/native，整体Goal active。
+
+## 2026-11-13 后继：事件回放恢复、真实装配取消与治理主片已验
+
+- 已提交推送的行为源：BFF `ef9e64e`（含replay修复`adf31d9`，原#17）、Agent `b61234b`（原#49）、App文档 `08bc30b6`（原#49）。当前精确gitlink为BFF `ef9e64e`／Agent `ce57f4d`／App `f942f35c`；Agent后继仅CURRENT记录，App新行为仅上述Project Skills词条组。Public29.0.0／227 owner操作、Agent8.18／canonical SQL不因本片改变。Goal实查 active，Task B整体未完成。
+- 本轮App行为后继`f942f35c`（原#49）统一Project Skills九语言词条：35 namespace＋emptyState，退役仅本组英语fallback；58 focused/非增量types/scopedlint、10SHA及zh源核等、独审CLEAR。正常en空态与fr整组/390px document390/390、dialog371/371已验，恢复原en/viewport。未改组件/协议/其它fallback/ProjectTodo，未重跑全默认/Next build；不冒全站翻译。
+- 当前Project从个人原source安装实际POST503/unknown；原body/key私有保留、没有第二次安装，response body被回收不杜撰错误码。fresh native列表0/selection空不当原写回执；源码已核安装本身verifyPackage→Storage GetPackageReference，资源恢复后只原命令。B09旧497真实隔离PG invite/accept/leave原件及三路径字节承接已主控核销。Root `05e41af2` 上新run `6b3033901c1c791ac9fd39a3` 已完成真实Chrome原生登录/邀请接受、member→admin→member、移除取消零DELETE/确认移除、同收件人重邀/同ID重发/撤销；7业务写均200。同一独立native observer Session持续有效，邀请读403→200→403，移除后Product403；最终pending0/两旧accept context404/dispatch0，owner保持。outcome/cleanup/credential检查均passed，主控另证测试DB不存在及三个源码副本已回收，独审CLEAR。邮件为fixture捕获、不是Internet SMTP；UI操作与observer权限证据分开，不冒正常持久IAM或全后台闭环。首run0366因private scope漏native accept而本地403→页面503、未到IAM的FAIL/截图保留；cleanup passed。只修两ignored helper的exact accept通道及反控后新run，未热改旧run/改正常团队。
+- BFF真实native SSE503已定位为frame_page遗漏source_subject_id；仅一列修复。现有真PG replay先RED42703，最终1 PASS/0skip，四纯文件91 PASS/0skip、build/types/lint/format/独审通过，PG库回收。仅BFF受控重载后，正常native→Web→BFF SSE200、真实id/data帧，Chrome硬刷新恢复新Run Stopped并保留旧incompatible失败。测试原生Session正式退出，Cookie回收，原角色不变。
+- Agent现有装配等待补原fence续租与listener建立时序。主控test_main9／相关191 PASS、5资源integration未选，Ruff/Pyright0/wheel/sdist/独审通过；首次误选integration的5 setup ERROR保留。HTTP/Worker成对重载后，新Run在Docker装配时原生Stop→175ms cancelled、原命令succeeded、model0、未绑sandbox，唯一run.completed(cancelled)。旧Run在活跃期间编辑运行源触发配方不兼容是实际失败/主控时序失误，旧Stop仅admitted，不冒取消成功、不降低guard。
+- 正常Custom API Admin另发现已配purpose但缺正式custom-api-admin surface；备份后仅补flag并重载Capability，列表503→200。仅新QA配置随机假标记，真实quarantine v1→2／owner只读→restore v2→3／owner可编辑、七安全字段/两审计/actual actor/原命令核等；sealed材料保留、不解密值。临时admin已恢复原false/v10，自己的Session正式退出，原会话保持；永久revoke待本轮单项用户确认，尚未提交。
+- Public29门户九路径已交付：221公开操作／22生成文件，六browser-private排除；Project/Scheduled产品分层与API概念同步，writer门户门与62页21475链接通过，主控九SHA及provenance/reference/links核等。固定已发行BFF509的wire pin有效，runtime后继不机械浮动；整TaskB或全站翻译未冒完成。
+- 新补grant真实墙钟到期：原QA/普通成员正式viewer到期前两GET200，20秒UTC实际经过后404/列表退休、owner200；原grant恢复revoked、两个Session正式退出。Scheduled旧owner-only lookup已由`ef9e64e`改接现READ预检＋原锁内EDIT；主控15 PASS/0skip、types/lint/build/两SHA/独审通过，Root`72bffec1`重载后真实双Session成员创建→跨actor修改强制暂停/清executor→显式启用绑实际actor→viewer403/原定义不变→旧revision409→暂停删除通过。前源404、private role键错误和即时next_run_at误断言FAIL均保留，不把pending/null冒Scheduler ACK。
+- 正常Scheduler实际缺进程（旧登记失效），令本轮自有outbox仍9项pending/retryable；只读先证原2计划paused、active0/未完occurrence/dispatch0，再仅以原源码/config恢复缺失Scheduler，readyz200。原worker自然交付两个QA delete succeeded，BFF任务0/自有pending0、Scheduler两项current GET404/schedule_not_found；历史3失败回执保留，无手改状态/代码/Schema或其它进程操作。两个grant恢复revoked、所有自建Session退出，无模型/资金调用。该片关闭协作定义/身份/CAS与资源回收，不冒自然到点或整个共享成功链。
+- B13 Provider元数据正常native本轮已补（独审CLEAR）：新建唯一无凭据QA目录项POST201/v1→立即停用200/v2→只改名200/v3→硬刷新保持→启用/停用200至v5；独立自有native Session经Admin BFF/Capability fresh200核exact key/name、disabled/v5、origins/scopes空，原两QA项未改。临时admin原false/v10→true/v11→false/v12，撤权后GET403/页面目录清退、自己的Session正式退出/Cookie回收。CDP正文eviction及首GET helper误读顶层enabled的KeyError保留，按正式provider嵌套schema仅重读成功，不重发写；本轮QA保持disabled登记、永久移除未提交。无生产源码/Schema/协议改变或OAuth/Prepare/工具执行，不冒Provider专用审计、移除或整个后台闭环。
+- B13下一窄片为IAM审计正式接线：现Admin死/api/audit已核实，既有IAM reader安全字段/cursor可复用，但BFF native闭集和人类权限不等价，须先收敛当前tenant平台管理员鲜验的owner设计，再按IAM→BFF→Admin正规发行；不借operator/OAuth身份，不做统一日志平台。用户/团队目录与本轮B09复用，不扩后台批量管理。
+- 当前55Run全终态、dispatch pending0、历史两笔财务unknown保持；该Worker Docker子进程0，但daemon version仍5秒超时，容器不存在／Storage数据面恢复未证，不重启共享VM、不清卷。共享成功Run／安全FINAL/Artifact／peer过程、后台其余具名缺口继续；原PR保持Draft，未merge main或部署，next-env.d.ts已知Next自动生成diff不提交。唯一TODO已按本轮事实纠偏，不重开旧链或新建任务中心。
+
+## 2026-11-12 Task B 正式接管：先保成果、再补最小缺口
+
+用户明确将Task B移交本会话主控 `/root`。本节是当前入口，以下历史记录保留各自时间／基线；不重开已交付Task A、不因旧待验表重新实现功能。唯一执行清单是[Root TODO](../../../todo.md)，原功能范围见[Task B交接](../../handoffs/2026-10-30-task-b-capabilities-account.md)。
+
+| 项 | 当前事实／下一动作 | 负责人／写区 |
+| --- | --- | --- |
+| 原PR与组合 | Root#67原477562a4、App#49 d6dd3cd0、BFF#17 1e6765b3、Capability#12 e068fcaa；主控先合入Rootmain1092d99b，保原14提交／468行记录和12个已验gitlink，不直接激活旧指针。App/BFF有明显主线分叉，须按功能保双方成果 | 主控唯一Git／Root台账／资源；不强推或删除旧worktree |
+| Capability已包含成果 | Root pin24094960与#12 e068fcaa源码树相同，后者仅多merge提交；MCP新授权、API隔离和Skills旧“待提交”叙述不能当当前缺功能 | api_perf_audit先只读核验；不重造owner |
+| App/BFF承接门 | 原App独有37提交包含MCP/API、账户、Skills和契约；原29.3有201 ops而现28.35有215 ops，另同名operation/schema有实质差异。不得整份旧generated/pin激活；先承接无新契约依赖的API／JSON创建后精确详情，后续由BFF统一发行再生成 | composer_ui_audit只读盘点完成；主控后继集成，不恢复已删除首页预热 |
+| Storage#2 | add2da6的fresh成对升级未在现main231bb663承接；现FINAL后继脚本导入旧target常量，不能机械换hash。沿原bootstrap冻结旧工具／旧canonical，核后继parent并补定向PG | app_merge_gate只读盘点完成；原PR保留，主控另交精确写区，不做正常DDL |
+| R-07首片 | check仍先generate并改写生成文件。沿现脚本生成到自有临时目录、比较完整集合和字节，显式generate继续写；失败保持原输入并回收自有临时目录。无wire、数据模型或业务运行变化 | api_perf_audit单writer：package／现normalizer与直接contract check／相关测试；已沿原#12推送c040dda8；主控8例／真实check／类型与scope lint/format通过，803输入SHA/mtime/mode不变、四输入冻结核等，独审CLEAR；仅工具片源码已验待合并，不冒全PR验收；候选推进触发Agent发布pin精确配对缺口，Root暂保原12个已验gitlink，不放宽门禁，与B-01消费者窗口一并切换 |
+| R-14后继 | singleton client永久origin DNS pin限制合法独立操作轮换。只把pin约束到一次有界OAuth操作，保同操作漂移拒绝／公网验证／实际IP连接／Host／SNI／取消；不清共享Map处理并发 | 局部技术设计／2生产factory＋3测试已验，原#12提交573a8f00；主控17例、types/scope lint-format、五输入核等和独审通过。writer63例仅相关unit，非真实Provider／PG／全默认；源码收口、组合待配对，不改协议／Schema |
+| B-01／B-02 | 先固定消费版本／实际加载源；只补新授权刷新删除、冲突／撤权／迟到／秘密边界。已有Docker执行／清理／刷新收据复用，不跑新模型凑证据 | owner→BFF→App按依赖；原PR内交付 |
+| 其余功能域 | Skills作者版本／安装使用、账户／Team／Share／模型积分与对应Admin按现收据盘点，仅实现当前缺口；视觉／多语言／性能／文档随片收尾 | composer_ui_audit先只读；主控验收和写区裁决 |
+
+交付：各仓沿原PR，本地受影响风险和相应owner门通过后正常合main、Root固定精确组合并清本轮分支。不部署、不清卷，不引入内部OAuth、重复认证／缓存／SDK或无用层。真实支付继续关闭、完整云E2B沿已接受边界暂存；外部供应商权限缺口只约束对应末端，不伪造成功、不暂停独立工作。2026-11-12用户已明确要求设置Goal，机器目标现active；按唯一TODO及本节持续推进，不以局部通过完成整体目标，不自行暂停。
+
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
 
 ### 2026-10-29 后继：连接器菜单顺序已正常修正
@@ -369,6 +513,149 @@ Swarm 独立缺口已定位（只读最小复现29 PASS/1 FAIL，未改Agent候�
 # 最新目标与 TODO：面向上线的正式产品闭环
 
 <a id="release-readiness-20261021"></a>
+
+### 2026-11-01 Task B 功能分工领取
+
+2026-11-01 用户进一步明确核心目标为简历/求职：以可通过腾讯云演示地址访问、能完成真实任务、本人能解释的产品成果安排优先级；产品页展示功能结果，面试再说明技术。Task B 范围不取消。个人演示部署与同事公用实例分离，代码沿已验证 Root 精确组合更新，数据库/对象存储/会话/OIDC/密钥/域名单独配置。先准备手动版本化部署、健康检查与回退，再按实际需要接自动发布；不修改同事既有 CI/CD。当前仅方案及部署差距核查，未接入腾讯云；现有 Phase1 Compose 的 mock/preview 默认与旧目录不能作为全功能正式演示直接发布。
+
+负责人：协作者 B（会话 01a11b32-a116-7083-acac-501aa5514c48）。范围以用户本次 Task B 为准，替代此前 Web/Backend 分层及本会话不改 Skills/MCP 的旧边界；复用本节有效目标，不另立产品事实源。A 保留统一发送、Run 控制、会话及产物展示；B 负责能力配置、资格/版本/授权、专属执行材料及账户协作的完整切片。
+
+基线：Root main 3a3b6b91faf4540a2499915698f2abbdb525ba85 已从远端核实；首次实施先核各 owner 当前 main、已有 diff、真实进程来源。旧本地首页功能分支完整保留，不以旧运行源推断当前 main 缺能力。正常预览不因盘点重启。提交、PR、集成绑定实际门禁与精确 owner artifact，不把历史局部证据升级为本轮验收。
+
+| ID | 功能 | 当前领取状态 | 验收范围 |
+| --- | --- | --- | --- |
+| B-01 | MCP/连接器 | 进行中：当前生产消费链盘点 | 四种创建→详情/编辑/图标/删除→刷新；目录分页；OAuth/Connection/Enable 分离及失败恢复；普通页/管理页/Composer 同身份 |
+| B-02 | Custom API | 进行中：执行与秘密边界盘点 | 多配置、隔离 Run、跨账号/撤权/漂移、迟到/取消、文件产物秘密边界；真实 Docker/E2B 分开报告 |
+| B-03 | Skills 目录与安装 | 依赖 B-01/B-02 | 精确版本/目录详情/安装启停/刷新一致 |
+| B-04 | Skills 创作与发布 | 依赖 B-03 | 来源/扫描/版本/审核/角色/未知结果恢复 |
+| B-05 | 任务能力与外部授权 | 随 B-01/B-02 | safe refs、Describe/Acquire、真实工具调用；与 A 统一发送/展示配对 |
+| B-06 | 登录与身份 | 出现可复现 P0 优先插入 | OIDC 回跳/刷新/注销/过期/多标签/撤权及故障分类 |
+| B-07 | 账户设置 | 待后继核验 | 读改存/刷新重登/CAS/取消/窄屏 |
+| B-08 | 知识记忆 | 待核现有 owner/范围 | 下次 Run 生效/停用/清理/隔离，不另造服务 |
+| B-09 | 团队角色 | 待后继核验 | IAM 权威分页/邀请/角色/撤权/迟到 |
+| B-10 | 分享协作 | 待后继核验 | 分享 metadata 权威回读/显式发布/撤销/权限矩阵 |
+| B-11 | 模型管理 | 随真实任务 | 选择到精确执行修订/健康/价格/后台回读 |
+| B-12 | 积分结算 | 随真实任务 | 同 attempt 预占/结算/释放/未知恢复/余额账本一致 |
+| B-13 | /manage | 随功能 | 现有管理壳中完成对应 CRUD/权限/审计及用户端回读 |
+| B-14 | 视觉/性能 | 随功能 | Manus 同态对照、窄屏/键盘/回焦、冷/热 p50/p95；未观察不称一致 |
+| B-15 | 说明/PR | 随功能 | 页面/接口/数据/实际门禁/限制/精确 artifact 与 A 停写互审 |
+
+首批只读任务：B-01-AUDIT 查 App→BFF→Capability/IAM 当前真实链及最小缺口；B-02-AUDIT 查 Agent Custom API 多配置/取消/输出与文件产物秘密边界，列已有测试与未证风险。主控独占计划/基线/Git/资源；审查员不改源码、服务或正常数据。实现文件集待源码证据后明确，未授跨仓并行写入。
+
+#### B-01-SESSION-READ：Provider 独立读 401 恢复
+
+- owner/writer：App MCP hooks；主控独占实现及 Git。基线 App 4860c37d，工作树 clean，相关三份原测试72 PASS。
+- 现有来源：Provider 目录筛选/续页、详情和关系全扫描各自 catch 未报告 typed HTTP401；同目录精确 Connection reader 已向 ProductReadRecheck 注入原 subject/generation/signal。BFF/同源维持正式401，恢复资格属于 AppGate，不能由业务 reader 伪造。
+- 设计：仅当前未退休且未取消的正式 HTTP401 携捕获的 actor/generation/signal报告；403/依赖/parse/network 不触发。关系扫描只分享活跃flight，将原 signal 暴露给订阅者，旧主体/代退休不报告。重入仍由现有单次再准入预算与代际重新GET驱动，不重放写命令。
+- 写区：src/ui/mcp/use-mcp-provider-directory.ts、use-mcp-provider-detail.ts、use-mcp-provider-relations.ts；tests/ui/mcp-provider-readmission.test.tsx（这三个Provider reader的会话过期/退休风险，放现有UI测试而非新通用auth套件）；相邻INDEX与当前事实仅准确记录。无新接口/Schema/状态持久化/owner，原三面设计仍适用。
+- 验证：先用合法typed401写失败行为用例；覆盖目录筛选/续页、独立详情、关系尾页；403/503/parse/network负控、跨主体/代际/abort/已卸载迟到、重新准入GET恢复；原相关72例与Session再准入/配置保存/Composer回归，lint/typecheck。浏览器正常过期验收另证，不能将hook替身称真实IAM。
+
+
+B-01-SESSION-READ 候选实际结果：新28行为回归先4项正确RED、最终6文件257PASS，独审无确定P0–P2。contract445/architecture50通过，完整lint0；扩大MCP/API885PASS/3原视觉夹具失败，单跑同失败，保持断言。typecheck新测试声明已修，仅余HEAD既有A展示onReconnect/legacySteps错误；未改其写区。已提交/推送 App6a4f591d，复用 draft PR49；正常IAM过期与整体B-01未关闭。
+
+本机正常3314只读浏览器验证：真实OIDC登录→首页插件→管理连接器→设置面板完成初读，MCP列表HTTP200，但Custom API列表HTTP503。该运行源仍是旧home代码，缺当前ProductReadRecheckContext，未将候选三hook单独复制激活。此证据证明导航/登录和实际错误，不称全部连接器可用。Capability固定44fcc5d的focused65通过；Provider CRUD真实PG1通过，Custom API HTTP边界5通过（IAM/持久层替身）。扩大个人MCP真实PG8通过/3失败/1原skip：OAuth刷新后的Prepare/Enable被“private MCP connection policy changed”挡住，正只读定因，不删断言。
+
+#### B-01-CREATE-DETAIL：API/JSON 完成回读
+
+App唯一writer task_b_mcp_audit；基线6a4f591d（B01过期修复已推PR49）。三设计前缀已先写；允许现 connector-command、custom-api-create-flow、mcp-json-import-flow、use-connector-creation-form、两form、connector-command-context、mcp-create-dialog、mcp-projection-read及同功能局部组件/CSS、相关测试/i18n/INDEX/CURRENT。仅安全locator的UI完成投影；无wire/Schema/正常源/A展示写区。单JSON直接详情，多项明确选择；取消迟到/换主体/新代/完成失败重试/秘密清除要保。主控独占Git、冻结后独审与工程/真实界面门；不把替身当owner旅程。
+
+冻结候选新增17行为回归，主控6文件130通过，独审无确定P0–P2。契约444通过/1既有生成器子进程5秒超时，原文件单跑23通过；保原门禁不扩大超时。完整lint通过，build编译成功但被既有A onReconnect类型错误阻断；App015862bb已推原PR49，不合main。Capability真实PG工具fixture对齐原授权名后11通过，SSE子项另配置自有空库1通过并清理，原policy/revocation负控10通过；d5708828已推原PR12，生产policy校验未改，原失败完整保留。
+
+#### B-01-READ-RECOVERY：可见局部错误与权威空态
+
+创建详情提交后由同App writer接续。范围：mcp-projection-read、mcp-provider-catalog-dialog、use-custom-api-projection、use-mcp-projection（仅原GET attempt/settlement）及必要内聚局部组件/CSS、对应既有gallery/read测试、i18n/INDEX/CURRENT；无wire/owner/Schema/A展示变化，不另建错误中心。读取失败目前只sr-only，旧confirmed空状态还会掩盖刷新错误。保留已知卡片，但全空/无匹配必须由当前相关读取共同确认；内联错误和GET重试按失败reader分流，不刷新健康部分、不重放写命令。保持401现有再准入归属、同主体/代际/取消边界和显式尾页/循环恢复。新按钮需真实同步pending围栏防重击，禁setTimeout假解锁；API故障不污染非all目录分类。先业务RED，再恢复、部分失败/已知卡片、旧确认空、迟到/重击/循环边界；主控冻结后独审与浏览器/窄屏验收。
+
+交付状态：Root 最终八文件90项通过，完整ESLint通过，独审原焦点P2关闭；受保护重试失败回焦且用户移焦不抢回。浏览器测试独有缓存避免已证Vite优化缓存争用，原一次挂载失败保留而未假定根因。App b3dcbe44 已推原PR49；390/1280静态生产CSS和隔离hydrated Chromium只作组件证据。正常3314未激活，既有A类型/build错误仍OPEN，不称B-01已完成。
+
+#### B-06-READ-RECOVER：已确认断线的显式恢复入口
+
+只读追溯确认旧合并34295b54/736239c7部分落地：status组件移除onReconnect/按钮，但现AppFrame仍正确连接engine.reconnect；另测试引用未落地的legacySteps，当前正式projection已采用安全activity单轨。Root将前者视为B06/B14必要恢复，唯一App writer task_b_read_recovery。仅status-surfaces组件恢复unavailable的显式重连（暂时reconnecting保持sr-only），新增就近UI风险回归及原projections测试迁移；保持原顺序/拼接/tool身份断言，以typed safe activity顺序及状态更新承接失效legacy字段断言，不恢复raw旧renderer。现engine snapshot-first/active身份/零重发POST测试完整保留并复跑。禁止改engine、Run/control、wire、线程renderer、A其它展示；Root负责独审、lint/types/build与正常配对，完成此窄修不代表整个B06已验完。
+
+交付状态：App aa3fbbdb 已推原PR49，冻结后Root完整engine加相关core/UI23文件517项通过，writer另25文件542项通过，独审无确定P0–P2；完整lint/typecheck/build均通过，先前类型/build阻断为已修历史事实。正常身份旅程尚未完成。
+
+#### B-15-NORMAL-PAIR：保正常源的正式配对准备
+
+正常3314仍为旧Web/BFF组合，不能直接换候选Web：存在MCP availability、模型目录、Skill publish/版本/删除及A display/parts/feedback等具体协议差异。原BFF8395有4个RSS/Billing提交与批准853分叉（4/84），merge-tree已证27处内容/重命名冲突；其正常库还含RSS历史表，必须保留。先将正在从canonical checkout加载的8395冻结为同版本独立运行归档，避免后继BFF实现/整合影响运行中的源；这是运行发行物，不创建新Git worktree。准备writer task_b_api_postgres仅写`.local-run/task-b-bff-normal-8395`与本机证据，用固定commit源、冻结lock独立依赖，保全必要生成物hash；不启动服务/数据库、不改原repo/index/ref/正常配置。Root核验后独占原env/端口的优雅切换及恢复。
+
+升级前置已只读定位：P44正规installer识别当前74d5父并只扩展，仍需新版IAM执行凭据配对。BFF853需修message-parts canonical精确向后投影，并补dispatch双nullable列正式演进；当前normal还有RSS历史，不为达目标删表/列。迁移须在隔离库验证数据保持、失败回滚/幂等，备份/恢复演练后才动正常库；现阶段未升级Schema。各未就绪末端不阻其它独立功能。
+
+#### B-15-BFF-EVOLUTION：正式升级入口修复
+
+Root已将正常BFF55838从physical checkout优雅切至精确8395独立归档，launcher39043；全790源blob一致、归一业务配置相等、正常原OIDC session与MCP/API三GET200。P27085/Web62806未动，未执行DDL。原feat/home-workspace-completion四独有提交保留；physical现新分支feat/task-b-owner-closure起自批准853。
+
+唯一BFF实现writer task_b_safe_file_tools，仅正式schema脚本/对应测试/package scripts、INDEX/CURRENT与三面设计必要前缀。第一修message-parts parser：沿现canonical regen/final定义做精确父投影与当前catalog识别，保原exact parent/CHECK，不改历史parts/regen/final语义；第二补既有dispatch.execution_project_ref与execution_context_retired_at两nullable列的具名正规check/apply演进，严格允许已知旧/current shape，不接受未知/部分漂移。无canonical新表/列、wire/owner pin/运行时业务变化，无兼容读写层或第二schema事实源。先实际RED与设计，隔离PG数据保持/幂等/取消/回滚/错误shape验收；不得运行正常库、服务或Git mutation。Root负责独审、资源执行/备份恢复与后续整合。8395RSS/Billing分叉只读分析由task_b_api_postgres进行，禁止并行写BFF；整合/正式配对未完成，不称新版Web已激活。
+
+本片交付：BFF b3289f4a 已推原draft PR17，独审无确定P0–P2。Root默认2306 PASS/3原SKIP、contract1327 PASS、正式build；两个独占PG文件12测试通过（7 pure/5 PG case），全输入前后hash相等，原13文件冻结hash经独审和Root复算一致。独占两库保留供后续演进验证，未正常DDL。真实SQL权限矩阵/并发apply与正常备份恢复尚未验，不冒产品升级完成。
+
+#### B-15-BFF-INTEGRATE：保留正常 RSS 的正式整合
+
+Root以b3289f4a（批准853+已验升级工具）为主体，与正常源8395b44作显式双父整合，保留四笔旧独有提交历史。唯一BFF writer task_b_safe_file_tools；Root独占merge/index/ref/提交/PR。writer只解决本次实际内容冲突、已自动合并的相关语义、相邻设计/测试/正式生成物，不变更当前owner pins或删减A的Run/display/feedback/regeneration/项目能力。旧Public20 RSS与批准历史Public20不同，不按版本号盲串证明；整合为单一canonical Public29.0，完整保留批准199操作，补既有运行记录与RSS分支，固定精确父摘要及明确有限整合delta，保旧历史oracle不重签。RSS必填trigger_kind的breaking由新major表达；消费者须待正式owner提交后固定更新，不在当前正常Web上伪造兼容层。
+
+Billing沿批准23ff的11正式SDK和原identity export，旧初始化更强的body/未知/取消/首末准入保障收敛至唯一现PUT；下载沿批准/download及现项目资源接口，承接旧独有有界/取消保障，不恢复重复/content别名。RSS两表、三表增量、receipt schema_version3及calendar历史身份保留；canonical仅合并两父已拥有事实，不新增别的服务或表。正常替换前仍须正式旧RSS父→最终演进、真实数据保持与备份恢复。沿原生成器重生受最终lock影响的manifest，保批准vendor/pins；不手改generated或丢旧测试换绿。设计先行、实际RED/受影响回归、冻结独审及全门由Root收口。旧8395归档继续运行，无正常Schema/配置/资源修改授权给worker。
+
+正常库升级前备份恢复演练已实际通过：固定原生pg_dump/pg_restore18.4导出BFF owner一致性只读快照，在新建的本次专属临时库恢复，32张表的行数和全行SHA256多重集逐一相等（备份117725bytes）。正常库无DDL/业务写入，未把副本恢复回正常库；该快照不是后继升级时的最终恢复点，正式Schema演进与正常激活仍待验。专属副本保留用于最终旧RSS父→整合canonical演练；私有库身份/备份不进入Git。
+
+BFF整合已正式提交/推送7e4ab1cee8f8d45a34902176cd15a10f3c4b22cb至原draft PR17，双父b328/8395保留，Root停写默认2756PASS/3原SKIP/0fail，独审无确定P0–P2。克隆库八正式入口各check/apply/check/apply均成功且逐步原32表旧值摘要保持，含原RSS任务/poll/seen；与34表fresh canonical首次raw比对仅3个旧CHECK括号差异失败，保原记录，后继仅此3对在PG原生重parse后精确相同，其他catalog exact且已独审。正常库未升级。固定消费者和正常业务旅程仍待，不把已推代码冒正常源。
+
+#### B-14-MANIFEST-DEADLINE：当前展示读取的有限等待
+
+正常旧源只读巡检已证17设置Tab DOM可打开，但全局networkidle等待被持续pending的runtime-manifest拖住；当前重测manifest173ms返回缺配置503，不能把历史pending唯一归因于它。候选App同一hook代码事实仍是fetch/response.json没有client总期限，AbortError统一忽略；这可用不合作fetch/body的确定性测试复现无限loading，独立于服务端15秒预算。唯一App writer task_b_api_postgres，基线aa3fbbdb。仅use-runtime-manifest、就近原hook/行为测试及INDEX/CURRENT/三设计必要前缀；无BFF/public/owner/wire/manifest值/导航权限/Run/正常源修改。
+
+采用一个20秒绝对client读取预算覆盖fetch与body；超期归source:error、清retrying、退休并abort本次读取，沿现PRODUCT默认，不冒preview/live。离页/模式切换/新attempt取消保持静默，旧迟到结果不能覆盖新scope或重新应用主题。只手动GET重试，不加自动重试/独立错误中心。保持已有current空导航/locale/theme allowlist/preview/身份边界。先真实业务RED：永不完成fetch、headers后body卡住、非合作迟到、截止与成功竞争、cleanup/新attempt、主动错误AbortError与取消区别；再原风险回归、冻结独审与相关工程门。这个修复不能声称消除当前缺System配置的503或历史pending唯一根因。
+
+Manifest修复App8f607e87已提交/推送原draft PR49，独审/Root相关57PASS、正式contract/architecture/lint/types/build与preview E2E120PASS。完整默认仍红，6个Redis环境组正确复验130PASS；OIDC97项被编译就绪前置阻断，单独亦失败。5个纯UI候选/HEAD均22FAIL361PASS，另3项视觉既有差异保留，未降门。正常源未切。
+
+#### B-01-DETAIL-READ-RECOVERY：创建交接后的 exact 详情恢复
+
+独审定位当前API、private MCP及Provider exact详情GET失败仅sr-only，profile缺失使表单锁定；createdDetail/createdApiDetail还禁用列表reader，不能借目录重试。唯一App writer task_b_api_postgres基线8f607e87，先修这组三详情再做正式29消费者配对。复用现McpReadFeedback/detailRetry/readScope与owner+window+locator围栏，只重发失败详情GET、同步pending防双击、失败回焦且用户移焦不抢，保401现ProductReadRecheck/代际/取消/迟到及未知命令；绝不重放创建/保存/Prepare。写区仅原projection、三详情hooks/dialogs、局部反馈必要接线及就近既有测试/INDEX/CURRENT/三设计，禁止engine/Run/正常源/Git/pin。原Provider四个sr-only/no-retry过时断言按现行为迁移且保其独有风险；icon Save旧关闭假设改为exact详情回读/显式关闭，保命令一次及icon不取消。真实RED后focused验证，最终与消费者配对合并做一次完整相关门，不为每个小步骤重复全套预览。
+
+详情交付阶段：7生产/5测试路径已冻结并独审通过，Root相关6文件211PASS；成功后的旧错误反馈清退原本已实现，审查误读已撤回，仅补既有行为断言，不记录为新修复。尚未正常激活。
+
+后继App cbef49c9仅测试/说明已推原PR49，Root两UI文件303PASS、scoped ESLint/完整tsc通过，桌面/手机preview E2E120PASS；77生产/生成与629冻结仍同。原full default红/OIDC97未验继续保留。Root实际候选精确GET补证断开后的server registered、connector revoked/enabled=false且二者200/ID相同，配置保留已非仅源码推断。App只读可达片已完成并提交/推送6cdbb090e1070240cc62d0e81521027cc222d2cc至原PR49：三过滤窄例外保delete优先及撤销版本屏障，immutable readonly intent、所有命令callback与UI均拒，Composer/项目/Run资格不改，不做全列表N+1/猜provider命名。7真实RED后修复，状态文案另3RED后修正，Root最终原三文件160PASS、scope lint/build通过；原逻辑与状态小差分独审通过。隔离真实IAM浏览器桌面/刷新/390px窄屏三旅程成功，exact connector/server读取200，MCP零写、关闭回焦；开发态详情6–8秒不是性能达标，global connections/icon末端503保留。正常3314未切换，正式Reauthorize消费者等ownerartifact。
+
+Platform三文档设计门已独审APPROVE，原墓碑/receipt顺序P2已通过六处精确句修关闭：fresh身份与原安全绑定先查原receipt，completed Reauthorize/Prepare跨后继Delete保原安全ACK，unknown/expired沿原状态；首次/重入实际业务才current/墓碑/CAS。Root授权唯一Platform writer task_b_api_postgres按已核精确路径清单实施current绑定、新身份纯本地命令、材料换绑、配置墓碑、正式v2 artifact/canonical schema及精确父evolution。仅本owner，排除IAM/A/正常资源/Git；真实PG与最终资源操作由Root冻结后执行。旧永久身份/refs、原撤权/PKCE/refresh/Runtime、历史wire oracle不弱化；消费者待owner固定提交后再接。
+
+Root已用官方generateCanonicalDdl/readCanonicalCatalogAndSlotDigest在带marker的自有临时库事务安装与slot1读数，真实fresh target718dfff8e357405f6ce24323a64e6cc1bf1749f7804ba447cc68923e29c51f65；主动回滚并确认owner schema不存在，正常源未动。三输入冻结与私有receipt保留，Platform以此接正式canonical target和精确父迁移，尚未完成整片PG业务/迁移验收。当前纯内存新增两旅程通过不是实际PG。
+
+后继真实迁移已跑：首轮原schema套件28PASS/3FAIL，定位SQL replacement把正则`$'`当替换元字符破坏旧父DDL；原helper改callback后，固定v2输入的原旧父迁移1PASS。两慢项定向复验rollback通过、drift仍30秒超时；固定368原父同项也超时，不冒全套绿色。新current精确父5组真实PG（exact/zero/multiple/wrong-owner/wrong-material）全PASS，成功保旧列值/永久撤销，坏绑定全事务拒绝且catalog/数据保持。完整新业务v3的private integration实际17PASS/12FAIL：窄read transaction遗漏新历史receipt reader绑定导致12项DependencyUnavailableError；已交唯一writer补正式composition。独审另抓普通connection GET/List未拒旧代/墓碑、Header active上限误计revoked历史、reauthorize原安全绑定无boundary读三处P2，沿原责任面最小修复后再冻结补验。源码尚未提交、BFF/App正式重连尚未接线；正常3314/服务/库未动，Goal仍active。
+
+最终v4已关闭上述四处缺陷：Root冻结65非MD的完整private PG29PASS、personal PG11PASS/1原SSE-driver条件SKIP、四文件unit/contract/architecture124PASS；5迁移组的4schema输入保持承接，独立有限复审APPROVE，正式lint/type/build/format通过。原strict checker同一正例在精确368父与v3均15秒ETIMEDOUT，保原完整门红，不冒性能无损或全仓通过。Platform正式提交`2cf63945feecd49f5b79c3532bbd7cbc5b70a3f8`并推原远端codex/connector-icon-staging/GitHub Draft12，70精确路径，无main合并。Root核1093全部非MD输入等值该commit，774官方build产物已备隔离候选。BFF以clean7e4接正式v2 vendor及browser-private新操作，Public29/200与SQL原字节不变；89非MD冻结2220e3ea独审通过，Root独立artifact构建0、原三文件91PASS，正式contract1560PASS/architecture37PASS，默认门仍在原冻结一轮。App已实施原UI/命令，跨仓固定依赖等正式BFF提交后更新。
+
+Root已激活隔离Platform2cf：退休自有旧候选进程组、同RR快照原生pg_dump、官方canonical d0→718、25表全部旧列值hash一致、新候选readyz200。只动本候选库/进程，正常3314保持；备份恢复未另验，不冒normal或跨owner原子升级。进程中断/所有权及最终handoff原子点经限定独审修正后执行。真实回执见本机测试验收B01-platform-2cf-paired-upgrade.json；新的App重连UI与真实浏览器旅程仍待完成。
+
+BFF正式固定并推送`e3b5fb759ee89523918ac06ebf3a738b4df4e346`至原Draft17，94精确路径；89非MD冻结不变，5MD仅42行当前前缀、历史后缀逐字保留。默认2762PASS/3原SKIP/0FAIL，Public29原105条lint warnings保留；Root独立artifact全部1102非MD与正式commit相同，ready200。新后端配旧App6cdb真实IAM exact两读200/断开只读可达/零MCP写，6.934秒不冒100ms达标。App唯一writer接正式private profile、现generator及同源adapter窄路由，不造通用代理；新授权页面旅程待验，正常3314未切。
+
+限域候选真实浏览器后继：API新建/取消/修改/刷新/删除成功，私有HTTP MCP公开服务实际声明/Prepare后已连接，改名及刷新保持。管理断开后个人connector已revoked，App三处过滤令保存配置无再打开入口，真实列表已空；断开后private server精确GET尚未实测，源码显示owner仍保其配置。不能仅解除过滤后冒重连，旧Prepare/OAuth/permanent revocation边界需owner先收敛，保旧凭据/执行refs不复活。Root裁定保单URL单配置体验：Platform currentConnectorId持久绑定、双CAS/receipt的纯本地新授权命令，建立新connector/newconnection，旧永久身份不翻回active；仅本人personal_remove允许，安全/管理员撤权不统一恢复。唯一Platform writer task_b_api_postgres先只写三设计文档，未授权Schema/wire/源码实施。配置删除保永久安全记录，配置材料沿原正式删除，不新增AEAD空编码；墓碑、partial unique、迁移唯一绑定与OAuth AAD重封须文档门独审。
+
+#### B-15-CONTROL-PLANE-PAIR：先交付真实 MCP/API 控制面
+
+旧Platform缺新版MCP必须availability字段，不能把新版App硬接旧服务或新增猜测fallback。复用已固定IAM b9a63c53、Platform36805356、BFF7e4ab1ce独立无Git元数据构建产物；原正常进程/端口/配置/任务继续保留。Root唯一资源操作者，本地独占单库三owner schema：IAM/P在normal只读RR快照data-only备份，各旧parent官方installer先建立canonical，恢复真实副本数据后各当前官方入口升级；IAM17→19、P21→25，原列全行值摘要均同，BFF fresh34空任务/outbox。data-only保canonical CHECK语法树，不篡改owner SQL或历史catalog oracle。新库身份/OID/marker、私密dump与逐阶段回执仅留本地；不是跨owner原子快照或正常升级。
+
+真实既有operator密码登录和官方新native OAuth client注册/回读已通过，IAM/P/BFF独立候选ready200。沿受管Redis逻辑DB9：IAM独有prefix、App origin hash；当前P只PING，BFF仅PING/publish、无subscribe且fresh无AGUI，不启动Agent，不把限域判断推广到未来AGUI隔离。候选与normal同127主机，Cookie不按端口隔离，必须独立浏览器context。加密/fingerprint私密副本保原密文配对，BFF→P两purpose与P→IAM execution服务身份独立新生成；无Storage/邮件/Provider OAuth/Agent/Billing/E2B末端不冒完成。
+
+正式消费者已固定提交App629ac5db3715546dacb484c0bf8ef0482e021c92，推原draft PR49：固定7e4原blob与digest，12 public generator正规生成，5独立contract不换源；保两父historical oracle的完整字节/操作proof，不导入SQL。既有calendar/RSS/runs沿正常1f700功能承接，AppSurface只必要薄桥，排除A engine/Run/display/control。139路径独审通过，contract479/architecture50、lint/types/build通过；Root相关详情211/Public29 232通过。默认首轮6973PASS/48FAIL/181SKIP保留；补双Redis变量后6文件130PASS，OIDC97仍被/app compile readiness阻断，正在仅补有限观测、不延长预算。16相关UI失败唯一App writer task_b_read_review仅两测试文件迁移，保缓存/主体/代际/清稿/不重放等断言，不改生产；OIDC诊断唯一writer task_b_safe_file_tools仅原系统测试文件。
+
+Root已建立629ac5db精确无Git archive并offline frozen安装、1545输入摘要不变；仅退休旧候选Web进程组，正常3314不动。复用候选真实IAM登录的独立context，MCP设置打开成功，scheduled-tasks真实GET200且空列表完成，RSS表单可打开，无自动化写入。首轮列表截图仅loading并非成功证据，后继已等待完成。开发环境小样本页旅程约2秒/5秒，非100ms达标或生产p50/p95；Storage/System/models/billing/skills等503末端仍明确未就绪。
+
+#### B-02-PG：Custom API 真实数据旅程
+
+Capability 唯一 writer task_b_api_postgres，基线 d5708828；仅本功能 integration 测试/必要 fixture/INDEX，不动生产、wire、Schema、lock、Root/Git或正常资源。复用自有 PostgreSQL fixture 与 canonical installer，从真实 profile 管理服务进入精确版本 Describe/Acquire，核同名 env 冲突、跨主体/tenant、版本轮换/删除、取消和最终材料复核；IAM authorize 明确替身，不称真实 IAM。Root 独占实际资源执行/清理与 Git。此为补当前实证缺口，已有实现不伪造 RED，不把直接 SQL seed 当管理链成功。
+
+交付状态：真实管理命令、加密和独占PG最终四组通过（9.06秒），独审无确定P0–P2；此前BigInt序列化测试错误以官方toJson修正，未删断言或冒产品RED。Capability 36805356 已推原PR12。IAM admission仍明确替身，尚非真实HTTP/Agent全链。
+
+#### B-02-FILE-TOOLS：受保护文件工具恢复
+
+Agent 唯一 writer task_b_safe_file_tools，基线2139674。先沿现FileEgress guard/aguard恢复Docker ls/glob/grep：rootfd/nofollow有界枚举、原名/路径先检查、完整文件bytes先检查后literal匹配，单次fresh Acquire与共享期限/取消归属保持；名称/遍历/结果预算及二进制/空pattern行为先在三设计收敛。写区仅FileEgress/Docker/对应测试与必要INDEX/CURRENT/设计前缀，无新依赖、wire、Schema、正常资源或Git。E2B公开list先buffer且无响应上限、commands.run强制login shell，不能直接套用为安全方案；真实E2B和公开直exec的PID/开始未知清理设计继续OPEN，不能据Docker收口B02。Root接手冻结独审与真实Docker验收。
+
+交付状态：Docker工具8文件冻结，独审无确定P0–P2；Root相邻122通过/15原marker未选，真实Docker2.201秒通过，含13次fresh Acquire、安全列举/有限glob/literal grep、完整原字节与非匹配原名拒绝及撤权，自有容器已回收。完整默认3378通过/934资源marker未选（397.73秒），未运行项不冒资源成功；最终fullRuff393/类型/lock/contract及wheel/sdist通过，Agent bfd1e9c已推原PR46。E2B公开direct exec虽有tag选择，但未知启动与迟到启动竞态、parser前预算及显式依赖决策仍待，不能据Docker关闭B-02。
+
+#### B-02-FILE-EGRESS：Custom API 原值文件出口
+
+Agent writer 负责 sandbox 的 fresh 授权与完整 bytes 检查；主控独占 Git/Root/正常资源。基线 c43fc3f，固定 Platform44fcc5d 与 DeepAgents0.6.7。Agent 三设计已先补，范围及同步/异步/取消/预算/TOCTOU/无持久化边界见其 2026-11-01 前缀。允许 execution_environment.py、Docker/E2B/archive、内聚 sandbox/file_egress.py、对应 tests/support 与测试/INDEX/当前事实；禁止 HTTP、Run/control、事件/产物展示、Owner wire、lock、正常进程。Root 接收后独审及真实 Docker 复验。grep/文件名/真实 E2B 未证不得声称整个 B-02 已关闭。
+
+阶段证据：focused108通过/6按资源marker未选，类型/Ruff/contract与sdist/wheel通过。真实Docker用本地明确授权替身验证容器资源限制、同Run绑定、fresh撤权/恢复、整文件与二进制原值拒绝、干净原字节、无环境继承及自有容器清理，1.726秒；不是正常IAM/真实E2B或对象存储全链。完整默认3354通过/1失败/934未选，唯一HTTP进程3秒冷启动时限失败，原两信号单跑2通过；保留原失败不扩大超时。独审发现E2B stream idle逐片重置导致总体deadline可能近翻倍（P2），已先RED后改公开SDK限时URL+HTTPX async整体传输期限并复审无新增确定P0–P2；并发QueueHandler日志原址净化通过，OS DNS executor不可强杀的清退越期限制如实保留。最终focused115通过/6资源未选，停写481份输入无漂移、full Ruff393/pyright0/build通过；完整3359通过/3 HTTP配置启动3秒时限失败/934未选，原3项单跑全过，不改门禁。Agent2139674已推原PR46，未合main/正常激活。
+
+
 
 更新：2026-10-23（America/New_York；沿用户重新整理的目标实施）。**本节是唯一有效目标和 TODO；历史任务顺序及“模型／工具／积分全面暂停”不再作为新计划的默认约束。** 当前已进入实施；用户已明确授权受限真实模型、工具及积分验收，验收后集中 PR merge。实施包含真实模型、低风险工具和实际用量积分结算验收；真钱支付后置。本轮统一承接全部已提出需求，Skills/MCP纳入同一交付目标，不设旧任务、交付债或另一个收尾周期。历史记录仅保留证据。
 
@@ -1241,3 +1528,714 @@ Browser
 - [ ] 若产品需要把“API 配置无效”作为独立公开 RunErrorCode，另开 Agent→BFF→App schema-evolution 切片：先更新历史父图与生成物，再升级 BFF 持久 CHECK，最后重载消费者；本轮不把这项未做的契约扩展冒称完成。
 
 本片证据：Agent `c43fc3f`（最终工作树相对既有 `c6c8073` 仅含 Custom API typed transport/failure handling 与回归测试）、App `c222b2e4`；浏览器和私有权威回读位于 ignored `var/dev/custom-api-boundary-20261029/`。默认 App 359 文件/6894 测试继续复现原有缺失 `KOKORO_TEST_REDIS_URL` 的 1 个 stored-session 套件（2 skip），本片未删断言或把该环境缺口称绿。
+
+
+### 2026-11-02 新授权完整浏览器旅程及 App 正式交付
+
+App `fe0bb6967b2962a9d5e9b88160c60d0a74bd912d` 已提交并推原 Draft PR49（34精确路径），正式配 BFF `e3b5fb759ee89523918ac06ebf3a738b4df4e346` / Platform `2cf63945feecd49f5b79c3532bbd7cbc5b70a3f8`，未合 main。独审限定 APPROVE；writer 相关8文件744PASS，Root固定artifact原3文件314PASS，lint/type/build通过；原完整contract的4个超时及全默认门历史红保留，不冒全仓绿色。治理测试原19入口列举补齐后26PASS，原18入口及顺序不改。
+
+真实 IAM 独立 Chromium context 已验证断开配置→创建全新授权→owner提交200但浏览器故意丢响应→原key/body/双CAS重放→同一新connector→重新GET权威详情→显式点击Connect→真实DeepWiki Prepare200。没有自动Prepare，也未执行收费模型/Run/工具调用。刷新、390px窄屏、关闭回焦3项通过，后继读取均200且零MCP写，真实状态“已连接”。前两次验收脚本分别误以为成功后详情不关闭、已连接overview应显示URL，断言错误及截图原样保留；修正后的回读脚本通过，不把脚本失败写成产品成功。综合证据 `B01-reauthorization-real-journey-final.json`、桌面与窄屏截图均在本机测试结果目录。
+
+固定no.git App artifact的1551个跟踪输入已逐字核正式fe0；仅Next dev自动将next-env.d.ts路由类型引用改为.next/dev，其余源码一致。原浏览器验证后只CURRENT结果段及原架构测试变更，产品代码未变。元数据 `B01-App-fe0-formal-artifact.json` 明示派生差异。正常3314/原库/其它项目进程未动；隔离候选仍60256，不能称用户正常页面已激活最新版。候选projection用途凭据与mcp-connection surface补齐后connections真实200；Storage末端尚503，下一片仅核正式Storage图标owner固定版本与最小运行配置，Task B仍进行中。
+
+
+#### B-01-ICON-ENDPOINT：正式Storage接通与图标最终隐私响应
+
+App后继 `075e75fd7de21e6e77dff89fecd32156fbf3bbe2` 已推原Draft49，保持P2cf/BFFe3和Public29；只给原Proxy exact binary GET集合加入无query、小写UUID的MCP图标路径，防Next覆盖route的no-referrer。8回归先1FAIL/7PASS，最终原Proxy/图标adapter真实HTTP/安全头3文件130PASS、scope ESLint和完整typecheck通过；独审限定APPROVE。未重跑原完整contract/default/build/E2E，不冒原全仓门消失。
+
+固定正式Storage4a990617（315源码完全等值，Prisma官方生成、584 tsc产物），同一候选库官方安装独立kokoro_storage九表5.766秒，邻居326 catalog entries前后等值。既有PG/Redis/MinIO/ClamAV在线，使用本次独立versioning/ObjectLock且无默认retention桶、独立Storage service secrets；只补候选P两个Storage键、BFF一个object origin、Web既有development-only精确loopback upload origin。正常3314/原库和其它项目服务均未动；生产CSP不改。
+
+真实IAM主路径已证版本PUT200、ClamAV Complete200、ready intent回读200、icon-only PATCH200、fresh server/刷新卡片自然同源图片200；后继原图bytes SHA/no-store/no-referrer/nosniff通过，另新draft取消200只释放新intent，server版本/原绑定保持，零server PATCH，390px通过（补验20.483秒，不是p50/p95）。先前CSP阻断、旧保存browser state失效、脚本未捕获waiter、no-store完整值误断言与实际最终Proxy隐私缺陷均保留原失败，分别恢复/修复后验证，不冒第一轮绿色。
+
+候选当前Web075e/P2cf/BFFe3/Storage4a990/IAMb9；A/runtime-artifact-current.json的1551跟踪输入与075e匹配，仅Next dev自动route类型引用派生；最新持有进程/组合见本机F/candidate-runtime-boundaries-icons.json。证据B01-icons-real-journey-final.json与icon-bound-desktop/narrow.png在本机E测试验收。B01/TaskB未整体关闭；下一步只读收敛普通Provider目录与/manage同身份最小链及已有surface/凭据purpose，不重开全仓盘点，不让未就绪外部OAuth末端阻塞独立功能。
+
+
+#### B-13-ADMIN-ENTRY：读取资格与会话代际
+
+真实候选确认当前真人非平台管理员：Product admin-access200/false，普通Provider目录200真实空态，管理403与匿名401均正确，零业务写；初次直接读取早于Shell恢复的401保留。原Admin gitlink已登记但本机目录空，当前HTTPS/SSH身份不可读；未开启无消费方的admin机器通道、未提升角色、不重建假后台。此未就绪末端不阻塞其它独立用户功能。
+
+同源读取发现侧栏原useEffect([])仅挂载一次，现App局部修复等可信准入、按subject/generation/preview退休管理投影、严格positive本人/内部manage路径及typed401原recheck。8项先RED；最终原两文件118PASS、独审限定APPROVE，真实候选普通账号菜单/回焦/390px通过。受影响ESLint/完整types结果与源码SHA随本片收据绑定；未重跑全仓门或后台正例，不关闭B01/B13/TaskB。下一独立切片为Custom API现有配置管理真实CRUD，不触发Agent/外部API执行。
+
+App局部正式提交 78337ee4bcbd1ebdf3460d22052db056a1dae653 已推原Draft49，非main；最终原两文件118PASS、scope ESLint/完整非增量types均0。候选1551跟踪输入逐字绑定78337，仅Next自动route类型引用为派生；BFFe3/P2cf/Storage4a990/IAMb9与正常3314保持。
+
+
+#### B-02-API-MANAGEMENT：当前正式候选配置 CRUD 实测
+
+Web78337/BFFe3/P2cf固定组合，真实IAM独立Chromium，创建唯一自有QA profile后UI exact详情GET200，编辑只PATCH一次后fresh列表与浏览器exact GET保持新CAS；取消草稿零写/原CAS不变，reload后权威列表及密钥空白保持，显式删除后fresh terminal列表不见本次ID。全程仅本次POST/PATCH/DELETE各一次、无违界请求，非秘密TASK_B_BASE_URL按write-only规则不回显；QA已删除。五个旅程通过，开发环境完整操作共9503ms，非p50/p95或单操作延迟。未执行第三方API/Agent/收费模型/E2B，不以配置管理当运行闭环。证据B02-custom-api-management-real-journey.json与桌面图在本机E测试验收。B02整项仍OPEN。
+
+
+#### B-02-E2B-FILESYSTEM：无进程受保护目录能力实施
+
+Agent固定bfd1e9c；原公开files.list无预算并不排除其正式底层。已核SDK2.30 Filesystem.Stat/ListDir是unary protobuf且不启动进程；采用官方生成Request/Response编解码与现有HTTPX整体deadline/先限响应再parse，固定两只读operation，使用公开envd origin/sandbox_headers，不接SDK私有pool/登录shell或新依赖。沿原FileEgress一次fresh Acquire/inspect、全遍历原名、完整文件bytes、glob/literal grep和预算；普通无provider不变。不新增Schema、Run/HTTP/owner wire或服务。
+
+唯一Agent writer task_b_safe_file_tools先更新现技术设计/API/当前事实与相邻INDEX的必要前缀，然后在sandbox/e2b_backend.py、file_egress.py与最多一个内聚metadata adapter实现；复用三原测试文件，真实RED后focused/Ruff/types/contract。Root独占Git/运行资源/独审/真实云箱。现Stat/ListDir/download是path-based，不能冒Docker原子dirfd或已解决E2B execute取消；真实模板mode/symlink含义须按官方源码/实际云箱核，未知failclosed。响应额外每RPC256KiB/总2MiB及有限请求数，原1024entries/128files/32KiB名字/64深度与8/16MiB内容预算保持。云钥当前候选/已登记运行env未找到，未断言全机没有；纯SDK替身/本地HTTP不当云箱。
+
+### B-06：已确认本地退出通知（2026-11-02）
+
+App 基线 78337，Root 唯一写入 product-auth-client、原 client/settings 测试及 auth INDEX/CURRENT；正式 ACK 删除原 hint，复用 storage 退役/重核，无 wire 变化。定向 RED 4 fail/1 pass，完整四文件初门 307 pass/1 fixture fail；正向 503 fixture 补正式 status 后，仅重跑已变原用例与 client，保留原断言。独审限定通过。真实候选旧卡片由 1 变 0；issuer 确认、自动登录/刷新竞争仍未验收，B-06 不关单。Root 继续最小交付与 Agent E2B 文件工具，不重演已过 CRUD。
+
+### B-02：E2B Filesystem 源码交付（2026-11-02）
+
+Agent bd82a7a1d5831c8f313140c893f1b95dda3e1095 已将 ls/glob/grep 接正式 Stat/ListDir 与有界 HTTPX；不新增依赖或 wire，Docker 原 dirfd 保持，运行配方闭集已消费新模块。独审有限通过；Root 当前四文件 130 pass/1 原 marker 未选（14.10s），冻结 Pyright/Ruff/format/contract 通过。真实云箱/正式授权、path-based 竞态及 execute 远端取消仍 OPEN，本片不关闭 B-02。App 本地退出通知修复 a51939c 已推 PR49；正式源1551文件候选60256一致，正常3314未切换。后继继续 B-01 四种创建→详情实际旅程，不重复已通过的 Custom API CRUD。
+
+
+### B-03 / B-04：个人技能包主链与终结拒绝（2026-11-02）
+
+复用原 Skills UI、BFF catalog/projection、Platform source/installation/catalog 与正式 Storage，候选仅补现有 workload purpose/surface，不创建新 owner、假目录或管理员权限。真实普通 OIDC 用户使用明确自有根 SKILL.md 包，已验上传、真实扫描、finalize 自动安装、fresh 权威回读/刷新；UI停用/启用保持同一来源和revision，文件树/预览及真正下载ZIP SHA与原上传相同，390宽无横溢。取消卸载零DELETE；显式卸载后owner无有效安装、刷新移除；真实目录Add重新安装，同一来源/revision的owner回读、目录Added刷新及Settings回读均通过。正向上传至刷新10709ms只是单旅程，不是p50/p95。
+
+测试初包错误采用Storage独立fixture的子目录根形状，不符合本产品入口根SKILL.md要求，正式拒绝保持；发现真实错误分类缺陷：持久IMPORT_PACKAGE_INVALID后原校验错误被映成Internal/BFF503。Platform 2ad5c9e72ce32bd7b7e8f97a6918e066fa0ad399只在持久reject成功后转已有LocalSkillImportError(import_package_rejected)，复用FailedPrecondition→BFF412→Web rejected；持久失败/取消/未知不伪装终结，不新增wire/Schema或放宽根校验。RED13/1→service14通过，Root相关service/RPC63通过；scope format/lint、完整typecheck及官方候选build通过，冻结两文件独审有限通过。已推原Draft12，未合main。真实不合格包在新源实际412/拒绝，owner GET终结码与UI查询恢复/重选通过。
+
+候选当前App a51939c / P2ad5 / BFFe3 / Storage4a990 / IAMb9；1120正式P输入无漂移、774编译输出，替换仅本次自有P进程并保原artifact/配置回滚，正常3314未动。正向导入/启停/下载证据绑定原P2cf，后继重装回读/错误分支绑定P2ad5；不拼成一次全版本全门。浏览器验收器对关闭详情、嵌入目录、搜索入口和目录刷新视图的错误假设原失败均保留；未以修改生产或重复未知写消红。E/技术方案与联调/B03-personal-skill-runtime-delivery.json汇总七份实际记录；下载handle已从公开报告脱敏。
+
+保留唯一自有QA技能供B04作者/版本旅程，其余无 他人 数据清理。B03项目精确选择、更多搜索/分页与B04作者/版本/审核权限矩阵仍OPEN；B01外部Provider/Admin、B02真实执行、B06发行者恢复及B07–15原完整范围不因本片关闭。Root组合gitlink未集成，历史完整门失败继续保留；下一步沿已有本人版本替换、撤回与恢复入口交付，不重新全仓盘点。
+
+
+#### B-04：作者第2版发布与用户显式安装升级（2026-11-02）
+
+当前固定App a519/P2ad5/BFFe3/Storage4a990/IAMb9真实普通用户旅程：作者managed/history读取后创建第2版、真实包上传/扫描校验/发布成功；原已安装版本保持第1版，未隐式升级。后继安装更新先取消零命令，再单次显式POST200；同一安装fresh读第2版、刷新保持且更新入口移除，文件预览与UI真正下载ZIP SHA均绑定第2版上传包。两份当前记录B04-personal-revision-two-published-real.json、B04-personal-explicit-version-upgrade-real.json在本机测试验收目录。未改生产源码、未重复发布、未撤回/恢复/删除，B04全项与Root组合继续OPEN；正常3314仍未切此候选。
+
+
+#### B-07：设备错误可见与 GET 恢复（2026-11-02）
+
+App7fc8a6e6已提交推原Draft49：首次/分页失败从仅sr-only改现共享Alert可见提示，保原部分列表、GET重试与未知DELETE核对围栏，不改wire/Schema。RED2失败/5通过；组件及原hook19通过，scopeESLint、完整非增量tsc通过，冻结两文件独审无确定P0–P2。1551跟踪输入候选已逐字绑定新提交，仅Next自动route类型派生；真实登录UI注入一次读503，1280/390错误可见无横溢、Enter重试真实GET200，零账户写。原完整门缺口保持，正常3314未切换，B07不整体关闭。
+
+#### B-04：撤回、历史内容恢复与新版本安装（2026-11-02）
+
+当前App7fc8/P2ad5/BFFe3/Storage4a990本人真实UI：取消撤回零写，显式撤回v2一次200、owner/status与history publication同证；fresh撤回后CAS从历史v1包新建并发布v3，取消恢复未创建版本。新v3不移动原v2安装，后继显式更新原安装至v3一次200。原旅程额外刷新后GET遇真实429/session_rate_limited，保留失败，不重放生命周期命令；后继独立fresh读同一v3 active、文件预览及UI下载SHA与原v1相同，零生命周期写，仅下载句柄POST。不能合成原单次全绿。
+
+当前自有QA task-b-qa-8e4ecca4的source为skill:5740b195-ea97-42e2-877e-cc7659aeb19f/revision3，同一installation enabled/installed true。B04-personal-version-lifecycle-delivery.json分别链接原429与后继readback证据；历史与已安装pin不是同一事实。英文恢复3条文案当前fallback中文，正补现有locale；管理员/跨租户权限、分享/删除/审核等仍OPEN，未冒全B04或TaskB关闭。
+
+
+#### B-10：会话分享当前状态只读链（2026-11-02，实施中）
+
+已核当前App/BFF只支持POST创建与DELETE撤销，打开/刷新无精确metadata读取；已分享列表没有share_id，不能替代或再POST冒读。BFF沿原conversation/project owner事实新增同资源GET：合法会话data.share nullable，active字段仅share_id/created_at/expires_at；原权限统一404，故障不冒null。现budget/signal单SELECT/LEFT JOIN，不写receipt/outbox/过期清理、无Schema或新owner/授权。允许一个具名build/test-only有限逆证明承接additive GET，原Public29 bytes与ordered200摘要保持。
+
+BFF e3b5基线由task_b_api_postgres唯一writer实施原port/query/service/route/OpenAPI/相关测试及必要文档；Root唯一Git/集成/运行资源。owner交付验证并固定提交后App才更新精确artifact与ShareButton只读打开/刷新回读，保零发布、显式create/revoke与身份代际。E技术方案与联调/B10-session-share-read-closure.md记录已核生产/消费链与实际验收边界。未交付/未验，不因计划写入关闭B10。
+
+#### B-04：恢复弹窗语言已交付（2026-11-02）
+
+App6b8988611f2581f0f86e52cf57bedf2b452c009f已推原Draft49，补8个现有非中文locale各3个历史恢复键；不改生命周期、中文或安装版本。原resolver定向29通过，精确ESLint及writer完整非增量typecheck通过；候选1551正式输入逐字核对，真实英文历史恢复弹窗/390宽无横溢，取消零hub写，不创建v4。B04-history-restore-locale-delivery.json与-language-browser.json保存范围；原429旅程不改写为通过。当前Web60256绑定6b898861，正常3314仍未切换，B04全范围保持OPEN。
+
+
+#### B-10：会话分享状态回读子链交付（2026-11-02）
+
+BFF2e737cad9649460dc477fc7d96ba593783fef619已推原Draft17；沿原owner提供GET，Public29.1/201有限逆证保原29与ordered200，正式机械投影固定canonicalSHA。188相关、37架构、9最终契约及Node22独立正式构建通过；真实PG/Redis单选4.11秒通过，明确IAM admission替身。原过期fixture约束失败保留，仅修本人造数。
+
+Appa0a97845ac2f5aee73fd73f374f38f36f0f8a1d4已推原Draft49。独立投影消费/原client与同源adapter、打开/重开/focus只读、命令后权威GET、身份/代际/范围退休接齐。审查修复旧复制跨窗口/新分享影响及Copied效果被无关重渲染触发的抢焦，原RED保留；145相关初门之后，最终48分享组件、ESLint/非增量tsc通过，v3独审有限批准。
+
+正式候选App1557输入/BFF1141输入与1082编译输出绑定上述提交。真实OIDC同一无私密QA会话/原分享：刷新恢复、9次只读零写、受控503→真实200重试、键盘/390宽通过；另一标签撤销后重开权威null，显式后继分享/撤销、匿名页面不可用通过。公开页实际HTTP200呈不可用，不冒页面404；新QA会话为明确owner-table测试准备，不冒UI创建或真实Run。原首次创建验收器CDP取body失败与全局alert断言失败均保留，只核同资源/修精确弹窗oracle，不重放未知命令。最后通过现有owner API软删本人QA，metadata404/列表无该项；保原Skills v3不动。
+
+暖打开5样本中位230.25ms/观察95th870.55ms，首次本次页面至链接3666ms；Next dev小样本，不冒稳定生产分位或100ms达标。E/技术方案与联调/B10-session-share-runtime-delivery.json给逐项范围。当前组合F/candidate-runtime-boundaries-session-share.json；正常3314、main与Root混合gitlink未集成。B10项目/Skills分享ACL及全TaskB仍OPEN，后继回到B01/B02未闭末端与A的当前运行配对，不重复已过分享CRUD。
+
+#### B-11/B-12：正式运行与结算配对（2026-11-02，进行中）
+
+候选复用原同一应用数据库，新增正式Agent/System/Billing各自schema，未新起实例/应用库/角色。按BFF正式pin加载System845cf46b、Billing23ff7199及IAMb9a63c53；独立用途凭据、Agent proof/JWKS、Docker与模型路由已配对。真实管理入口创建合成QA费率/政策及非现金100积分，随后通过正式IAM CAS恢复普通用户，后继App回读platform_admin=false。该费率不是生产供应商报价，不冒真实付费充值。
+
+真实App发送→BFF→Agent→本地Qwen暴露两项确定缺口：LiteLLM尾帧形状原观察器漏usage；合法unsupported-profile/known-totals证据被旧数据库CHECK拒绝，seal回滚后只能保存unknown终态。Agent773cb1e/c1bb1ab分别保守兼容可信尾帧及严格冗余text、修canonical CHECK；不补cache/reasoning零、不丢未知分类、不回填旧attempt。Root保留原失败及一次误载旧PYTHONPATH记录，原4笔未知结算预占共40 QA积分未人工释放/改账。候选单一CHECK已按canonical修复，四份evidence/ACK字节前后完全不变；没有重跑fresh installer或修改正常3314。启动预期CHECK指纹遗漏由安装测试RED复现后精确同步，比较器不放宽。
+
+当前已验：观察器相关157通过；真实PG预算/证据22通过；完整安装/漂移拒绝加预算55通过；Ruff/format、完整Pyright、contract与wheel/sdist通过。完整默认本次3437通过/3时限失败/942未选，首次3416通过/7时限失败后相关10定向通过，不能合成单次全绿。资源门888通过/5失败/34环境错误：包括未配MinIO、明确disposable显示库及admin URL缺口和原native并发/时间断言；原日志保留，未关闭该门。上述3项时限失败的相关7项后继定向通过，仍不合成单次全绿。
+
+Agent b467b5c 已推原Draft46并加载精确源码/独立venv。真实普通账户新Run实际完成：2050输入/5输出/2055总tokens、partial且supported；同attempt按合成QA费率capture3/release7，用户账本-3，余额available57/held40。本人页面显示最终TASK_B_LOCAL_OK，刷新仍在，parts GET200且零业务POST。原首次snapshot404/session_not_found与后继只读恢复200分别保留，不冒一次无竞态全绿。ordered消息content=null沿正式parts读取，不把正文空指针当模型失败。新结果不改变原4笔40积分待核对。
+
+本机E技术方案与联调/B02-B12-current-real-run-pairing.json链接分离证据；全TaskB、B02真实Custom API与E2B末端、正常3314/Root/main组合仍OPEN。下一步单个自有QA Custom API从实际Composer选择到正式Describe/Acquire和Docker执行，不重演已过CRUD。
+
+
+#### B-02：正式 Custom API Docker、隔离与取消（2026-11-02）
+
+Agentb467候选真实普通UI保存/Composer选择，消息POST202只传profile_id+expected_state_version，正式Describe/Acquire到Docker execute exit0，动作详情刷新后能读真实输入与TASK_B_API_PRESENT；容器终态清理completed且已不存在。第一次配置故障为worker PATH漏/usr/local/bin，Describe成功但模型调用前assembly失败，修候选启动配置而非改业务；原失败保留。后继新配置的另一个Run实际输出TASK_B_ISOLATION_OK，原变量缺失/本次变量存在，workspace不同；小模型转入无关ask_user_question后单次UI取消202，页面Stopped、Agent真终态与清理completed分别确认，未把202直接当完成。
+
+两Run分别3次真实模型调用，按合成费率capture10/release20、capture12/release18；当前available35/held40，原4笔未知预占不改。第一个模型最终答非所问，第二个转等待，两者不冒正常完整回复旅程全绿。本机literal canary在本人Run/dispatch/message/tool journal及native checkpoints、四份运行日志未检出；该单检查不证明任意编码/网络/文件外泄安全。本人API名称CAS从v1到v2后，原会话历史pin v1保留，当前Composer旧pin清空零业务写；取消删除零DELETE，后继显式删两QA配置各200、fresh GET404、列表空，保留别人MCP与Skills。
+
+E技术方案与联调/B02-current-formal-docker-execution.json分开链接原观察器与后继只读/取消事实；首次创建/确认按钮定位错误保留，不以重放未知命令修绿。完整E2B、多配置/跨账号/撤权与全TaskB仍OPEN；正常3314/Root/main未集成。
+
+
+#### B-01 / B-14：API 文案与图标弹窗回焦（2026-11-02）
+
+App f6b26d77 补Custom API详情与共享图标弹窗中英文，中文原文/命令/密钥只写行为不变；113相关、精确lint与非增量类型通过，主方新增英文2项复跑通过，独审限定通过。实际英文1280/390弹窗文案和无横溢通过，同时稳定观察发现取消回焦落BODY/错误INPUT。1ac805bb最小补原Upload/draft回焦围栏，原取消/Escape先2 RED、原组件24通过，主方4相关通过/20未选，精确lint/非增量类型和两文件冻结独审通过。真实候选1280/390取消均回Upload、零业务写；原标题oracle与last()重绑定错误独立保留，不冒产品故障。
+
+两提交已推原Draft49，候选1557输入绑定1ac805bb（仅Next派生类型引用例外），正常3314/main未切。纯局部片未重跑全仓门，既有全门失败与其余Task B范围保留。E技术方案与联调/B01-api-locale-and-icon-focus-delivery.json给有限范围。后继补普通Provider个人连接名称/说明编辑入口：合同已有，复用原exact GET、CAS与management恢复，不改Provider目录字段、不新owner或wire。
+
+
+#### B-01：Provider 个人连接编辑与当前文案交付（2026-11-02）
+
+App2b98f632已推原Draft49，复用已有update_connector/CAS和原Editor：普通Provider详情显式编辑个人名称/说明，fresh exact GET后才可保存，失败可见GET重试；不改共享目录字段。相关156、主方11定向、scope ESLint/非增量tsc及冻结独审通过。真实普通IAM用户一次UI PATCH200后原CDP取body观察器失败，未重放写；后继fresh GET确认v2改名/清空说明、目录不变，刷新一致，取消零写/原卡片回焦、390px/Escape通过。初次未等准入401与正确等待后200分别保留。本人fixture disabled/unavailable，只验metadata、不冒可执行能力。
+
+候选追加原mcp_admin专用服务凭据/表面，P/BFF精确源码不改；IAM原生CAS短暂QA角色仅供正规本人Provider准备/清理，个人UI操作前已恢复普通角色。本人两连接已撤销，Provider正规删除fresh404，角色恢复false/v8；没有待恢复权限、不冒管理GUI成功。App e928ecd3补详情管理文案中英，中文逐字保持，命令不变；105相关初门、修正测试查询类型后新用例和Root各1通过，scope lint/非增量tsc及独审通过。候选1557输入绑定e928ecd3，正常3314/main未切、Root混合gitlink未集成。E技术方案与联调/B01-provider-personal-metadata-delivery.md分离实际证据。后继修目录成功后无刷新入口与团队翻页失败无首页恢复入口；B01/TaskB保持OPEN。
+
+
+#### B-01 / B-09：只读恢复与正式角色权限契约（2026-11-02）
+
+App9f3d9503补团队incompleteRead的原GET-only恢复按钮；35相关、Root2定向、scope lint/非增量tsc和冻结独审通过，已推原Draft49。App4ebcb870补目录成功态刷新，广场/弹窗均复用原GET；无筛选更新shell首页，有筛选保query/category从首页替换，保卡片/禁旧更多/按实际失败cursor重试。87相关、Root7定向、scope lint/非增量tsc及7路径独审通过，已推；候选1557输入绑定4eb，真实只读刷新/390验收进行中。正常3314/main未动。
+
+真实团队读members200/roles502，原生错误bff_bad_response，不能仅当超时或以更宽string绕过。已核IAM正式内置角色含delete_series，BFF内部IAM reader已更新（先前认为它缺失为只读截断误判，已纠正），但BFF Public TeamRole.skill与App旧SDK/runtime闭集未同步。采用owner正规29.2追加该已存在动作、严格有限逆恢复29.1再沿原29/双父proof，原201inventory/历史oracle不改；不另建Team投影。BFF提交固定后App才更新唯一完整snapshot、12原生成入口provenance与正规输出，原schema只增正式action，unknown action仍严格拒绝。Root唯一Git/运行集成，BFF唯一writer task_b_read_review、App后继唯一writer task_b_safe_file_tools；不改数据库、权限授予或新owner。该契约片及真实团队回读未完成前B09不关闭。
+
+
+#### B-09：真实团队角色502与翻页恢复闭环（2026-11-02）
+
+BFF8ae73fde已推原Draft17（local feat/task-b-owner-closure，remote原head codex/noncash-credit-funding，未另建PR），Public29.2仅补IAM正式delete_series，严格完整inverse承接29.1/29与原双父；201inventory/SQL/旧oracle不变。11契约+11Team读及Root11、正式build/type/lint/format/semantic201通过；原Project regex负控在精确2e基线复现失败保留。候选1142源/1082正式编译已核，新独立源码沿原配置启动ready200。
+
+App59edbe91已推原Draft49，唯一fullsource固定8ae、12原recipe和原share投影正规消费；runtime schema仅增该正式动作，未知仍502。79Team/493完整契约/50架构/13recipe、scope lint/非增量tsc与66路径独审、Root5定向通过。首轮7失败是新test-only helper说明缺原drift分类词，仅修说明，旧负控/hash不动；最终全契约通过。1559候选源精确绑定59ed。
+
+真实普通IAM团队成员/角色/邀请均200，原roles502消失。只读注入真实成员页cursor+匹配400（未造成员行/写owner）后原行保留，显式无cursor首页GET826ms恢复，零业务写，390px无横溢。E技术方案与联调/B09-team-role-and-cursor-runtime-delivery.json汇总范围；不能据此关闭完整B09/TaskB。目录刷新真实8读/1280/390及观察器原失败分离见B01-provider-refresh-delivery.json。正常3314/main/Root混合gitlink未集成；下一步继续B01/B13现有管理入口真实闭环与未闭末端，未重复全仓门。
+
+
+#### B-03 / B-14：项目技能精确安装、默认选择与可见读取恢复（2026-11-02）
+
+App227a6ac4已推原Draft49，普通初读/搜索/分页失败不再隐藏提示，复用原GET-only reload；保旧卡片禁写、pending原key恢复及准入围栏。3 RED到presentation8通过，相关hook15通过/33未选，Root5通过/3未选，scope lint/非增量tsc0，有限独审通过。三路径冻结含原INDEX说明，候选1559源绑定227a。未重复全仓门，正常3314/main/Root未切。
+
+真实QA项目只创建一次，既有本人Skill安装为独立项目安装，精确source_ref/revision3；一次POST安装200和一次PUT默认200，刷新后原installation_id保持。原生GET为data数组、revision字符串；首观察器错认结构保留，后继只读明确核准。SKILL.md真实文件渲染，实际ZIP266B（SKILL.md215B）下载成功；关闭未保存默认草稿零写，注入一次网络读失败后可见错误，GET重读864ms恢复，390px无横溢，后继零写验证通过。下载为正式POST签发；首观察器把此显式动作计入全局零写的假失败保留，未重放下载。
+
+启动缺口为候选System站点不存在导致manifest404，沿原system-admin启动身份/native site+policy+config+application+feature exposure补齐，未改IAM角色/DB直写/前端绕过；保存true但未expose仍false的原生保护实际保持。入口出现后才能验项目Skill。E技术方案与联调/B03-project-skill-exact-runtime-delivery.json区分配置、命令、只读与原观察器；项目resources503及真正Run加载不冒通过，完整B03/TaskB仍OPEN。
+
+#### B-09 / B-10：真实双账号团队与真实任务分享（2026-11-03）
+
+App a9aa4a59 已推原 Draft49，按 IAM 正式 create/resend 与 cancel 的不同动作分别控制邀请按钮，不改变角色或服务契约。两项 RED 到原 TeamPanel34/权限4 通过，Root2定向、scope lint/非增量类型及停写独审通过；候选1559源精确绑定。普通用户通过实际现有本地SMTP收到邀请与验证邮件，原生注册、邮箱验证、接受邀请及OIDC成功，双方回读相同成员。不是互联网邮箱投递。成员无邀请管理权限；升admin后可读邀请，再降member，同一产品会话立即403，刷新管理按钮消失。取消移除零DELETE，显式移除本人QA成员200后原会话团队读403；重新邀请、重发保持同ID、撤销后接受页404。QA成员/待处理邀请已清理，无临时admin待恢复，验证过的测试账号保留。E/技术方案与联调/B09-two-account-invitation-and-role-runtime-delivery.json含最终清理，不再沿用中途“成员待移除”状态。
+
+实际Agent任务会话分享打开零发布，显式创建200、复制一致、刷新回读原链接，匿名正式snapshot200且无execution_head/私有工具过程/parts。首次peer旧session401被观察器误判为非预期，原记录保留，不重放创建；后继原生重新准入同一主体，私有metadata404，公开链接200。取消撤销零DELETE，显式撤销一次200，fresh metadata为null、原匿名链接404，发布fixture已清理。E/技术方案与联调/B10-owned-real-session-share-runtime-delivery.json分离证据。Skill分享仍缺既有DELETE的Web消费，正沿正式29.2 ACK/原creator边界补确认与未知恢复，不造匿名权限；项目分享/完整跨租户矩阵与全TaskB仍OPEN。
+
+#### B-05：项目默认技能实际 Run，明确加载与模型使用的差别（2026-11-03）
+
+普通UI发送仅project_ref、未传selected_skill_source_refs，BFF message/outbox与Agent request精确冻结同一项目默认source。前两次独立新任务在模型装配前model_unavailable/0模型attempt，源于原生60s健康鲜度；第二次真实probe/CAS后冷页面准备使resolving已65.717s，原失败保留。第三次将真实probe/CAS置于页面准备后，POST202，native durable Ready的source/revision字符串3/完整/.skills/…/SKILL.md一致，真实包已校验加载。
+
+本地小模型实际read_file只传SKILL.md，读取根路径 /SKILL.md 失败（错误原文以证据为准），完整技能路径从未尝试；随后多次无关web_fetch，终态internal_error。不能冒精确路径路由故障，不加不安全fallback，不称模型真实阅读成功。六次attempt均sealed，五次completed/normalized/partial、一条unknown/unresolved，存在financial ACK时间不等于已核最终账。后继只读确认已终态，未发cancel；balance上下文401不改写为成功。E/技术方案与联调/B05-project-default-skill-real-run-delivery.json逐条链接原证据。B05成功正文使用、长期健康上报、最终结算及完整TaskB保持OPEN；先交付已明确的Skill分享撤销consumer，避免重复模型试跑消耗。
+
+
+#### B-10：Skill 原分享链接撤销消费与真实空 DELETE 修复（2026-11-03）
+
+App14020f88接正式29.2 creator-only DELETE，详情只管理当前主体显式Create ACK，缓存复制前Resolve，取消零写、pending禁重；未知仅GET原ID，不自动复制或重发。主体/资源/窗口退休拒迟到结果，硬刷新须显式分享取得本人ACK，不造listing。70相关、Root11、scope lint/非增量类型和11路径有限独审通过并推原Draft49。真实创建201、精确v3摘要、匿名仍须登录、取消回焦/390宽通过，但首次实际DELETE400保留，原链接未替换。
+
+官方NextRequestAdapter实测将无framing、零字节DELETE包装为非null空流；原GET式body对象检查误拒，并非已证浏览器自动CL0。24c9638a最小四路径仅使revoke走既有download的10秒/abort受限读取：CL缺省或规范0、禁TE，必须真EOF零字节后才向owner转发且不带body/framing，GET仍严拒。27 focused与Root9、scope lint/非增量类型、冻结独审通过，已推原Draft49并精确升级1559候选源。
+
+原share_id先GET200，再由显式管理动作取得同creator/source同ID的active ACK，单次确认DELETE200、严格ACK UI显示停止、fresh GET404、原登录分享页不可用，publicationCleanupRequired=false；没有用新链接替代原链接来冒成功。390宽左右16/374无横溢。E/技术方案与联调/B10-skill-share-owned-revoke-runtime-delivery.json链接原失败和后继同链接验收。当前候选Web60256=24c9638a/BFF60259=8ae73fde，正常3314/main/Root混合gitlink未切。完整B10项目/跨租户矩阵、全仓未闭门与全TaskB仍OPEN；后继继续普通账户设置而非重复分享流程。
+
+#### B-07 / B-11：默认模型目录随登录身份退休（2026-11-03）
+
+App70208355已推原Draft49，原ProjectReadBoundary传入现chat preference；缺正式身份不请求，preview/admitted/subject/generation变即清退旧目录、取消原signal/计时器、退休旧Select portal，迟到响应/旧选项回调不能写。原设备级草稿、localStorage与保存失败重试保持，不新造账户owner。SET25先7FAIL/6PASS，修后13PASS；Root3/164未选、scope lint/完整非增量types、四路径冻结独审通过。候选1559源精确绑定，正常3314/main未切。
+
+实际普通浏览器目录200/一模型，精确selector保存、刷新仍在，390px无横溢，原headless本机偏好已恢复，零服务端业务写。首单次错误注入未观察到预期503/错误提示的harness失败原样保留，不推断产品缺陷；后继有界持续依赖故障实际503及可见错误，显式GET重试真实200/约253.5ms，原abort分别记录。该单样本不是稳定分位或100ms达标；身份退役是组件负控，不冒真实双账号该设置验收。E/技术方案与联调/B07-B11-model-identity-runtime-delivery.json分离证据。下一步只读逐笔核对原4条unknown QA预占，不改账、不重跑模型；完整TaskB active。
+
+#### B-12：原四笔与技能 Run 六笔实际核账（2026-11-03）
+
+有界只读分别核Agent/Billing repeatable-read快照，不冒跨库原子一致：原四笔v2–v5各10仍pending_reconciliation/active hold，cap/release均0，无usage_event/settlement；原evidence与ACK完全不变，无合法后继usage，不能重送旧ACK冒已知或直接释放。后继项目Skill v3唯一Run六个不同call_id（各attempt_ordinal=1，不冒六次重试）前五笔normalized/known_nonzero/partial，owner实际capture3/4/4/4/4共19、release7/6/6/6/6共31；末笔unknown/incomplete_response保留10。身份/证据digest/ACK金额及正式usage/settlement refs逐笔对齐，未补缓存零或重算费率。
+
+当前同一QA账户权威available6/held50，held50=原四40+末笔10，不是又扣50。真实普通浏览器Credits余额6/50、summary/ledger均200，完整ledger13条且next_cursor=null，五个已结算usage_event各精确对应唯一-3/-4/-4/-4/-4 journal；390px无溢、零业务写。首次harness误把fetch Response.status当函数的失败保留，修观察器后仅重读，未改产品代码或重放命令。E/技术方案与联调/B12-current-credit-ui-read-delivery.json链接两份逐笔报告与实际UI证据。所有费率/积分为既有合成QA，不冒支付或生产报价；五条unknown处置/真实政策及全TaskB仍OPEN。后继继续B08个人知识/记忆的真实owner与设置闭环，不重复模型试跑。
+
+#### B-08：个人知识真实CRUD与后继Run材料接线（2026-11-03，实施中）
+
+App702/BFF8ae现资料四字段、个人知识CRUD和usage事实都归BFF本人表；Agent长期记忆另走可信namespace/PgStore，Mori是Music，不能误起服务。真实普通UI自有知识同ID创建201/rev1、更新200/rev2、刷新保持、取消编辑/删除零写、删除204/fresh404，usage前后一致，390无溢、fixture已清理；报告B08-owned-knowledge-crud-runtime-delivery.json。初次只读Add探针误用标签，其false lookup不是按钮disabled，后继实际Add操作已证。当前UI“任务应用待接通”仍真实。
+
+已证缺口：BFF launch/Agent strict RunRequest没有个人材料slot，保存不代表后继Run使用。两owner D0及Root实施裁定在E/技术方案与联调/B08-*-material-context-d0.md和B08-root-material-context-decisions.md。Agent b467原分支由task_b_safe_file_tools唯一writer先发布8.11 optional个人材料/旧omission fence兼容、可信human actor/tenant绑定、实际模型装配、原窗口/计数器预算拒绝与private trace门；BFF task_b_api_postgres等待owner固定提交后再正规SDK消费/原消息事务单SQL快照。Root唯一Git/服务/配置/计划writer，task_b_read_review有限设计独审。无新增知识表/服务、不挪trace/content/Skill/project字段、不静默截断，不放大原1MiB，超界须明确失败/无无限假queued。新Run含regen读新设置，同key/outbox重投原冻结；scheduler等其它admission面后继独立OPEN。原SDK压缩不保证巨型system可压，run_token_budget不是上下文帽，Langfuse原始prompt callback不能忽略。尚未实现/固定或真实新Run验收，不冒完成；QA余额6/冻结50，实施阶段零模型/改账/充值。
+
+App d98abda1已推原Draft49并精确升级候选1559输入，仅7行隐藏知识编辑/删除弹窗遗留的上一笔Saved，列表成功与当前unknown/conflict/error恢复保留；原面板8通过、scope lint/非增量types0、三路径停写独审通过，未加镜像测试或为显示改动再重演CRUD。B08-knowledge-dialog-feedback-delivery.json给范围。Agent8.11仍独立实施，BFF未提前消费。D0独审P2自动LangSmith/Debug内容回调旁路已通知writer；真实actor.opaque_ref可绑定个人owner。BFF首次413本已有not_admitted→failed/RUN_ERROR，先unknown的sticky恢复安全围栏保留。完整HTTP body即payload.launch，身份走header，可在原queued前按正式SDK实际序列化字节和owner1MiB metadata拒界，拟正规personal_context_too_large/413；App原pending保body/key、不自动发送，不能冒已恢复editable draft。
+
+Agent B08 30ce29a6、BFF 1e6765b3与App 38d2f6cd已提交推送原Draft46/17/49，候选Agent60261/worker、BFF60259、Web60256按精确已提交源升级并健康；正常3314/Root/main未切。Agent v2离线wheel+sdist重建成功，231生产模块及530源输入字节核一致。BFF v2独审APPROVE，63相关/37架构/201语义、18SDK生成与lint/build/types通过；Root同实例独占临时PG库真实B08两旅程及failure CHECK evolution一旅程通过，fixture库已删除；候选原库正式check→apply→check=current，1145源/1084编译产物核一致。App 77路径独审APPROVE，13原生成链、190受影响契约、67 UI/原请求恢复、50架构及scope lint/非增量types通过；1560候选源输入核一致，A发送状态未改。真实普通UI创建一条知识/开启→新消息202→正确本人材料被冻结→Agent context_window_exceeded→普通原会话刷新200正确显示超限、零自动重发；原瞬时排队观察不冒持久界面故障。网关local-qwen显式num_ctx4096，System对应context4096/maxout512，完整提示超限在模型计费准入前拒绝；该Run原生Billing admission=0，不能称知识已参与模型回答或on/off成功。20非现金QA测试积分经正式BFF发放，native IAM临时管理员8→9→10立即撤回；当前26available/50held，原unknown50未改，测试知识已删、usage恢复false/rev2。首次全表facts隔离不足、Agent probe漏Bearer及只读定位器歧义等原失败保留，未重放业务写。B08-real-material-run-read-audit.json、B08-app-final-independent-review.md等在E/技术方案与联调。模型容量适配、成功on/off、动态/scheduler及全TaskB仍OPEN，知识待接提示未提前移除。
+
+
+#### B-08 / B-11：模型窗口与首发偏好更正（2026-11-03）
+
+共享 LiteLLM local-qwen 配置实际 num_ctx4096，候选 System 曾误登记为16384；独立直接Ollama 16K/no-thinking模型另建，未改变共享网关。此前完整工具请求 UNKNOWN 不足以证明模型不会使用知识。Agent 最终边界重复注入 b636879e 缺乏依据，已用849f668撤回并推原Draft46，39项相关测试通过；Root旧gitlink尚待正规组合验证，不冒已同步或已合main。Root Draft67已改正模型能力与Admin“仓库不存在”的过度结论；当前访问Repository not found只能证明现身份不可读。
+
+v24真实Run在装配阶段 model_unavailable，原生模型attempt=0，requested_model_label=null；原fixture已清理。定位到Web首次异步准入后丢失已有模型偏好，新增真实engine首发回归先红，最小3行修复后84相关通过，定向lint/完整非增量tsc通过。仅测试选项undefined与strict类型冲突已修，不改运行contract。Web60256此时是38d2f6cd加该单文件未提交overlay，哈希已登记；v25首条真实UI发送已包含独立16K raw label，模型最终回答与on/off仍待确认。未重演全部工程门，正常3314/main不切，不称完整B08/B11完成。
+
+候选Billing曾经合成QA充值单位误用造成超额余额，不能沿用前文26available/50held等旧快照；不得为“修绿”直改账本或处理原未知冻结。当前独立16K费率与50积分单attempt上限仅为合成QA测试政策，非生产报价/支付。后继须逐笔以当前正式账本核对。
+
+
+v25后继终态：首条请求已正确带独立16K label，Agent同值冻结，原生一次模型attempt为observed，usage execution_outcome=completed / normalized / known_nonzero / partial，financial ACK已回。Run后续internal_error，不是上游零attempt或知识成功回答；开启/关闭对照仍未通过，关闭腿未发送。页面观察169.635秒不冒模型纯耗时。自有知识删除/usage恢复均确认，cleanupRequired=false，无待恢复权限；未重放原message。BFF余额从19999985000000降至19999973000000 micros，原70积分冻结保持；12积分为合成QA消费，既存超额发放未直改。后继定位当前已完成模型调用后的Run收口异常，避免继续盲换模型或重复充值。
+
+v25 typed checkpoint确认MODEL_BUDGET_UNAVAILABLE；Agent局部修复将3个固定财务unavailable映射dependency_unavailable/false，已确认pending ACK仍独立，不新增重放。client默认5→10秒仍单发送/有界取消。4项先红后绿，4相关文件184通过/4原marker未选，Ruff及显式Python3.12 Pyright通过；App首发偏好84相关通过。8个源/测试路径停写限定独审APPROVE，无确定P0–P2，完整owner门未重演。
+
+候选单文件App overlay及两个Agent生产文件overlay均记精确SHA，不能冒称已提交组合。v26真实首发仍正确direct16K，唯一模型attempt observed且usage completed/normalized/known_nonzero/partial；Run失败原因为MODEL_SETTLEMENT_UNAVAILABLE，财务ACK稍后恢复。BFF当前无显式timeout配置，实际默认5秒，不是此前误认为的实际10秒；延长Agent期限未解决该末端，未发送关闭腿或重复模型。cleanupRequired=false，自有知识删除/usage恢复；保留原失败receipt，下一步沿该结算原identity与owner链定位，并推进独立功能，不再盲发v27。完整B08/TaskB保持OPEN。
+
+两片已分别提交推送原分支：App f078d98d、Agent cfd1fccc（包含849f668撤回），工作区干净。正常3314未切；候选运行仍按上述overlay取证，不能把提交动作冒成全候选源码一致性验证。仅用v26已经ACK的原event/原幂等key，通过正式BFF重读同一结算回执212.4ms、captured，Agent原sealed evidence/ACK逐字未变；没有新reserve/provider/model，不把该单次无模型负载样本冒p50/p95或首结算性能修复。
+
+System原LiteLLM标签经fresh版本7与已发布4K revision核对后，正式CAS PUT200恢复实际context4096的旧精确revision；版本8，原visible/default/priority保留，独立direct16K与共享网关未变。旧错误16K快照及合成QA费率历史不改写，后继不能继续使用错误窗口宣称成功。实际Admin权限、13条兼容边、全owner门及完整TaskB仍未闭，不合main。
+
+#### B-14：设置竖栏方向键与窄屏布局配对（2026-11-03）
+
+真实桌面column但aria-orientation固定horizontal，↓不切换，新E2E先红。原rail ResizeObserver/reveal回报实际CSS方向给同一Tabs root；不加断点、第二套导航或手写方向键。桌面↓/↑、390px→/←、回桌面焦点与选择E2E6.1秒通过，原更多菜单/深页可见项/缩放/侧栏回焦旅程11.6秒通过。候选三生产文件按HEAD字节核对后覆盖，仍为登记SHA的开发overlay，不冒整体源码精确组合；正常3314未切。
+
+最终原设置组件167通过69.76秒，定向ESLint/完整非增量tsc通过，六路径停写只读审查APPROVE，无确定P0–P2。首跑165过/2失败及隔离复跑1过/1失败是旧模型测试在目录ready前点击disabled；仅等待enabled后全文件通过，未放宽断言/时限。浏览器旧auth观察失败、嵌套tablist观察器及私有setup重复Playwright安装原失败保留；原生/login刷新、定位实际nav、同一安装后验证通过，未改认证代码。完整owner门/视觉同态对照与全TaskB仍OPEN，后继继续账户头像与正式owner支持边界核实，不再发送模型任务来刷成功。
+#### B-07：原 IAM 头像信息的账户页消费（2026-11-03）
+
+App2286cce8 已推原功能分支，沿 IAM 已有 `profile`/`picture` 及原同源资料读补可选 HTTPS 头像；无新 owner、上传、图片代理或持久化。保持原 subject/代际退休，匿名/no-referrer，坏 URL 或图片失败回落首字母，不损姓名资料。定向回归先红2/75，修复后三文件100项通过，scope lint/完整非增量tsc通过，九路径有限独审APPROVE。后台浏览器原生资料200（本人QA无图片）和明确fixture图片加载/失败、390px无横溢分别记录，零账户写入；不冒真实用户图片或上传验收。E/技术方案与联调/B07-account-picture-delivery.json 绑定原始测试、独审和四文件候选overlay。正常3314/main不切，完整B07及TaskB、既存B08结算末端和组合门禁继续OPEN；已通过不变验证不重复。
+
+
+#### B-15：日常3314切换当前App与保数据BFF/System（2026-11-03）
+
+日常3314已从旧归档切至App2286cce8当前checkout开发源，保原正常IAM登录、用户/租户、BFF数据库、Redis与上游地址；不是切换到隔离QA环境。后台Playwright通过正常原生准入后，完成本人测试账户姓名保存→权威回读→刷新保持→未保存离开不写→原名恢复的真实旅程，两次PATCH200，cleanupRequired=false。17个设置入口面板可见，390px无横溢；只证明导航/布局，不称所有页面服务可用。导航暖缓存5样本的p50/p95约120–170/172–201ms，包含自动化观察，不是冷启动、数据就绪或100ms目标通过。
+
+正式BFF5cb4a293完成独立正常快照恢复演练，8个原生演进check/必要apply/check均成功；随后原旧BFF优雅drain、最后一致备份、原同一kokoro_bff schema执行已验演进。32→34表，全部32张原表旧列逐表行数/排序行值摘要升级前后相同。原Project/偏好/知识/RSS/幂等与5条scheduled outbox均纳入保护，未换库/钥匙或删旧行。旧runtime与两份备份保留，自有演练临时库已精确识别、无连接后清理。新55838健康/就绪均200，Agent保持false。
+
+按BFF正式System6.1 pin使用845cf46b，不误用物理1460820 HEAD；全新正常System以同一正常BFF数据库的独立kokoro_system schema、独立Redis namespace启动。正式空owner installer23表，原BFF列catalog摘要前后相同；BFF服务token沿原正常值配对，不复制QA数据/模型/价格或更换IAM身份。正式System API以本地部署operator创建kokoro产品、127.0.0.1站点、active状态及中英manifest policy，未变浏览器账户权限。
+
+当前日常同源实读：账户资料、项目、project-pins、模型目录、zh-CN/en-US runtime-manifest均200，hub业务写0。模型目录接通不等于已配置真实可执行模型；无新模型/预占/充值。MCP connections与skill-installations仍明确503 dependency_unavailable，须保原Platform密钥/数据升级和补正规purpose凭据/Storage；不能放宽decoder或用候选库伪装成功。正常Platform仍旧fa5，Root/main未合，Admin与历史契约组合缺口、B08结算末端及全TaskB仍OPEN。原生浏览器凭据/备份/进程只留ignored；有限证据汇总B15-normal-preserving-runtime-delivery.json。
+
+#### B-15：日常IAM/Platform保数据升级与真实API配置闭环（2026-11-03）
+
+正常IAM49689升级正式b9a63c53/API0.18；原生具名演进前完成一致快照副本演练、停旧服务最后备份，原17表旧列逐表数量及有序数据摘要不变、目标19表。正常Platform61931升级正式2ad5c9e7；SQL dump/restore首演练catalog不等保留为失败；改用旧owner canonical安装与原data-only快照恢复后精确74d5父、原生apply至718d，原25表旧列数据不变。三份自有演练库按归属/无连接核实清理，正常备份保留；未改父hash或执行任意修复DDL。
+
+Platform与IAM直接执行身份正规文件配对，BFF catalog/projection分别限定purpose；Storage63372保持4ab2原对象桶/数据库/Redis，仅追加正常Platform身份后原生重启。MCP原密钥材料逐字保持，两个旧硬链接密钥文件复制为独立0600文件以满足当前原生读取约束，未轮换密钥。正常六服务ready200，账户/项目/pins/MCP连接/Skills安装/models/中英manifest同源全200，取代上一里程碑MCP/Skills503状态；模型目录为空和Agent禁用均未掩盖。
+
+后台Playwright在正常原生账户完成独立Custom API创建201→权威回读200→编辑200→刷新保持→未保存取消零PATCH→删除200→同ID回读404，响应不含写入密钥，自有配置cleanupRequired=false。E/技术方案与联调/B15-normal-capability-account-pairing-delivery.json绑定原始回执SHA。不是原生Computer Use或外部服务真实执行证据。其余MCP三种配置/Skills导入正在接续，Storage4a990 approved父catalog与正常实际不匹配，Prisma diff0不能代替原生指纹，尚未升级。正常历史多库未收敛同库，完整B01/B02/B03及全Task B/组合门/main仍OPEN。
+
+#### B-01：正常四种创建入口配置保存与清理（2026-11-03）
+
+正常3314完成Custom API创建/编辑/刷新/取消/删除（上节）；自定义MCP创建201→同ID详情200→编辑200→刷新保持→删除200/404。JSON导入与URL添加首次命令已保存，Playwright直接读取响应正文失败，原失败记录保留；各按正式connectors列表中唯一本人测试名找回同server/connector ID，真实页面打开详情、同ID删除200并回读404，未再次POST或用新配置替代原请求。全部自有配置已清理。E/技术方案与联调/B01-normal-four-creation-configuration-delivery.json逐份绑定原始失败、权威回读及恢复证据。
+
+本片仅配置保存与管理，不触发Prepare/Connect/Enable或外部服务，不冒称四种创建的真实连接/OAuth完成；stdio、图标/存储精确升级、Provider各末端与全B01继续OPEN。原生登录可重新完成并准入，独立脚本的初始语言/会话观察问题不直接归因为产品缺陷。技能原生上传/安装真实旅程接续中，不机械重跑已通过且输入未变的测试。
+
+正常技能上传首条导入begin201，但UI未知、权威GET仍upload_pending。已确认日常Web旧启动环境缺少既有KOKORO_WEB_LOCAL_UPLOAD_ORIGIN；正常Web保同App/认证/数据补精确loopback Storage origin后原生重启。原桶versioning Enabled；GetBucketCors404、尝试最小本地PUT/版本ACK策略被provider NotImplemented501拒绝，未成功修改桶CORS、未改对象数据。CSP漏配已确认，CORS是否另阻实际上传仍以新输入的真实请求为准，不能仅凭预检下结论。首条pending测试意图及其24小时期限保留，不伪报安装或清理完成；修正启动配置后的新独立包旅程接续并私密保存原body/key。
+
+#### B-03：正常技能原生包导入、刷新与清理通过（2026-11-03）
+
+正常Web补既有精确本地上传origin后，新独立QA包从原生UI选择ZIP→begin201→真实对象PUT/版本ACK→complete200→finalize200→安装后刷新仍见，随后本人技能源DELETE200、本人账号安装DELETE200，正式同ID回读installed=false且刷新卡片消失。E/技术方案与联调/B03-normal-owned-skill-import-delivery.json绑定原失败/配置切换/新真实旅程与两类清理；不把删除源当移除账号安装。桶CORS API501未改配置，后继实际成功证明它不是当前本地旅程阻塞，首次CORS诊断不冒最终根因。App未生产改码，next-env启动派生单行已精确恢复。
+
+成功新包的来源/安装清理完成；首条旧CSP输入产生的upload_pending意图仍保留24小时到期和cleanupRequired=true，不假冒同一意图恢复，也不通过DB清理或新上传覆盖原失败。完整版本/权限/项目/Agent使用与B03/B04及全目标继续OPEN。
+
+#### B-03：正常技能启停、文件树与精确下载闭环（2026-11-03）
+
+正常3314同App2286cce8、原生账户与正常服务组合，以新的本人双文件包完成真实UI导入安装，停用与启用各原生命令200，分别刷新保持；详情读取SKILL.md及references/check.md正文，下载当前安装包200，下载ZIP与上传ZIP的SHA256逐字一致。随后来源删除200、账号安装移除200，同ID权威回读installed=false，刷新卡片消失，本次包cleanupRequired=false。E/技术方案与联调/B03-normal-skill-lifecycle-delivery.json绑定原始两份回执；首份验收器将文件显示名当完整accessible name导致超时，保留原失败，仅修验收器并恢复同一安装，不重新上传或修改产品源码。
+
+本片证明正常账号安装的启停、读取及精确包下载，不冒充项目选择、真正Run加载、版本更新、跨主体权限或管理后台完成。原先CSP失败的独立旧导入意图仍单独待到期。Storage父catalog调查不阻塞本片：同PG按4ab2官方空库installer建立的本人隔离库，与正常库原生读取的388条catalog定义完全一致；两者仍不等于脚本批准的父指纹，未放宽批准值或升级正常库，隔离库已按归属清理。全Task B继续OPEN。
+
+#### B-03/B-14：正常项目精确技能与读取失败反馈（2026-11-03）
+
+正常 System 通过已有 API 为原站点/产品配置 project.skills 暴露；普通 manifest 实读与项目入口已确认，不改浏览器角色或绕过准入。本人同一 QA 包先账号安装，再创建项目的独立安装，默认选择经权威回读/刷新保持；精确正文预览、下载原 ZIP SHA256 一致。随后清默认、移除项目安装、项目删除202并原生读回逻辑 released、移除本人来源和账号安装均通过。本次 cleanupRequired=false 仅指原生逻辑清理，不声称物理存储对象删除；原先独立 CSP pending 意图不在本次清理内。
+
+真实首次 package 429 及另一次诊断503暴露了空白 reader。App7bac5ae6 已推原功能分支：无已确认正文时显示现有错误提示，仅绑定有效时显式 GET 重试；权限退休不恢复旧内容，不重放写命令。完整详情88项、定向lint/完整非增量types/diff通过，限定独审无确定P0–P2；缺失的指定审查技能未调用，按局部迭代未重跑完整 owner 门，不声明可合并。最终正常预览下载成功未再命中失败，不能作为正常错误重试证据；底层429/503仍未定因。原验收器失败均保留，恢复同一项目/安装而非新建覆盖。证据 E/技术方案与联调/B03-normal-project-skill-and-reader-delivery.json 绑定实际回执、源码及日志SHA。未执行Run；版本/权限/Admin、真实外部连接与全Task B/组合门/main继续OPEN。
+
+本次 Root 仅更新已推送并正常加载的 App7bac5ae6 精确 gitlink；拓扑检查仍退出1，错误仅为原 kokoro-admin 未独立初始化、origin/HEAD不符三项，未冒称完整组合通过或合 main。
+
+#### B-01/B-05：正常 HTTPS MCP 准备、刷新与草稿交接（2026-11-03）
+
+正常3314原生创建本人 DeepWiki HTTPS 配置201，Prepare200，权威GET为ready/available、有独立Connection和实际三个selector（ask_wiki_question/read_wiki_contents/read_wiki_structure）。刷新后首次“试用一下”禁用并非连接保存失败：正常System尚无mcp导航，App按现规则不给Composer连接器回调。通过既有System API向原站点/产品/应用增加workspace.connectors暴露及mcp导航配置，保原project.skills及账户角色；没有前端绕过或运行代码改动。恢复同一配置后刷新按钮可用，显式试用进入新草稿、正文含该连接器名、选择器同名项checked；执行写请求0。随后原生删除200、同ID404，cleanupRequired=false。官方端点依据 https://docs.devin.ai/work-with-devin/deepwiki-mcp ，实际selector以回执为准。
+
+先前本地HTTP本人fixture的初始化/三类目录发现、Prepare200和connection回读也真实成功，但现安全投影严格HTTPS，保持unavailable且不出现可执行试用；不为验收放宽协议。首条浏览器create响应正文读取失败保留，经本人唯一名称及原server/connector权威回读恢复，没有第二次创建；该HTTP配置已删除并404，自有fixture已关闭。E/技术方案与联调/B01-normal-https-prepare-and-draft-delivery.json逐份绑定原失败/配置与成功回执。此片只关闭声明的HTTPS准备/刷新/草稿交接，不当成真实Run工具调用、OAuth矩阵、结算、完整视觉/性能或全Task B完成；其他末端继续OPEN。
+
+#### B-04：正常个人版本完整生命周期与历史读取修复（2026-11-03）
+
+正常3314本人样本完成v1导入安装→v2新包上传/扫描/校验/发布→取消升级零写→同一安装显式更新v2及刷新/精确正文/原ZIP摘要一致。发布不隐式升级安装。随后取消撤回零写、显式撤回v2、历史v1精确正文读取；取消恢复零写，原v1 ZIP经既有链发布成新UID/v3，原安装保持v2。显式更新同一安装到v3后，刷新正文与ZIP均与原v1一致；原生系列删除、安装移除及权威installed=false通过，测试样本cleanupRequired=false，不声称物理对象删除。首份验收器对重复关闭按钮和更新按钮完整无障碍名称误定位保留；后续恢复同一系列/安装，未重发成功发布或升级。
+
+App a857542a64b6d878e5aeab92b081194a1ff478e9修复历史关闭/重新准入/同主体generation换代时旧列表、正文、分页/恢复入口复现，迟到结果退休；原未知Restore意图及原body/key/CAS保留。可见版本号与真实完整日期已在正常桌面/390核对，窄窗374宽、scrollWidth=clientWidth=372；截图正文仍加载，未冒已加载正文视觉对照。新增回归先3FAIL，最终history+restore16PASS，Root同范围独立复验16PASS，scoped ESLint/完整非增量tsc/diff0；停写四文件限定独审无确定P0–P2，缺失hix-code-review未冒调用。E/技术方案与联调/B04-normal-version-lifecycle-and-history-read-delivery.json绑定七份原始回执与四源码SHA。无接口/Schema/依赖/模型变化，未重复无关全owner门，不声明完整需求可合并；Root只配对已推精确App版本。跨主体/租户、Admin、真实Run加载、其余B项及全组合/main继续OPEN。
+
+本次新App gitlink的Root拓扑复验仍仅原Admin未独立初始化、origin不匹配及HEAD/gitlink不符三项，退出1；不据局部功能修复合main。
+
+#### B-04 / B-06 / B-09：正常私有技能作者与同团队成员权限（2026-11-03）
+
+正常3314通过团队页邀请、现有本地SMTP邮箱验证、原生注册/登录和接受邀请建立本人QA普通成员，双方回读同一member身份。作者独立私有技能导入安装后，另一账号的managed详情、历史、包及作者安装读取均404；创建新版、撤回、删除系列及安装owner-only来源均403，作者原active状态与state_version不变。分享仍遵循现owner规则，不扩大publication audience：匿名401；成员Resolve、summary、下载及撤销均404，页面显示不可用，作者原链接仍有效。作者显式撤销200后fresh GET404。以上13个负控未暴露本人QA正文标记，不冒跨租户或管理员矩阵。
+
+作者原生撤回200后安装保留且source_status=withdrawn；本人managed下载资格与字节200，SHA256与原ZIP一致，成员同路径404。随后本人系列删除、安装移除、权威installed=false/managed404通过；测试成员通过正常团队页移除200，原Product会话立即403，原邀请不再pending。保留已注册测试账号，未授予admin或修改用户账号权限、模型、账本。最初QA ZIP错误地多包一层目录，被原生IMPORT_PACKAGE_INVALID拒绝；原rejected意图保留至2026-11-04T10:19:14.743Z，不称物理清除。已知拒绝后换用根目录SKILL.md的新包，原输入与回执均保留；分享响应正文观测失败及清理脚本语言定位失败分别保存，未伪称产品故障或丢弃原写事实。
+
+本片无生产代码/契约/Schema变动。独立只读审计未发现确定新越权问题；现有权限与主体退休定向回归20通过、96因名称筛选跳过，不作为完整测试通过。正常真实证据E/技术方案与联调/B04-normal-private-permission-runtime-delivery.json绑定10份原始回执SHA、明确API/页面范围与清理边界；hix-code-review仍缺失，未声称调用。App保持a857542a，完整作者/管理员/跨租户、真实Run及其余Task B与组合合并门继续OPEN。
+
+#### B-07：设置草稿隔离与日期语言（2026-11-03）
+
+App27b17f12c325022cfd0f9b77eab53fccf6f5598d已推原Draft49。个性化旧回调此前可取到新准入会话并修改/保存新草稿或读取新冲突；增加发起scope核对，换主体/准入代后的旧update/persist/retry/chooseServer/saveDraft均退休，原CAS及未知结果显式恢复保持。新回归4FAIL/2PASS后修复；数据管理三类日期原来无视产品语言，沿现locale格式化，原ISO时间和列表读取不变，新回归1FAIL/5PASS后修复。
+
+停写五路径独审无确定P0–P2，主方四套67PASS、定向ESLint/完整非增量tsc/diff通过。正常3314当前源码的日期展示以明确只读列表fixture验证中文/英文及390px无横溢；不冒原生分享/归档CRUD或Manus对照。第二轮逐路径记录仅原生POST /api/auth/session，业务写零；第一轮计数未分类而失败的原回执保留。正常个性化当前null，双标签CAS验收器在首写前退出，零PUT/零数据修改，未将其算通过。
+
+E/技术方案与联调/B07-settings-identity-locale-delivery.json绑定源码、命令、原始回执和范围；同目录自包含HTML提供真实显示截图。无契约/Schema/依赖变动，不重演无关完整owner门。hix-code-review不可用，未声称调用；完整B07/Task B及组合合并仍OPEN。
+
+#### B-01：正常存储图标升级与页面实测（2026-11-03）
+
+官方4ab2f23干净父库原生bootstrap真实RED：完整目录为1d60而原脚本只接受历史bdf6。正常库与同源码官方新建库388项定义完全一致，不归因于正常结构漂移。Storage add2da6ca379be686127da31d64e38843fc10a70保留历史bdf6→94839，新增固定父新建→原三条enum ALTER→独立新版新建全部定义一致的1d60→0f480精确配对；未知、部分目录及双向错误目标仍拒绝，canonical/fingerprint/事务/安装锁/取消围栏不变。独立只读审无确定P0–P2；正常执行脚本的未知COMMIT记录问题已修为调用前unknown、成功后committed，不把丢ACK写成零修改。
+
+定向真实PG三项及单元五项通过，四项名称过滤；完整类型、相关lint、四路径格式和diff通过。完整bootstrap首轮7FAIL涉及fixture连接与CREATE/DROP超时，首因未归因、原日志保留，未重跑无关全仓或冒完整owner门。当前只读库存仍见4个storage_schema前缀库，未证明全部归本次失败，保留待核，不盲删；本次新建fresh资格两库和真实备份恢复演练库均有亲建清理回执。hix-code-review仍不可用，未冒调用。
+
+正常Storage owner先全量私有pg_dump并恢复到独立库，原数据SHA一致，正式expand前后九表全量数据及xmin摘要一致，重放already-current；再对正常库重新备份、亲建旧服务优雅退出、正式expand与相同数据/xmin核对通过。正常63372已从冻结add2da6源码启动ready，原数据库/对象bucket/扫描器/credential配置保留。此为Storage运行源更新，不冒完整Root所有gitlink与运行源一致。
+
+正常3314本人QA完成从设备上传PNG→扫描/可用预览→保存MCP配置→刷新卡片自然图片加载→详情及390宽度无横溢。单次上传到预览8561ms、整段25167ms，不称p50/p95或100ms达标；Playwright headless自动化不是Computer Use，也不是Manus视觉对照。随后同一新建配置原生删除200、fresh列表无该server；原生对象生命周期清理不等于物理字节删除。只保存配置，未连接示例端点，不冒真实MCP调用/OAuth完成。E/技术方案与联调/B01-normal-icons-storage-delivery.json及自包含HTML绑定真实回执、截图和精确source。Storage功能分支已推；组合及完整Task B仍OPEN。
+
+### 2026-11-03 B-03 / B-06：两类恢复功能交付
+
+正常B06真实双标签复现退出后原页丢为/app。App5b7d0fd6保tab-local白名单导航hint，原GET-only确认和签RP流程不改，失败页不提前固定跳首页；正常退出→issuer确认→另一标签私有内容退休/资料401→显式重登完整path/query/hash恢复/资料200→另一标签再准入通过。存储不可用失败恢复回退/app，自然过期/多设备仍OPEN。
+
+Appd6dd3cd0修设置与独立技能广场的可见错误/明确重试，保原查询/分类/cursor/身份退休与安装写命令。正常两入口浏览器注入目录503→可见Alert→同body真实owner200通过，390px及设置提示框父内边界通过；原误判共用组件导致首轮广场漏修的RED保留，现两个入口均验。原CSS仅width:auto防w-full加margin裁切。Auth75、设置选中8（18未选）、广场原文件12项通过，scope lint/最终全tsc通过，停写限定独审无确定P0–P2；非完整owner门，缺hix-code-review未冒调用。
+
+App两提交已推原Draft49并核精确remote head；Root仅更新App gitlink与本计划。正常3314加载本App源码，其他owner组合/原Admin拓扑/全门仍未完整配对，不冒main或完整Task B。故障为明确浏览器fixture、非自然owner事故；单样本恢复设置1855ms/广场2036ms及退休约5秒，不冒分位或100ms。E/技术方案与联调/B03-B06-settings-recovery-delivery.json绑定原始范围；完整目标继续active。
+
+
+### 2026-11-12 Task B App候选与真实配置首片
+
+- App原#49已并入accepted main，候选a0512901保双方历史和现Public28.35；完整lint／非增量TS／build／22正规生成检查通过，rail最终295 PASS。完整默认6753 PASS/2 FAIL后，仅修旧calendar与可见错误两处oracle，原两文件48 PASS；未重跑全默认，不拼接成全绿。
+- Root ae480fb9固定App候选并从真实已提交blobs重算inventory，拓扑／15 edges 0 violations／原checkpoint通过。正常3310受控切换；隔离依赖复用曾误改正常workspace链接造成Build Error，已恢复并改独立offline frozen安装，正常浏览器确认恢复；持久数据未改。
+- 主控native真实API创建201→fresh exact详情→刷新保持；JSON双导入201→明确选择B→fresh Connector/Server200→取消未保存编辑→刷新原值通过。只保存配置，未连接/Prepare/执行或声称供应商成功，秘密未回显。3项唯一命名测试配置待删除确认，原Context7未改；原始脱敏metadata／截图／receipt保本地ignored。
+- 本片真实观察：bootstrap空models被误投影ready-empty，MCP English详情/配置/JSON编辑有硬编码中文与局部缺译。composer_ui_audit仅在隔离App最小修正，复用现字典/测试，不动auth、机器契约/正常源；主控停写后验收。BFF原#17收敛和Agent精确消费者四字段配对并行，Goal保持active。
+
+
+### 2026-11-12 B-T1a正式消费者配对与受控恢复
+
+Agent281bde49（PR #48）仅4行顶层Platform pin／常量／断言配对Capability573a8f00（原#12），四Proto、generated、独立历史发行锚不变。主控正常3.14.3复验四contract文件129 PASS／contract-check，四SHA与隔离archive fixture核等；正规generator／Ruff／Pyright／wheel安装smoke通过，初次3.11 TypedDict收集失败保留。managed worktree工具两次未返回且未生成目录，独立验证用ignored源码archive，不掩称managed工作树成功。
+
+52 Run均终态、Agent dispatch与BFF相关pending0后，主控SIGTERM原HTTP／Worker／Platform，应用已验补丁并恢复正式入口；两owner health／ready200、Worker消费，原持久数据和两笔未知财务恢复记录保持。staged Root精确gitlink与按76真实Git blobs重算93引用的inventory已通过拓扑／15边0违例／原checkpoint。首轮未stage导致gitlink不一致失败保留，随后补齐真实gitlink通过；未弱化规则。源码／本地候选组合通过不冒PR已合、供应商授权或整个Task B完成。App局部多语言片16路径停写／独审CLEAR，主控验收中；BFF认证metadata按owner发行单独推进。
+
+
+### 2026-11-12 B-01明确重新授权最小续做裁决
+
+复用原#17 e3b5fb7已批准边界与Capability573a8f00正式ReauthorizePersonalMcpServer，无新owner／Schema／认证。BFF现MCP native管理入口显式POST承接source_connector_id及server/connector双CAS、冻结原key/body/digest；Capability唯一生成全新pending/disabled身份，旧身份永久无效，不自动Prepare/OAuth或补连接资格。历史ACK允许按原命令重放，不在重放前插current GET；ACK后由App fresh exact读新Server/Connector决定当前投影，失败仅重读，身份／窗口退休与迟到结果不handoff。
+
+BFF独立MCP writer api_perf_audit仅承接旧具体hunks，并用当前owner精确commit/provenance正规生成；四Proto／67 artifacts已核与旧候选相同，当前新增serviceCredentialSources使provenance摘要必须按当前真实字节配对，独立publication旧pin保留。Public Chat／Share、Schema、package-lock及共有文档仍由Chat writer／主控持有。MCP private code-first artifact与App正式固定消费者顺序交付，不制造第二SDK或公开传输协议。正常资源不动；两writer停写后由主控统一build／contract与真实最小边界验收再入原BFF#17／App#49。
+
+
+### 2026-11-12 Native UI／清理与已验Agent PR出口
+
+App8208882d四文件443 PASS／build、后继34c51204七字典十默认key与原测试117 PASS／build／独审／输入核等；真实English详情/JSON安全错误/取消回焦/390px与最终French320默认表单内收通过（288px容器与scrollWidth相等）。实际French先复现回退与English占位才修，不把key存在当正确翻译。未全站／全部locale视觉QA；最终观察网络缓冲eviction保留，不把留存零mutations冒完整零写证据。
+
+用户明确批准后，仅删除本轮API与JSON A/B三唯一配置，三DELETE200，硬刷新仅余原Context7，未改它；恢复en与视口，原收据／截图留ignored。Agent#48正常merge mainb7867212，树核等281bde49，topic本地远程均清；4个CI红annotation明确账户账单/额度未启动，未绕保护。Root db28020c精确配对Agent main／App34c51204／Capability573a8f00，131真实blobs／150引用重算，拓扑／15边0违例／原checkpoint通过。
+
+BFF3007c16仅本地metadata已验未push，后继Share GET19路径停写待真实PG、MCP独立writer进行；原PR17最终保历史集成后统一发行消费者。Skills只读核验已证多数原功能和真实旅程在现源码祖先，剩余现三入口一致性、后台/管理员撤权与跨tenant边界，复用真实Skill运行，不把旧待领取或旧候选独有提交机械扩成新Task B范围。Goal active，主控继续收口独立已验片而非只汇报。
+
+
+### 2026-11-12 BFF联合实测与原PR历史收口
+
+主控0a2c98ae联合候选337相关PASS／0SKIP、build/types/lint／216semantic／两正规check与114输入核等；独立Share/MCP/Team/退役补口审查CLEAR。真实ChatModule/Nest＋独立PG7 PASS（IAM准入double、无Redis），含Project owner单独变化404／恢复200、GET事实和receipt值/xmin不变。首次URL漏schema、次轮deleted seed漏deleted_at失败均保留，只改接线/fixture，所有3个自有库DROP。未跑全默认／新模型／真实Provider，不以数量冒Task B完成。
+
+原BFF#17普通merge旧1e6765b3到已验0a2，82冲突及自动混入260路径由两只读owner分组审查、主控具名路径逐组处理；保当前完整Schema/Execution/verified spool/native credit与已移植Share/MCP/enum，删除旧层/重复186行MCP测试/未发行29.3及旧vendor/CLI/RSS旁路，B08意图另保留。最终609b0e93有双方历史且完整源树等已验0a2，快进推送原#17，无force/no新BFF PR，仍Draft。App composer_ui_audit正从固定0a2正规消费两profile；正常服务未抢切。Storage原#2由api_perf_audit独立非runtime工具片推进，base maina8edebf8树等231bb663，fresh→FINAL资格不得凭猜hash或改成功断言收口。Goal active、唯一TODO持续推进。
+
+
+### 2026-11-12 App消费交付与Storage实证纠偏
+
+App原#49已提交推送ebc36617：固定BFF0a2两profile，主控23生成检查、60文件1216 PASS／build；独审发现3真实缺口（tenant暂缺下原未知命令保留、provider_key与server身份一致、Shared SDK path.id生成）修后主控185 PASS／types／SDK check／build，110路径冻结核等，两独审CLEAR。未重跑完整默认或模型、不拼全门绿色；正常源仍34c51204／BFF05a1074，下一步受控配对只补native缺口。
+
+Storage旧fresh1d60→0f480说法经当前真实PG完整目录推导未复现：0f91535 fresh实际94839，精确删除3 enum定义为legacy bdf6；既有FINAL DDL到809d并与独立993aede定义全等，既有workspace DDL到13a347并与独立当前f8145定义全等。四owner search_path均一致，public反解仅schema前缀差异；无旧0f480全定义收据，不据mock hash添加兼容。撤回未提交假设补丁，生产工具/canonical保持。
+
+原6例先4 PASS/2 FAIL仅因历史FINAL测试误读当前Schema及遗漏workspace_output；固定同发布工具/helper/993aede与测试URL GUC后主控真实6 PASS，原行/no-op/ArtifactsStore断言不弱化，格式／ESLint／types／独审CLEAR，2输入SHA核等。三注册probe库和fixture自有库均回收，正常库/卷未改。47bf19d两文件修复；原#2普通保add2历史集成31a7c89，完整树核等已验47bf19d，沿原PR交付，不带未证实兼容。早期探测主控输错摘要与后继未复现假设的失败保留，不归咎生产实现。Goal持续active，唯一TODO已纠偏。
+
+
+### 2026-11-12 受控消费者组合与真实native补验
+
+Storage原#2正常合main7155093c（树等31a7c89/47bf19d），仅两test/doc差异；本轮local/remote topic已清，其他旧工作树保留。CI annotation明确账户账单／额度导致任务未启动，未绕保护。
+
+52 Run全终态／相关pending0后，只SIGTERM本方BFF/App，正常源码切609b0e93/ebc36617、原配置启动，health/页面200、原生会话刷新恢复。真实浏览器Share打开只GET200、未创建公开链接；自建无密钥MCP QA Disconnect→显式reauthorize200→不同connector pending/disabled/version1→exact Connector与Server GET200→硬刷新保持未连接，完整操作阶段trace仅1个reauthorize POST，无自动Prepare/OAuth/enable，Context7未改。刷新后再取旧response body已evict，保留实际早先ACK/状态/完整阶段trace，不冒重取得body。新1项测试配置待用户单项删除确认；原3项批准删除此前已完成，不能挪用其授权。
+
+当前staged精确组合由326真实已提交Git blobs更新398引用，拓扑／15边0违例／原checkpoint通过；初次遗漏inventory owner版本更新而FAIL，按实际28.37纠偏后通过，未改规则。Skills现本人structured-report安装详情/真实SKILL.md读取200及返回已验，但当前账号Project为空，不冒广场/Project/作者history三入口全验，也不为验收复制旧账号数据。Goal仍active，完整Task B/原Draft PR出口未完，下一步仍只补当前TODO缺失。
+
+
+### 2026-11-12 B-02最低补证、Skills多语言与B-08实施
+
+主控复用现测试，只补Custom API材料资格/秘密边界：Capability573真实PG4 PASS（执行准入double、fixture随机库回收）；Agentb786在Python3.14.3三小文件＋Factory接缝107 PASS（model/sandbox doubles，178原实验/弃用warnings保留）；BFF609已构建隔离checkout单文件7 PASS。源码核对Acquire只作调用局部SecretStr、metadata-only prompt/recipe、先脱敏再截断与原文件/产物guard，未发现具体新明文出口；不新增每载体重复套件，不冒真实IAM撤权、任意编码外发DLP、全存量扫描或云E2B。
+
+App正常英文Skills两radio回退中文、日期固定zh已修，5source/test路径：仅en补2已有key（另外8语言齐备）、formatter显式locale及两调用、现组件回归。writer7 RED→主控41 PASS/types/build与5SHA核等，独审CLEAR；原#49提交844fbbcb/0c6078e3，正常HMR后native英文/320px文本完整、Third-party整词换行、documentWidth320、日期November12，恢复视口。不称全站九语QA。
+
+B08不换当前Agent8.17已发行pin；三设计实施门本地1d9ab9e，唯一writer app_merge_gate在隔离BFF推进同owner快照→原Chat outbox→私有材料。无profile/usage省略，关闭保revision，原key/regen原输入；consumer按canonical补闭集/knowledge条件/ID唯一性，不另造schema。主控Agent当前两相关文件21 PASS，待writer停写后独立真实PG；正常BFF609保持。
+
+Admin原正常3320监听缺失，主控校原9bed/私有配置与Product origin一致后恢复正式Next dev；无代码/角色/凭据/Schema变更。匿名直入/Web入口307，当前浏览器/manage回/app且无管理菜单，只作当前用户拒绝边界，正管理员/撤权/跨tenant未验。原三QA已清；新增1MCP QA待单项删除确认，Goal仍active。
+
+
+### 2026-11-12 B-08源码、真实PG与受控激活
+
+原#17已推143ade1，现三设计门1d9ab9e。最终12输入manifest SHA1509e05272cc2c25eb65f2e9e3dbe180a099b678aa0441a96b9f9351abe328ef；主控68 related/types/正规Agent check，writer build/lint通过，两独审CLEAR。当前Agent固定7bfb/8.17原artifact不换；个人子图闭集/usage条件/ID唯一性从owner生成，不加平行schema。Agent当前owner两文件21 PASS，未改源码。
+
+真实PG初轮前三旅程PASS，第4因fixture漏abort和缺current stream头FAIL；未改生产，仅同PG文件接真实SELECT完成后abort及合法活动头。修后5PASS，再同旅程末尾增加合法小snapshot interrupt正控，最终5PASS，原read故障/取消/1MiB/101项完整Message/outbox/cancel零effects断言保持。三自有库均DROP，正常DB/Redis不变；生产11输入持续原SHA，未重跑68/build去刷绿。
+
+正常52终态/相关pending0后仅BFF受控SIGTERM并以原env源码143恢复health200，App0c不动、原两未知财务记录保留。Root232真实blobs/290引用配对，staged拓扑/15边0违例/原checkpointPASS。正常Profile当前只读，未改资料/知识、未发模型；native设置→新消息生效/恢复与公开产品指南仍继续，不关闭B08或整体Goal。
+
+
+### 2026-11-12 B08产品分层说明与native验证开始
+
+App原#49 c044c337：product/settings/personalization.md及原导航/index/availability/一致性/INDEX六路径，另仅现knowledgeUseHint九语言与直接测试，去掉公共过时Englishfallback。主控18冻结输入：47 related/types/阅读路线具名1/正规参考生成与门户build/62页20513内链/Appbuild全部通过，独审CLEAR；原大chunk/API changelog MD012/mts lint ignored不冒全门。正常AppHMR至c044，Knowledge当前英文提示正确；未改开关/知识。当前Profile四字段原值均空，已由正常UI onBlur保存75字符临时功能marker并显示Saved（非个人信息/秘密），单次新消息实际作用仍进行中，之后正常UI恢复原四字段。不以此Saved替代Run成功。
+
+Appc044/BFF143精确组合staged85真实blobs/93引用重算，拓扑/15边0违例/原checkpointPASS。管理员正式read命令当前仅做预检：原manager authority env无native Session cookie路径，因此未启动CLI/未改权/未重置凭据；不拿历史不同管理员身份/tenant收据冒当前通过。整体Goal继续active。
+
+
+### 2026-11-12 B-08正常native闭环与原值恢复
+
+绑定Root21e833c4（Appc044/BFF143）精确干净已提交组合：UI Profile75字符临时指令onBlur Saved；新消息只含简短问候请求，不含marker。正常配置模型实际1次调用，AI SDK显示TASKB_PERSONAL_APPLIED问候，原资料清空恢复Saved/revision2后硬刷新仍恢复同一条原答复。仅此次新风险1模型调用，不重做旧Skill/MCP/Docker成功旅程。
+
+权威normal BFF/Agent各自只读连接验证私有personal_context完全相同/owner相等、UserMessage不含marker/trace无原材料，双Message完成/Run terminal，model attempt observed/granted、financial ACK存在；53终态/pending0，旧两未知财务候选保持。原native提交network collector当时未观察到事件，明确无HTTP数量/状态断言；刷新重新启用Network后有203事件，未掩盖前段缺口。此前真实PG/owner规则风险组合独立承接知识开关/删除/跨actor/重放/regen，未为每分支重复真实模型。B08当前手工范围验收待原PR整体出口，自动记忆/外部导入仅既有支持范围说明，不扩大目标。
+
+Appbf8ef938/BFFabbfd78只更新CURRENT，代码与已验c044/143逐路径相同；正常checkout同源，无需因纯文档再重启/刷测试。产品指南/9语知识提示、Portal62页20513链接已验。Goal active，后继B01/B13现有Admin→托管stdio实旅程与剩余域；本地新会话留作收据、1MCP QA删除待单项确认，原配置/未知WIP不动。
+
+### 2026-11-12 PERF-02 最小收口
+
+BFF原#17已推 `9cc717135255b639b66933ac58e48e813d696a86`：GET入口一次完整原生Session＋current_membership，原六跳变两跳；后续只验本request真实expiresAt/绝对预算/断连，不跨请求缓存。本人tenant/active Project SQL不变，PUT三次准入及写后撤权/unknown保持，无wire/Schema/依赖变化。主控四输入SHA核等、51 focused PASS/0 SKIP、完整types/diff-check，writer最终build/scoped lint/格式通过，独审CLEAR。证据依赖为真实localhost HTTP peer，不冒真实IAM/p95。
+
+正常源同原配置受控切至9cc，前后53 Run均终态/待投递0，旧两未知财务记录保持。首次探测误用/health得404，正式/healthz复核另记录，不当服务故障或隐藏首probe。无PG/模型/全默认重跑。Root仅更新此BFF gitlink及232真实已提交blobs/290引用；拓扑 PASS、兼容 15 edges/0 violations、原 checkpoint PASS。原3QA先前已DELETE200＋刷新验，不重复删除；新增1QA单独待确认。Goal保持active，B01/B13及原表剩余项继续，未完成全TaskB或合原Draft PR。
+
+### 2026-11-12 B13正常准入与下一片最小设计门
+
+主控沿现IAM正式管理CLI（仅独立进程显式manager配置）和现owned开发账号新建原生Session，先正式read原false/version0，再CAS grant true/v1；正常Admin同源/manage成功，Models四目录200，Provider/托管包页可读。随后CAS恢复false/v2，两个operation_id对应IAM审计成功且old/new状态版本核等；仅新Session退出和自有0600 Cookie删除，原浏览器刷新/manage→/app、普通会话继续有效。未改正常服务配置/密码/tenant，未造Cookie或SQL角色。初始Web /iam/sign-in/email JSON405、退出非空body400均保留；正式CSRF表单与空body恢复成功。不是整个Admin CRUD通过。
+
+真实新缺口已定位：users强制site却请求已不存在/api/user360，teams仍旧通用ResourceTable，壳层sites/manifests固定空。不是缺少待创建站点；不能用site=tenant或个人余额接口假装管理员任意用户读取。下一片按既有owner成员目录替换死入口，仍保未交付的更广后台需求，不标B13完整闭环。
+
+Skills正常浏览器只读：同structured-report安装、作者current history、广场package均source_ref/revision1相同，SKILL.md目录及正文核等；GET及只读List/Get RPC无生命周期写。当前作者只有v1/账号无Project，旧版恢复和Project现行关联未运行；原收据/祖先按差额承接，不重复模型。封面404如实记录，未把不存在图片当包读取失败。Root3389/Appbf8/BFF9cc源码未变；临时授权/截图/原始收据仅ignored。Goal active，新增托管stdio QA准备/启用的动作确认待用户回答，不阻塞独立修复。
+
+**B13成员目录切片设计门（主控裁决）**：IAM拥有当前tenant成员/角色事实，BFF现有 `/v1/admin/identity/members` 仍是唯一投影，Admin沿现adapter与已固定strict成员client读取，无新owner/协议/Schema/数据库/认证层。`/users` 和 `/teams` 以明确的当前租户成员/角色目录替换死site/manifest入口，共用一个有实际两调用方的业务组件；使用既有分页/cursor、刷新、401/403退休与断连/迟到隔离，过滤只声明当前页，不冒全局搜索。不修改AppShell的其它未承接模块；不造站点，不借本人账户读他人余额。删除两页旧独占user360/action/退款/停用假入口及无消费者的专属类型（仍有其它消费者则保留待对应切片）。保留积分现正式入口，不增充值/写权限。完整任意用户360及原后台尚缺的跨owner操作仍列OPEN，不以本只读片替代。最低验证：当前成员分页/空/失败重试/退休/迟到风险组件＋原成员client及本owner所需types/lint/build/contract；正常native管理员实读并复核撤权，不跑模型/全后端。Admin三面当前文档先更新此边界，再实施，独立writer与主控验收/原PR出口分开。
+
+### 2026-11-12 B07双标签主旅程补验
+
+Root3389/Appbf8/BFF9cc不改源码。正常浏览器两个同主体设置页：B初始GET revision2，A实际PUT expected_revision2成功200；B同expected2保存409，原B草稿保留。显式Reload显示权威A，再Use server profile，硬刷新仍A。随后按最新revision3将原四个空字段恢复PUT200，原标签硬刷新确认四空；另独立新原生Session走正式CSRF表单登录，profile GET200/revision4全空，再仅退出新Session并删除自有Cookie。没有模型/工具/资金/知识开关调用，也没有版本回滚；当前工作浏览器Session未退出。
+
+三个写入阶段request/response事件完整无truncated/hasMore；首A GET未捕获、后续旧response body lookup已evict均记录，不能声称全程trace完整；A outgoing expected2和B GET2、UI冲突/权威选择/刷新与新登录GET是独立实际证据。只补关闭B07此缺口，B06、Project ACL、后台完整CRUD及整个TaskB不因此完成。截图/收据仅ignored，不重跑默认/模型或旧已验分支。
+
+### 2026-11-12 B06接线定位/B13具名实施
+
+主控新建独立原生Session经正式CSRF登录与本人auth读成功，随后 `/api/account/sessions?limit=25` 实际503 `account_sessions_unavailable`，尚未撤销任何会话。只读定位normal BFF未设置既有 `KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE`，IAM亦缺 `IAM_BFF_ACCOUNT_SESSION_CREDENTIAL_FILE`，普通登录专用user_context凭据不能当该生命周期profile复用；未因此改协议/加OAuth/token/SDK。自有本次Session已正式退出、自有Cookie删除，原工作Session不变。下一步只核登记的专用文件/正式格式，再由主控纯配置配对、按空闲受控重启并补两个真实缺口。
+
+B13成员目录设计门已记同一有效计划。唯一writer api_perf_audit复用现干净Admin checkout，先由主控停止自己启动的3320，再从已fetch main08365f3（merge树等原normal9bed）建本轮codex/task-b-admin-directory；候选验收前不重开服务。写区仅users/teams、一个两消费方成员组件、直接测试、现中英词典和三短文档；无新owner/wire/Schema/认证层，较广后台CRUD/任意User360仍OPEN。受管隔离创建请求仍待工具响应，句柄仅留本地持续核验，未宣称结束/未重复创建；复用已有checkout继续实质推进，普通App/BFF/其它owner不变。
+
+### 2026-11-12 B06真实接线闭环与Admin候选发行
+
+只补normal IAM/BFF原已支持account_sessions专用路径，当前正常tenant精确配对、独立随机profile、0600文件，原.env私有备份；无源码/协议/Schema/SQL模型/认证层变化。主控空闲检查后受控重启两owner，healthz均200。正常浏览器当前Session列表200，精确核QA新Session身份/创建时间后，仅该目标DELETE200，fresh列表200目标消失，原当前和原另一Session都保留；被撤会话自己的auth读false、受保护profile401。此为正常IAM/BFF真实链，不是HTTP替身。
+
+另一个自建QA Session仅fixture缩短自身expires_at到8秒，正式auth先true且返回的真实expiresAt精确相符；墙钟过期后auth=false/profile401，不先logout/不改全局TTL/原Session，不冒七天浸泡或浏览器自动倒计时已验。两个测试Session均经正式退出与自有Cookie清理。前后53 Run终态/pending0，旧两财务未知保持；不调用新模型/资金/全默认。原503与首次临时登录残留已清理，完整收据只留ignored。
+
+Admin目录候选10bc264已沿自有PR7推送（此前Admin PR已合闭，实际新需求才建），writer完整lint/contract/355测试/build/post-types，主控九SHA/相关35测试/独审CLEAR，当前待正常native中英/窄屏与撤权。Root只配新Admin gitlink；inventory无该Admin repository_path描述项，本次0引用/0blob变化，不能冒重算其它owner。本轮Root拓扑PASS、15边0违例、原checkpoint PASS；整个TaskB/后台广义CRUD仍OPEN，Goal active。
+
+### 2026-11-12 B11/B12既有Run只读补证
+
+未增加模型/工具调用或财务写入。主控按现canonical schema，对B08既有Run在BFF、Agent、Billing各owner独立只读查询，无跨owner SQL。唯一dispatch/attempt/admission及原会话核等；actor/payer、attempt/call/ordinal和调用三摘要、模型精确revision/digest与冻结报价均匹配。Agent actual=verified，最新evidence/ACK/admission引用核等；ACK/admission/hold=captured，usage/settlement=settled，单条usage debit与capture金额、每个funding allocation及预留=capture+release守恒核等。
+
+首次摘要仅因psycopg UUID与string比较方式产生admission_matches=false，原始身份其实相等；统一两侧类型后全部关系核等，初次私有摘要保留，无生产修复/重新计价或重跑模型。该证据只证明此前B08真实Run及其历史冻结报价，不把当前活动政策、旧两未知预占、所有Run或Admin政策管理顺带标完成。完整查询和无秘密摘要均只留ignored，唯一TODO已补此差额。
+
+### 2026-11-12 B13窄屏首轮FAIL与最小标题修复
+
+Admin10bc264正常native验证当前tenant3成员、正式GET200、两入口一致、本页筛选1→清空3、中英/UTC均通过；390px documentWidth390、表内310/920横滚正确，但截图标题/说明被默认PageHeader同一行ellipsis截为Curre...，故首轮视觉FAIL保留，不以DOM全文或宽度通过冒验收。
+
+后继Admin4241c2f只改组件标题结构与原两个公开语义断言：正式pageHeaderRender=false、语义h1和独立自然换行说明，不改读取/状态机/文案/表格。主控两SHA/11 focused、独审CLEAR；writer相关lint/types/build/post-types通过，不重复355/后端/模型。原临时role已恢复false/version4、新Session/cookie已清、原浏览器回/app；再由主控停自启Admin修候选。新源正常390最终复验仍待，原PR7保持Draft。
+
+Root仅固定该Admin新gitlink，owner传输/契约/生成物与09e1完全相同，沿此前合同门证据，不重跑不变输入；本轮只补新gitlink拓扑。Goal active，全部TaskB及后台更广合同需求仍OPEN。
+
+### 2026-11-12 B13目录读取片最终native验收
+
+绑定Root5d9a1760/Admin4241c2f正常源码（后继e7f2f79仅README，九源码/设计输入冻结核等）。正式当前tenant成员GET200/3项、Users/Teams同事实、当前页筛选和清空、中英UTC均已实测；首轮10bc390标题/说明单行截断FAIL保留。最终4241在390px中英h1/说明自然完整换行，标题与说明client/scroll均310、documentWidth390，表格仅内部横滚；保截图对照，不冒全站/全部语言Manus等同。
+
+当前role撤销后原挂载目录刷新实际403，私有成员行立即清退；显式重核回/app，原工作会话仍可用。最后临时platform_admin恢复false/v6，三次临时窗口共六CAS成功audit old/new版本核等，新Session全部正式退出/自有Cookie清除，locale=en及viewport恢复。无业务写/新模型/资金操作；正常Admin已恢复3320，原核心owner和数据保持。
+
+主控最终两SHA/11 focused/独审CLEAR，writer最终相关lint/types/build/post-types；前序九SHA/主控35与writer355等按阶段保留，不拼成最终全量测试全绿。原PR7保持Draft；只读成员目录此片关闭，广义User360、其它后台管理/政策与TaskB原剩余项仍OPEN。Root只配DocOnly后继gitlink；传输输入与已验09e1相同，沿原合同门，补本轮拓扑，不重复模型/PG/默认。Goal持续active。
+
+### 2026-11-12 PERF-03发行及下一native隔离旅程
+
+BFF原PR17已推aad81e7，4生产路径/2原测试完成模型目录一次共同deadline与本方取消，删除本GET无用幂等Map。主控六SHA停写核等、同两文件34 PASS/0 SKIP、完整types；独审原六文件CLEAR，主控另补零预算503缺x-request-id的真实RED/最小header修复并复核，余四SHA不变。writer最终build/scoped lint通过；测试原文件基线也有format告警，只新段格式通过，不冒整文件格式绿。无contract/Schema/依赖/新认证/cache/retry变化。
+
+正常BFF在空闲检查后同原配置受控切aad，healthz200，前后53Run终态/pending0，旧两财务未知保持。Root按232个真实已提交BFF blobs重算290引用，本轮暂存组合拓扑PASS、兼容15边/0违例、原checkpoint PASS；均为本组合实际结果，不用旧门冒新组合。原正常模型读/浏览器菜单仅补必要回读，无新模型或资金操作。
+
+当前另有私有native模型/计价隔离driver正在接线：真实IAM/App/Admin/BFF/System/Billing，正常tenant/配置不动；只允许独立源码/输出/临时数据库及精确localhost开发态fixture接缝，尚未启动或验证，不冒已闭环。stdio echo包已在本地由锁定SDK生成声明并经Agent/Platform两owner结构验证，未创建Provider/上传/发布/启动进程，等待原动作确认。Project ACL产品边界同样待用户选择；这些局部前置不暂停整个Goal。
+
+### 2026-11-12 native目录与icon观察核验
+
+Root0b725116/BFFaad正常认证目录GET200、两现有模型选项/Default原选中态和Esc回焦已验；network189事件未截断，未发任务/模型或资金操作。精确组合拓扑PASS、兼容15边0违例、原checkpoint PASS已提交推送原#67，BFF原#17描述同步；两PR继续Draft、整体TaskB未完。
+
+icon观察由api_perf_audit只读链路核验、主控当前native采样：同一Context7服务详情200/无icon绑定，独立media404；本挂载只发1次media请求，打开详情不重读，首字母C及Connected保持，列表200。正式owner已定义optional绑定缺失404，App已有no retry/fallback，无新缺陷或必要代码。旧布尔样本缺exact URL不能倒填根因，当前404body被CDP回收故不称全trace。只关闭该观察，不扩缓存/协议/服务。原三QA配置已删除；后来新reauthorization配置不在三项授权内，仍待原单项确认。
+
+B09主动leave源码已具备，缺真实主动退出而非管理员移除证据。正常Product固定tenant/最后owner保护，不让原账号退出；现隔离主机primary/secondary是同用户，不能伪造第二成员。后继复用真实IAM/App/BFF隔离组织与正式邀请一个QA member/两个自然Session，预期退出窗口logout后401、另一Session当前资格403；不强锁退出窗口403或新写生产实现。
+
+### 2026-11-12 B13有限原范围与当前隔离接线
+
+主控复核原交接B13（功能表）及有效计划B13条目，composer_ui_audit只读交叉核验：必交为具名Skills审核、Provider/MCP/API/模型、用户团队权限、积分计价/流水和对应操作审计；任意User360、全局画像/退款、跨owner统一日志平台并非原文具体旅程。唯一TODO将笼统“广义User360未完”改成这些有限原范围，不借此取消真实权限/审计或Custom API管理的owner设计缺口。已验非现金发放与同Run账本不重复。
+
+后台native模型/计价接线首run仅source阶段FAIL：Admin archive不跟踪Next生成的next-env.d.ts，而旧隔离helper要求其存在。未启动DB/服务、cleanup PASS；私有driver补标准两reference bootstrap及原helper输入检查，不改生产源。后继冻结Root2d1a074f/六owner提交并审查exact localhost三处test-only fixture diff：第二轮System安装遇macOS Unix socket临时路径过长，cleanup PASS；短路径修正后第三轮iam_native报告SmokeError、cleanup PASS；源码定位现凭据根落在已注册短tmp，却仍传旧run-directory，推断是归属guard不匹配，后继待实际证实。现仅修注册短tmp与既有helper凭据根的接线，不放宽生产/auth校验；尚无浏览器写旅程成功证据。仅回收已终态B-T1a独立验证venv，保源/补丁/收据；正常venv/数据/进程不动，实际释放量不据逻辑214MiB推断。原managed worktree工具确认返回超时，Git只见既有Admin checkout；不重启创建操作。
+
+### 2026-11-12 Billing readiness接线与当前活动政策
+
+第四隔离run正常构建/IAM/System已走通，Billing真实/readyz持续200却等待超时，outcome FAIL/cleanup PASS。主控比对Billing canonical/controller/生成ReadyResponse：正式Root helper仍要求早已退役的data.module，故不是Billing/PG不健康。api_perf_audit仅删此旧期望，现原测试用独立canonical body替代复制被测READY；真实RED两项→本文件41 PASS/0 SKIP，主控同41/两SHA/格式检查复验。status=ready/PG=ok/绝对期限/停止等原行为不变；既有sys.path后import E402保留，不冒全lint/全Root门绿。仅修Root test接线，Billing生产源码/协议不改；新冻结组合后再补同一次缺失native后台旅程，不重跑模型/资金。
+
+另主控对正常Billing以单owner只读repeatable-read/DB时钟补证：当前活动rate v3、policy v2，均与latest一致且非未来；rate计数/profile配对、已验模型exact revision/digest当前覆盖与币种一致。选择按正式owner先tenant revision后过滤model，不把latest或历史冻结快照当今天政策；仅此时点/该模型，不冒全部模型、后台发布或新费用。原价/资金/历史快照保持，当前报告时间规范化UTC。
+
+### 2026-11-12 native后台阶段证据及容量恢复
+
+绑定Rootdf295dac/精确六owner的第六run：真实IAM/System/Billing/BFF/App/Admin启动，匿名Admin API401、正式/login303；CUA独立localhost原生账号实际登录进入工作台，无Bearer/假Cookie。访问/manage/models首次编译时Turbopack SST出现ENOSPC、owned_service_exited，尚无模型/标签/费率/政策业务写。本轮outcome FAIL；自动回收最终receipt同受ENOSPC影响，不能称自动cleanup PASS。
+
+主控查全注册pgroup已无进程，先仅删其生成.next释放空间，再沿具名资源marker/原helper回收同一测试库与Redis/origin键；库回收前九业务表（model definition/revision/label、费率/政策、账户/hold/journal、Agent outbox）均0。自有shorttmp/source/deps、账号/密钥文件回收，原生测试Cookie清除/页关，人工cleanup PASS独立留证。正常BFF随后发现旧进程exit1/无监听，旧log不足证根因；仅同aad/原配置恢复，healthz/readyz200。原工作台native刷新auth/session及models均200/189事件无截断，原会话保持，无新模型/资金动作；正常App200。未清正常数据、卷或他人资源。
+
+私有driver后继只增加容量控制：已锁Next16.2.6支持的dev磁盘缓存关闭，仍Turbopack；两private config独立记录原blob/补丁摘要，不混IAM三test-only接缝。启动要求2GiB/运行保底1GiB，低于则正常退出回收；错误记录失败不阻断finally。静态准备通过，未重跑；随后只回收原TaskA已终态私有qualification的两node_modules与一.next叶，保源码/收据/manifest；主控核七门终态、基线为当前App祖先、无活跃argv/正常依赖链接。allocated约2.35GiB因APFS共享实际仅增143MiB，现Data约1.38GiB仍低于2GiB预算，不拿逻辑大小冒实得、不继续无界扫描或删除正常输出。Goal持续active，完整后台写旅程和原TaskB其余具名残项仍OPEN；原PR不合main/不部署。
+
+### 2026-11-12 侧栏既有key缺译修复派工
+
+正常English截图的“新建任务/电脑/创作/自动化/任务/收起项目”等由App现t(key)直接产生，8个key仅中文源存在，非中文overlay缺席；不是这些标签来自System中文manifest，也未见第二LocaleProvider。composer_ui_audit单writer仅八非中文词典/两原测试及必要i18n INDEX，按所有9个上线语言补既有key，先RED再GREEN；不改中文源、key、Provider、导航资格、协议或CSS。主控管Git/验收/唯一台账。当前资源不足大隔离，只做focused/相关lint/非增量TS，不跑build/完整默认/资源，未冒已修/可合并。
+
+live与private fallback出现Agent/Library的差别来自现manifest featureFlags/navigation与既有fallback，不据截图认定版本或System发布错误。manifest hook取navigator.language而非Settings当前locale是另一具名事实，当前未留实际navigation响应正文，后继定向核验语言切换影响，不混本片改动或假修正常配置。Goal持续active。
+
+### 2026-11-13 当前阶段收口与下一差额
+
+Goal实查active，整体Task B保持OPEN。App原#49新增00334cbe（基线bf8ef938，16路径含当前文档）：侧栏32个既有key九语言自有译文，补118缺译/7占位；拖动ARIA仅现有t向hook传必需label，两个真实caller承接，不改排序/权限/焦点/迟到逻辑、用户标题或locale框架。主控最终160 focused、相关ESLint、完整非增量TS、正常工作区production build通过，15输入前后SHA核等、独审CLEAR。最新真实French项目标题/空态正确并恢复English；实际目标视口1000×716/document1000，工具临时390 override未应用，不称本阶段新390验收。原15-key阶段窄屏证据仍单列，未重跑完整默认或模型/资金。
+
+B13第七次隔离run0eb09c8e843ee281ba2f37f4绑定Root58215eca/已提交六owner（Appbf8，不混后继侧栏提交）。六owner真实启动/native登录通过；definition201、r1草稿201后publish409。确定原因是旧测试recipe空bounds，但System正式publish要求完整；Admin“可空”未解释发布要求且详情只读，登记明确后续UI补口，不放宽owner约束。保原409，主控同一run显式创建r2(8192/1024)201→发布200；label201→两次CAS200别名修改/恢复原null/default revision不变；rate/policy各201，硬刷新与正式GET完整配置/精确r2 digest核等。两条计价命令由主控显式触发原body/key HTTP replay，data回执完全一致；不是浏览器ACK丢失验收。
+
+原driver只支持恰一个revision，其终态FAIL/exact_owned_browser_creations_required原样保留，cleanup PASS、credential log check PASS。独立补充verifier只核实录10命令、两个revision精确状态/两publish状态/CAS、fresh reads、原replay及五表零资金/Run，主控执行PASS；新增补充收据不覆盖原FAIL、不冒整个B13闭环。浏览器正式退出回landing，独占临时库/Redis/pgroup/源码输出由原helper回收；不可变配置随具名临时库清理不是产品retire/delete能力。正常账号/报价/资金/路由未动，无Provider/model请求。
+
+后续只做已发现差额：B13草稿发布提示/可修正路径；原具名Skills审核、MCP/API管理、团队邀请/角色/审计等TODO仍OPEN，不扩User360/统一审计框架。共享移动侧栏primitive与manifest设置语言输入另列观察；不以有限词条齐备冒全站翻译完成。沿原PR，不部署、不提前合整PR。主控只短停自己的App3310用于build，同配置已恢复；本轮无源码/依赖副本新复制，原B13副本创建早于新备份规则，后继不得复用旧复制配方新建。
+
+正常Agent Worker恢复补记：只读预检53 Run全终态、dispatch pending0（claimed53为历史）。Worker此前缺席，Agent.env.local本身缺BFF模型准入map；沿已登记launch_worker.py从BFF purpose凭据文件精确匹配当前tenant/caller/surface，进程内复用原secret/System角色并移除HTTP-only字段，不新增凭据或改生产配置。正式AppConfig/签名/Platform文件通过，主控启动原正式worker入口并观察到consuming日志；登记实际PID/exec及九个正常listener。此为消费就绪，不冒本轮新模型端到端成功，未提交新Run；旧财务未知项保持原正式恢复边界。
+
+### 2026-11-13 B13 草稿修正接线设计门（当前实施）
+
+- 事实/owner：System49a5已有updateModelRevisionDraft；System拥有草稿/发布不可变性与版本校验。BFFaad/Admin e7当前只承接create/publish，导致空bounds合法草稿没有产品内修正入口，真实409已留证。
+- 选定位置：BFF扩现有model-configuration窄adapter，发布具名PATCH /v1/admin/model-revisions/{revision_id}（required idempotency-key+If-Match、现platform-admin准入/system:write），只透传owner已有草稿更新；Admin复用现ConfigurationFlow与revision表单，编辑仅草稿，model_id/revision不可修改；提交显式CAS，unknown保原body/key/version，退休/取消/迟到沿原流程。发布前缺bounds给就地解释，不改变System的最终执行边界，不用自动复制新revision代替修正。
+- 契约：仅BFF兼容增量并提交固定owner blob给Admin正规消费；System及数据库不改，App原public子集pin暂不无意义升级，机器治理核兼容。保持Admin同源→BFF→System、内部服务身份+可信actor，不新增Cookie/OAuth/token/SDK/缓存。文档只改本次TECHNICAL_DESIGN/API_CONTRACT/current，Root单写台账。
+- 删除/恢复/验收：没有legacy双路，不建通用编辑框架或第二草稿store；缺权限/过时版本/未知结果与已发布拒绝承接原控制。最低充分证据为现BFF实际Nest/loopback-owner传输与closed schema/权限/CAS/取消负控，Admin实际表单编辑/发布前反馈与原命令恢复；源码停写后主控focused/types/build+相关contract，真实owner草稿修正→发布补缺旅程另记，不重跑模型/支付/全部B13。
+
+### 2026-11-13 B13 草稿修正候选验收/交付
+
+原计划设计门落实：BFF原#17/396897b8固定Public28.38/217，System仍49a/既有845契约pin，只正规生成已有PATCH，源头草稿/不可变性/权限不变。现BFF现窄adapter+精确admin前缀/UUID/服务准入承接required key/CAS、closed非空partial、null/省略及同id草稿ACK。主控正常工作区build与五相关文件190 PASS/0SKIP；writer全lint/types/generator/semantic通过，独审CLEAR。原整contract1400PASS/2FAIL保留，准确修复原delete_series的16项exact enum与feedback负控误删无关Share项后两文件44 PASS；主控190已包含，但未拼成重跑全contract绿。
+
+Admin原#7/df7883d固定该BFF原字节、46消费项并退役旧唯一无依赖vendor。复用原表单编辑当前草稿，冻结id/version及不可修改model_id/revision；新读只提示重开不自动rebase，合法空bounds草稿仍可保存，发布前缺bounds有原页反馈。原journal写入读回后onPrepared只退休matching编辑器，unknown显式原命令恢复，不清key/body/CAS或算成功；取消/卸载代际阻止异步validation和迟到接管。主控最终全47文件363 PASS/0SKIP、全lint/非增量types/两正式contract/build/post-types通过，停写18输入独审CLEAR，后继只有验收文案及纠正旧版本注释。
+
+App原#49/c1444ee0仅同源桥精准开放此PATCH，原64KiB/body/key/CAS/Origin/Cookie/signal保持；主控56 focused/build、writer scopedlint/完整types通过，Public28.37子集及原生成链不盲升级。Root固定三仓精确HEAD，inventory核413真实committed blobs/507引用，拓扑/15边0违例/原checkpoint通过。三仓已推原PR，未merge main/部署。原B13第七次两revision/rate/policy真实旅程仍只证明旧组合，不借它代替本片新路径。
+
+运行恢复先只读：53 Run全终态，Agent dispatch/BFF launch/steer/scheduled待办0，原两财务未知项保持；只替换主控自己的BFF进程，healthz/readyz200。App/Admin只短停用于各一次正常工作区build后同配置恢复，未复制源码/依赖、未动PG/Redis/卷/其它owner。App dev生成next-env路径diff单列未提交。下一检查点是隔离native真实“同一草稿PATCH补齐→publish→刷新”，不重复模型/费率/支付；新fixture须遵当前轻量源码/依赖规则，历史复制配方不复用。B09正式invite/accept/leave已定位，缺隔离双身份接线，不扩Project ACL或用logout401冒成员403。
+
+### 2026-11-13 B13/B14 下一独立写区
+
+主控验收与唯一Git/台账；sidebar_i18n_finish仅Admin修订表单与共用上游选择两组件复用现zh/en词典和真实LocaleProvider；实际Shell已有locale却固定Ant zhCN，一行按同一locale选择官方enUS/zhCN并补原hydration行为测试，不增加Provider或逐组件覆盖，不改业务/协议/框架；pricing_fixture_review只更新既有ignored native driver四文件为draft-correction与当前轻量复制/锁定安装规则，不启动资源。主控随后绑定三仓新提交/Root精确组合，单次补native同草稿修正/发布；不把另建r2或mock当该证据。
+
+### 2026-11-13 B14/新native接线交接事实
+
+Admin原#7后继87c228c只修两实际模型组件60个zh/en词条、现App上下文的发布确认，以及Shell现单一ConfigProvider跟随同一locale选择官方enUS/zhCN。用户模型名/协议、onPrepared/代际/CAS/null及目录不rebase保持；不加新Provider/解析层或逐组件重复覆盖。主控九输入冻结：全47文件367 PASS/0SKIP、完整lint、正常工作区build及构建后非增量types通过、独审CLEAR；原SSR/hydration/链接/监听回收覆盖保留。其它Models/Admin自定义旧文案未扩译，本片不冒全后台本地化/视觉完成。
+
+Root配对Admin87c228c；BFF396897b8/Appc1444ee0及机器契约不变，拓扑/15边0违例/原checkpoint通过，未重复后端全门。主控同配置恢复Admin，正常数据/角色/资金未改。
+
+新native driver仅ignored四文件静态准备并由主控纯检查/四SHA复验通过；draft-correction只同一r1创建→PATCH补齐(原CAS1)→publish(CAS2)→fresh版本3，原PATCH显式历史回执重放后仍须鲜读published3，不重复label/费率/模型/资金。新source复制遵rsync相同预检/实参、固定排除清单/提交blob核等，无旧依赖/cache复制；实际fixturepatch门批准后才按各owner engines/锁安装（Next22，其它24），8GiB启动预算/运行保底1GiB，拒复用run-id时不碰历史目录。正常pnpm/Corepack只读缓存可复用，不另备缓存。主控仅一次最小旧driver四源码备份69,265bytes，未带依赖；旧runs原失败/收据保持。尚未把静态检查当source复制、安装或native成功；下一步在新Root精确SHA上由主控启动并审实际patch。
+
+
+### 2026-11-13 B13 native 执行检查点
+
+主控独占资源/浏览器，pricing_fixture_review只读复审安装参数，sidebar_i18n_finish只读准备B09双身份接线。首新规则run c551e366f081e23dc7844615源码/私有patch门通过，锁安装请求下载超时FAIL，cleanup PASS；无业务/DB/浏览器动作。后继只调锁定pnpm下载请求预算600000ms/并发4，保锁、版本和engine。新run dc4d634d3525c1b6171576a7绑定Root2303d74c，4137源码与三IAM test/两Next resource patch由主控实际核验批准，安装进行中。只补同一r1 PATCH→publish→fresh及原PATCH回执/当前态分离，不重复计价/模型旅程；Goal active，整Task B及原PR仍OPEN。
+
+
+后继实测：dc4d634d3525c1b6171576a7六owner锁安装/构建/启动通过，真实native登录成功；/manage/models首次编译触发Next16.2.6已确认Google /l/font?kit=...&skey=... 无扩展URL解析缺陷（官方issue99114/fix100158），不是业务API/TLS失败。实际截图/主控browser-failure-receipt保留；正式Sign out后abort，原driver FAIL/cleanup PASS。只实施Admin同族/字重真实官方local字体+许可的局部修复，不改依赖/认证/模型，focused及真实Next build后配新Root再补同草稿。该环境失败不扩为整个Goal blocked。
+
+局部font修复已沿Admin原#7推送`3a521aba`：原三族/字重local真实官方资产779316bytes、OFL/固定来源SHA，主控12focused/非增量types/scopedlint/真实Turbopack build/posttypes/独审通过；15提交输入核等，normal同配置恢复。后继仅复用现pnpm store按锁copy安装（prefer-offline、无复制依赖/cache或prune/reset；cleanup只run），免重复下载，不换runtime或锁版本。新Root配对后补同草稿旅程，未冒已通过。B09三命令隔离接线已纯准备/静态核验，未邀成员/改角色或跑真实旅程。
+
+
+### 2026-11-13 B13 同草稿缺失native收据收口
+
+主控run9634eda90cfe493517b5394b绑定Root89de6a62/Admin3a521aba精确组合。唯一definition201与r1空bounds201；缺bounds发布仅本页英文反馈、观察代理无publish请求；同ID PATCH仅context8192/output1024、原key/CAS1→200/version2，再显式publish CAS2→200/version3，浏览器硬刷新详情同ID/摘要/限额且Published/无Edit。原PATCH显式重放历史ACK2不变、独立fresh仍published3。owner读回/七Billing资金/计价表与BFF dispatch均0/正式logout/cleanup/credential-log-check PASS。完整receipt与截图保ignored，前c551下载超时和dc4字体编译FAIL均保留；不拼历史r2/计价或mock。English表单/确认/Ant文案本次实际通过，非全Admin翻译/视觉完成。
+
+本子项关闭，整体B13/Task B/原PR仍OPEN/Draft；Goal实查active。下一个为B09双身份正式邀请/CSRF接受/本人UI leave与独立Session403，三命令test协议纯准备/语法与schema检查已交主控，未实际邀请/授成员/跑服务。继续既有owner，无新认证/SDK/框架，不重跑模型/资金或已验B06/B07。
+
+
+### 2026-11-13 B09接线与Models展示随片
+
+B09复用ignored现driver新增team-invitation，仅IAM/BFF/App，原source/审批/锁copy安装/进程/cleanup；三marker只控制recipient创建/精确私有邀请链接/observer激活，正式两业务写仍由浏览器，原ownerbind/BrowserBroker/生产认证不改。独审提前发现test状态与helper重名，最小rename后原IAM tsconfig466roots纯内存semantic RED7→GREEN0，累计三patch亦0错误；邀请成功断言按正式BFF/App收紧exact200。尚未启动本轮资源/浏览器；非整个Goal blocked。
+
+独立Admin原#7 `79b14599`只补Models presentation108 zh/en key，主控七文件46PASS/8SHA/types/scopedlint/真实build/posttypes、独审通过。原requests/CAS/journal/unknown及技术/用户/diagnostic原值保持，不扩框架。正常Admin恢复，本片browser/窄屏未新增，待真实后台后继复用，不冒整B14闭环。
+
+
+### 2026-11-13 B09 本人主动退出真实收据
+
+run497bcd810c3f33b82fe06ce8绑定Root5097b9b0/IAM40c/BFF396/Appc144，三owner source3318/累计三fixture+一Next patch主控核验，实际副本原tsconfig strict semantic PASS。owner UI invite200→recipient原生邀请signin/CSRF accept→Product login/本人member→UI Confirm leave DELETE200 exact member/status:left→自动signout及浏览器members401（CDP未截断）→owner fresh login目录目标缺席/owner保留→正式logout通过。独立observer before/after同Session摘要、expiry未来且真实IAM native200；原Product资格200→403 product_tenant_forbidden；owner鲜读/dispatch0/credential-log/cleanup PASS。仅本次两业务写，无roles替换/普通member remove/模型/资金或正常tenant变更；原旧角色分页移除等证据不拼成新全套。
+
+B09此具名缺口关闭，整体Task B/原PR/原件核验仍OPEN。下一实际面为B13现Skills治理→用户可见性，先定位当前active/verified immutable包，不造版本/执行模型；旧approvals网页指向不存在接口，不能作为审核成功，若要求独立待审审批流程须先owner状态/权限/审计/契约门，不把quarantine冒批准工作流。
+
+
+### 2026-11-13 B13 失效全局审批入口退役设计门
+
+- 基线/owner：Admin79b1459，旧approvals整页内联请求/api/approvals*，Admin/BFF/Capability无正式队列/approve/reject接口；它不是现Skills审核治理owner。TaskB仍承接原Hub Skills的正式发布/受众/隔离/恢复及用户回读，不以删除旧入口替代此验收。
+- 选定边界：删除旧app/(console)/approvals/page.tsx、Shell菜单/Overview卡和唯一nav.approvals双语key；不新增重定向/alias/“审批成功”stub或独立审批状态机。已有效/manage/hub及Skill正式操作保持，用户/资金/全局审计不扩。
+- 无Schema/契约/认证/状态机变更；旧URL采用Next标准404，未知旧API仍404。无数据迁移/清理，恢复仅Git回退该完整source片，不复活第二owner。
+- sidebar_i18n_finish只读核运行配置/凭据字段；pricing_fixture_review唯一Admin writer（5生产路径+原hydration测试+现TECH/API/README短说明），主控唯一Git/正常服务/验收/台账。原SSR/hydration/locale/监听风险保留，新增真实导航/overview无审批且保Hub；主控focused/lint/types/build与正式同源404/Hub可达，wire不变不重跑模型/资金/全owner合同。
+
+## 2026-11-13 B13 治理真实验收与资源故障边界
+
+Admin44ec4e9f已推原#7：退役无owner的全局Approvals页与两处入口，主控21 focused/ESLint/Next build/后置非增量types通过；正常同源旧页面与API404，native Hub16项及真实技能治理保持。原生成类型引用已删页的失败保留，正规build更新后通过。Models79b显示片另补正常en/zh目录/修订/详情关闭、390px中文空表单取消；page/main390无横溢，未创建配置/调用模型，原en和默认视口已恢复。
+
+BFFc40315b9已推原#17并正常激活：Skills管理/包下载早拒绝缺request-id导致网关502，现两wrapper各加一行现ID设置；主控65 focused/非增量types/正式build/独审通过。真实原普通角色恢复后Admin403 skill_forbidden，响应UUID/JSON/no-store正确。首轮用外部ID断言回显失败保留；Admin源码每次自产UUID，纠正测试断言而非放宽生产adapter。原node --test漏--import tsx的加载失败也保留，不拼成全默认通过。
+
+正常native对既有QA pin consistency current v5：audience catalog→owner→catalog两次UI POST200；非owner Product目录隐藏/详情404，恢复后同series/current版本200/原checksum可见；quarantine UI200，目录空/详情404。restore UI503，Storage同刻GetPackageReference503/186.757ms，不是5秒超时；S3 HeadBucket200而List500 InternalError/0 drives provided。Docker daemon本机unix _ping/version/containers各4秒timeout；现VM日志于11-12 22:53记录I/O/journal中止/只读重挂载，日志无05:44新事件。共享Docker VM重启已询问，尚未执行；不清卷/重建/重启他人资源。
+
+**未闭环项**：QA仍quarantined/state8；原restore正文/幂等键已私有登记，资源恢复后原命令重放并鲜读，不用新版本填补。治理期间主体非owner但临时具平台管理员，Product读链不使用该资格旁路；已正式CAS恢复原false/v8，再实测Admin403/普通目录空200/详情404，浏览器重载退出管理页回/app，注销本轮新Session，用户原会话不动。完整B13/Task B仍OPEN、Goal active；下一按此最小缺口恢复，独立元数据台账核验继续，原PR保持Draft、不merge/部署。
+
+B15旧Bearer元数据待办已核销：BFF28.38/217中210native、2health、2service-only、2webhook、1独立skill.list Key；Admin46项均native且canonical同SHA，App28.37/216同规则。主控现BFF已有contract102 PASS、App已有消费断言1 PASS，未改代码/generator/版本或机械更新pin；不保留已过时故障来拖延后继。
+
+组合收口：Admin44ec4e9f/BFF398cfe06已各推原PR；Root按413真实已提交blobs重核、仅290个仓commit引用更新，契约blob摘要零变化，未机械重发消费者pin。阶段先因旧inventory commit引用compatibility/checkpoint失败，精确更新后拓扑、15边0违例、原checkpoint全部PASS。App现next-env开发路由生成差异保留未提交。
+
+## 2026-11-13 Task B 多语言与公开 API 文档已交付，Project 协作进入明确设计
+
+App58ba5ecf已推原#49并正常源码激活：删除manifest写html.lang的重复effect，由LocaleProvider唯一维护。真实schema-valid迟到en-GB覆盖fr RED后修复；主控31 focused/非增量types/scopedlint/正式App build、六输入SHA核等及独审通过。正常native English→Français/html.lang=fr→硬刷新保持→原English/en恢复；不改manifest请求locale/scope/policy，不冒正常System支持en-GB或元数据请求语言映射已完成。只短停自己的App3310用于build，同配置恢复；53 Run全终态、派发无待办、原两财务unknown保留，不重跑模型/计费。
+
+公开门户固定已发布BFF396897b8/Public28.38/d6927c3a完整artifact，承接新增草稿条件PATCH；业务App client仍28.37。首页旧Bearer警告纠正、Secure/plain cookie互斥模式与名称明确。门户lint/provenance/55 tests/build/reference确定性211 public operations/architecture/62页20603链接通过；初始cwd路径错误、旧pin相对当前checkout不符、旧changelog空行和auth缺Secure名称断言失败保留，正规配对/正文修正后通过。无新框架/依赖/服务启动或部署，未跑全App默认，不冒全站/B14/B15完成。
+
+用户把Project产品选择委托主控。当前裁决：同tenant现成员显式viewer/editor、可到期/撤权；项目资料及明确项目聊天/任务安全结果共享，个人聊天/Secrets/Connection/资金不继承；owner独占授权与删除，执行始终当前actor自身资格。BFF三现设计为目标态未实施；独审发现editor改ScheduledTask可能沿原作者执行委托的P1，必须先明确暂停/新actor显式委托/旧revision fence，再闭门实施；必要Agent/Storage安全读取增量仍owner先发布，不代理creator。ProviderCRUD已存在，真实Custom API Admin及独立审计缺口已具体登记，不新造统一管理或审计平台。Docker恢复仍是共享资源单项待确认，QA保持quarantined/state8/原命令保留；未因此blocked整体Goal，Goal active、原PR继续Draft。
+
+B10本轮实际推进：BFF33419a04三目标设计已推原PR，独审ScheduledTask委托P1歧义已修复并CLEAR（代码/Schema仍未宣称完成）；FINAL结果范围以全部正式delivery/asset绑定复用当前Storage purpose=artifact，未设creator限制，不新增Agent/Storage接口。pricing_fixture_review现为BFF唯一生产/契约/SQL writer，先真实grant/CAS/幂等与访问规则，再逐现Project/Chat/结果入口承接；独立运行委托字段需具体设计过门，不代理creator，不只改finder。models_ui_review仅先写Capability Admin Custom API三设计，不碰BFF合同；主控保持Git/资源/唯一台账。
+
+当前提交组合App58ba5ecf＋BFF33419a04：按413真实committed blobs重核383仓引用，仅两份BFF设计文档摘要变化；拓扑/15边0违例/原checkpointPASS。此门绑定已提交快照，不冒后继BFF正在写的Project源码已验；正常BFF仍原c403实现，334仅设计文档后继。主控明示ProjectGrant绑定稳定subject、每次当前tenant准入生效，不新加IAM成员代际协议；退出期间拒绝，同subject合法重新加入后原有效grant可再生效，owner仍可撤销/到期。
+
+本轮先前分工：pricing_fixture_review写BFF ProjectGrant/逐入口ACL，models_ui_review写Capability Custom API治理（owner已交付，后继消费分工见最新检查点）；主控Git/资源/验收。ScheduledTask已压到Task.execution_actor_id＋dispatch.task_revision，复用已有revision、subject、digest、proof和opaque Scheduler callback task_revision，不另造授权ref/第二版本；跨actor执行配置编辑先暂停清executor，同执行人原native CAS可沿自己的委托。精确旧Schema中owner原即executor，合法回填保等原执行事实，不索取逐行历史登录日志、不暂停所有已验旧任务；未知父或非法/矛盾数据仍拒绝演进。以上是正在实施的目标，不冒新源码已验收。
+
+### 2026-11-13 本轮实际交付与下一检查点
+
+Capability Custom API owner `efe18a1f` 已推原#12，主控60路径核等，真实PG6项及HTTP/composition/正式contract通过；owner完整门通过，条件资源/外部E2E未跑分列，不激活未配对normal组合。BFF Project协作先两阶段真实PG通过，后继actor-key/immutableACK独有真实PG再通过；全部自有库回收，原expiry时间舍入与receiptfixture失败保留。此为源码/隔离PG阶段证据，不冒native Project协作闭环。
+
+pricing_fixture_review继续B10 canonical/业务/SQL，models_ui_review独立消费Capability固定artifact/generated与个人窄投影，公共API/模块/Git/正常资源不并发修改。主控验收与串行发布；下一B10共享安全投影/精确父演进，再BFF统一发布、App/Admin消费与真实双身份。Goal active、原PR Draft、不merge/部署；共享DockerVM重启仍待独立确认。
+
+B13消费补证：主控对84路径停写BFF消费区正式build、29source/8原HTTP及正规生成检查均通过，全部受测源码SHA不变，独审CLEAR。后继消费独立85路径已推BFF74117ac原#17，B10其它WIP完整保留、非完整owner验收。Agent新需求七路径正规配对已推 `0ec00aec` / Draft #49（原#48已合），主控129contract/generator/checker与独审通过；专用runtime历史锚、执行白名单不变，新Admin请求不进入执行I/O。App私有治理消费已基于BFF74117ac进入实现，原58编译基线standalone避免HMR提前激活；主控统一build和native。另独立client writer只消费已发布Capability六Admin RPC/绑定/专用purpose，公共AdminHTTP及canonical仍待B10writer停写后串行接入，不先造第二wire。
+
+### 2026-11-13 治理源码组合与多人执行门
+
+候选已提交组合Cap efe18a1f/BFFd875e3bd/Appebf97674/Agent0ec00aec；413真实Git blobs/476仓引用/18摘要据实重算，拓扑/15边0违例/原checkpoint通过，只证源码组合，不代表native激活。App37路径主控302与build/独审通过；新增未保存API转nonactive再保存漏口已最小修，保旧引用/草稿，未重复全默认。Admin6RPC薄客户端及严格receipt标记已交付，公共HTTP/页面未接。
+
+B10共享read/FINAL真PG先42P18（共享query漏$6）失败，经原LIMIT承接修正后通过；失败与回收原件保留。多人Run必须真实actor/subject，按subject源cursor唯一事实→单public序，旧stream HWM/state退役不双写、不reset；旧origin只精确已证绑定回填，矛盾拒绝，Chat同key隔离与现HTTP actor scope一致，旧ID/payload不改。新多source真PG首ACK null尚失败正定位；reader旧阶段不冒新source schema通过。
+
+Agent shared context由owner可选typed字段承载，BFF有权限后一致快照冻结whole-message bounded suffix与确认FINAL/显式has_earlier，不传creator checkpoint、不拼input；Agent current本人材料、Run级thread/workspace、同Run恢复、私密/完整window守卫；不加摘要服务/cache/SDK/重复entry凭证。20路径已停写通过主控171+2及契约/独审，8.18尚未发行，BFF不得消费WIP作正式pin。旧FINAL adjunct支持锚不改，新recipe不满足旧形状仍unknown，正式durable FINAL已验证。继续Goal active/原PR Draft，未merge/部署。
+
+本检查点后继：多source真PG `2cd27860` 已通过三轮actor/同key/各自HWM/单public序/重复冲突/旧fence；此前b210是新fixture会话ID前缀不符、a125是query输出alias被text排序，并非生产序回退，原断言不变/失败原件保留，三个自有库均回收。Agent8.18正式owner `3e61c0a1` 已推原#49，canonical cc7b8e02，主控171contract/model＋2真Factory、契约与20SHA核等/独审通过；BFF开始正规固定消费，不再是WIP发行。下一只补shared冻结/精确父/资源安全SSE及产品native缺口，整体Goal仍active。
+
+并行接缝现已交接：Admin唯一writer负责Public29候选六操作/装配/API文档，B10原writer保8.18冻结/SQL/source/SSE。App只读识别peer busy/本人控制/合法错误三wire缺口，Root已裁决复用安全execution_head.can_control、Project消息can_regenerate、消息页project_access及原AGUI metadata；不猜creator、不暴露peer pause/process，未发行221 candidate允许修正后仍严格退已发行217/28.38，不造未发行假历史。真实BFF producer→peer projector错误经当前App mapper隔离验证时发现漏thread/run ID和错误新literal，最小保原公开身份/固定safe literal后通过；29新control flag仍须正式消费验，不把旧pin适配当native。当前Parent/Admin后继源码未整片提交，整体Goal active。
+
+新增控制/context实际SQL gate：366cc322真PG通过三轮payload历史0/2/4与当前own/peer/demotion/regen事实。37d0新query content歧义、d908 orphan漏subject导致误判peer起点两FAIL先后真实发现，限定列来源/actual subject后GREEN；未放宽orphan保护/断言，所有自有库回收。Admin19源码主控33及独审CLEAR，六B10source测试与两边界测试已追加现脚本；PG继续显式隔离资源入口，不造新编排。后继仅resources/Skill安装/exact-parent与完整native/UI。
+
+
+### 2026-11-13 协作核心发行与消费实施检查点
+
+主控已把停写135路径正式提交推送 BFF `38d47c9` 原 Draft #17，Public29/227（canonical45c54365），正规消费 Agent3e61c0a1/8.18。最终 focused240/0skip、历史contract102/0skip、正规Agent generation check均PASS、135SHA不变；生产build绑定同字节。原229/11夹具失败保留，最小承接read lifetime/RR lease/两候选查询后复跑，未删scope/keyset/非法头/回滚断言。独审 buffered Project读发送前资格P1以实际RR唯一回调修复，当前CLEAR；resource阶段重核和已发Complete未知语义保持。未跑全默认，不冒正常激活/完整owner或TaskB闭环。
+
+当前Root精确源配对BFF38d47/Agent3e61，inventory按413实际committed blobs更新347引用/54摘要；App仍ebf97674原消费，Public29消费者尚在写，源码溯源检查不是可激活性承诺。主控独占Git/资源/台账/验收：pricing_fixture_review继续具名精确父演进和既定剩余BFF入口；models_ui_review正式App共享/唯一AI SDK终态/六Admin桥；custom_api_admin_client正式Admin Hub治理及52项契约消费。均用同一已发行Git artifact、不碰他仓写区，不新增认证/SDK/第二stream。后续精确父PG→前端停写/build→组合激活/真实双身份/剩余native→文档/原PR完整交付。Goal保持active、原PR Draft；共享Docker重启仍独立待答，不能将Project产品答复挪作资源授权。
+
+
+### 2026-11-13 精确父演进及 Admin 消费源码已交付，主控接管未提交前端
+
+BFF `690a787` 推原#17，具名evolve仅精确d875/28.38或current，主控pure3与真实PG完整1项均0skip/0fail；原ID/payload/executor/revision/public序保值、unknown/mixed拒绝、来源矛盾回滚/noop通过，冻结scripts/dist输入无漂移，aeab6b95自有库DROP+absence确认。正常库只读核29streams无缺Conversation/错owner、Scheduled dispatch0；未对正常库演进。Admin `153c875` 推原#7，52正式消费和Hub治理/审计/原命令恢复；主控focused9/1真实暴露拒绝tuple缺口，修后10PASS，完整默认380/0skip、lint/types/contract/实际Next build/posttypes通过。旧normal编译输出在build前移动、后恢复，Hub200且原SHA保持，无源码/依赖复制；候选编译输出本地待真实组合验收。最新Root源码配对重读413 blobs，更新290引用/18摘要，不机械升级其它独立pins。
+
+三个writer均因执行额度终止，主控接管WIP，不把其退出视为生产阻塞或Goal暂停。App正规29候选/AI SDK单轨终态/Grant角色片仍未提交，主控已补六Admin桥、member/迟到ACK、原命令刷新恢复/身份退休、canonical Project和Scheduled CAS接线；保持为WIP直到最终停写门。BFF剩余Skills/pin/删除/结果/本人RunDisplay、组合激活/native/文档/原PR总收尾仍OPEN。Goal active，原PR Draft，不合main/部署/清卷，原两财务unknown与Docker独立待答保持。
+
+
+### 2026-11-13 App Public29 协作源交付（正常组合/native 仍 OPEN）
+
+App `f32b707a` 推原#49，143paths包含正式Public29生成消费、Grant真实成员/角色与同tab原命令恢复、peer safe controls/原snapshot→AI SDK终态恢复、current Scheduled revision/executor与原CAS及六具名Admin桥。主控补错member/迟到ACK和401集合退休实际缺口，403/404只退休目标并保其它Project。29→已发行28.37叶逆证逐字等Git原件，原sealed父SHA不变；只更新当前pin/negative needle，独立private profile不浮动。原私人URL复制专属测试退休，由实际Grant组件/未知恢复/角色退休承接；仅自比常量的伪pin断言删除，真整个artifact与生成检查保留。
+
+首完整默认6771/94FAIL保留（新合同/pin/fixture及实际401缺口），修后相关focused逐项通过；最终停写142输入逐SHA保持，完整默认380文件6865 PASS/0skip、完整lint、正规生成checks、Next生产build/posttypes通过。提交前仅一处测试行尾空格和两份进度文档变动，生产字节不改；正常3310/3320仍各自旧已验编译输出，未热激活新WIP。新Root inventory417真实committed blobs/93引用/31摘要，注册四个真实Project消费输入；源码溯源不代表双身份/native完成。
+
+主控继续已知BFF剩余Skills安装/包/spec、本人pins、聚合删除、selected FINAL及本人RunDisplay，然后原地演进/精确组合/真实两身份与Admin治理/Portal29产品/API文档/原PR收尾。无新扫描轮、TaskA回开、认证/SDK/第二stream；Goal active、原PR Draft，不提前合main/部署/清卷。
+
+
+### 2026-11-13 共享个人pins与Skills接线源码收口
+
+BFF `fbc2025c`推原#17，16路径：pins沿当前read资格只写本人偏好、parent锁后新SQL鲜验；installation GET、包/spec/exact download接read，四类写接edit，body/key解析后及owner I/O出口核同canonical Project，实际actor不变，private finder不全局放宽。shared_project_pin_skills_review独审发现半包body期间降权仍发owner写的P2，主控真实Nest/HTTP先RED后修，零新增owner调用；最终独审12个源码/测试路径CLEAR。主控focused183、Nest/DI74、真实PG2均0失败/0跳过；build/lint/types/12路径format通过，PG自有6c682987库DROP并确认absent。最初PG1/1、接线2例及body竞态失败、DI65/9和69/5都保留；DI只校准当前readable/read覆盖及真实Conversation事实，零I/O/8关闭阶段断言保留。无合同/Schema/认证变化，不跑无关全默认或模型，不冒native完成。
+
+主控继续Project aggregate删除、selected FINAL资格与本人editor RunDisplay；shared_project_run_display_audit只读方案已交付，须同时readable lookup与edit gate并保exact actor/final证据，不能仅换lookup放行viewer。然后正常精确父演进/组合激活、真实两身份与Admin治理、Portal29文档及原PR总收尾。Goal active、各原PR Draft，正常资源未激活、不合main/部署/清卷；Docker共享VM独立待答与两财务unknown保持。
+
+
+### 2026-11-13 本人editor RunDisplay源码收口（不冒整链）
+
+BFF `5cb7b13d`推原#17，8路径；主控按shared_project_run_display_audit最小方案实施并由同agent独审CLEAR：readable finder与Project edit gate同步接，exact Run actual actor不放宽，peer/viewer拒绝；verified spool与Agent后发头前鲜验保留。本人FINAL binder同原RR内核current/edit，SQL绑定dispatch.subject=actor=caller，去Conversation creator假设但保唯一completed slot/revision/durable-final/retired证据；selectedFinalAnswerInTransaction未改。新HTTP先404≠200、真实PG先editor binding null的RED保留；主控三完整文件123 PASS/0skip、creator→editor→creator真实PG完整1 PASS/0skip，build/lint/types/7路径format通过。c25e4c3a自有库DROP+absence、源码/dist输入SHA保持；HTTP Agent/Storage为明示fixture，未跑真实模型/native或旧parts全套，不拼全绿。
+
+接下去主控仅补Project aggregate删除与selected FINAL输入资格，再精确父演进/配对激活/真实双身份及Admin治理/Portal29产品和API文档/原PR整体交付。当前Goal active、正常资源未切换、原PR仍Draft、不合main/部署；其它已接受暂存边界不变。
+
+
+### 2026-11-13 已知共享输入/聚合删除源码已齐（最终完整门与正常组合仍待）
+
+BFF `6b1d8a4`原#17发布20路径：同Project当前read与唯一来源解析复用两处SQL，保source actor/Run/asset/digest；目标锁内edit与metadata后再验不变。真实输入PG暴露fresh latest/active预读阻断原key regen，分开不可变source读与新命令/UI资格，原receipt仍优先，fresh门未放宽。owner aggregate收全部canonical creator与own legacy，data creator/实际cleanup actor显式分开；已deleted child保原deleted_at但补fence，known-unsent全退休，peer admitted/unknown原事实保持，只给真实actor发取消；N+1仍owner服务断言，全部成员ACK齐才released。
+
+主控一次完整默认2556 PASS/21 FAIL/2条件SKIP，原日志保留。五失败组按真实readable/read/canonical Project/完整Task owner-executor修夹具，私有Prepare保持573独立feature pin并核573/efe两实际vendor bytes；SQL字符串排序/owner-only/FOR SHARE oracle不代表当前共享策略，风险由真实PG承接，不改gate或私有profile。独审另抓Project viewer新cancel仍发1次Agent，修为readable后保原安全ACK/replay分类，只有新cancel/resume需edit并释放未送claim；临时早拒误挡旧ACK也有RED并修。最终三独审CLEAR，11相关完整文件163 PASS/0skip、真实PG输入11与聚合完整1均0fail/0skip；build/lint/types/16路径format通过，16源码测试+8dist SHA保持；最终0e894ea0/b7c7ecd2自有DB DROP+absence。未重新跑完整默认，不拼最终全绿，不冒真实IAM/Storage/Agent/browser整链。
+
+已知六处源码入口收口不等于TaskB完成。接下来最终完整默认门→当次normal进程与quiet/确切catalog核验→仅本任务受管应用配对停启/具名owner演进/正式候选输出→真实双身份与Admin治理→Portal29/API/产品文档→原PR正常main及分支清理。受控activation清单已由只读agent交付；旧processes.json别名/快照不是当前运行证明，必须主控实查。Docker共享VM仍独立待答，不停他项目、不清卷，原两笔财务unknown保持；Goal active，各原PR Draft，不部署。
+
+
+### 2026-11-13 冻结源码最终完整默认通过，正常切换仅完成只读准备
+
+主控在已提交6b1d8a4源码上跑正式pnpm test，完整2580项：2578 PASS/0 FAIL/2条件SKIP；24源码/测试/compiled输入逐SHA保持。两跳过是owner schema coexist/rollback与R237 fresh catalog的需PG条件例，不冒全部integration。此前完整2556/21/2、修复后134定向/163相关及所有RED原件保留。BFF后继38e8e7a仅CURRENT收据，生产树等6b；doc-only Root组合重读417真实blobs/290引用/0摘要变化。用户不要求测试数量，不以这些数字称TaskB已完成。
+
+本轮正常资源只读实查（不是旧登记推断）：BFF53 dispatch均terminal、取消与scheduled dispatch空、enabled Task0、active consumer lease0；Agent53 Run全terminal、active lease0，历史claimed53均join到同tenant已terminal Run、event outbox全published；BFF/Cap/Agent HTTP/App各一个实际listener，受管Agent worker仍活。原数据未清状态、无模型/资金/服务重启、未执行normal evolve；旧processes别名仍须实际切换时复核。下一步当次quiet与exact父/catalog→停本任务受管调用方/owner并配对credential purpose/源码→具名演进→正式候选编译输出→真实双身份及Admin治理→Portal29文档→原PR/main/清理。全Goal仍active，Docker共享VM待答与两financial unknown保持原边界。
+
+
+### 2026-11-13 正常成对演进与双身份 ACL 主片已验
+
+主控按当次quiet/真实PID-cwd停6个自有应用，不动共享infra/其他owner；必要配置及两owner一致性dump私有保留。Capability718d精确父正常升级成功；BFF两次正式失败分别为物理列布局和13条合法queued无Agent source，两次均回滚且原36表SHA保持。演进工具1086a4f/509597f沿原#17交付，live语义仍精确、queued仅真正缺source并由原dispatch全闭集证明，已有矛盾source仍拒绝；不加通用fallback、不补source/HWM、不改canonical SQL或HTTP。既有真实PG用例补实际风险，RED→最终1 PASS/0skip、规则3、lint/format与独审CLEAR；原保值/负控/noop全保留。
+
+最终正常演进成功，BFF36/Capability25表原行SHA完全核等，cursor/HWM/state精确迁移；成对9项Platform/1项BFF admin配置保原8项，Cap/BFF readyz200、Agent正式Worker consuming。裸Agent readyz401不称ready已验。前端候选已受控激活；首次IAB登录502证实是本地HTTP与强制production/Secure Cookie模式不匹配，恢复App现私有环境对应源码next dev后真实普通账号登录通过，生产安全源码不改；Admin候选next start，旧输出保留。App自动next-env开发types路径未提交，后继收尾处理，不造源码副本。
+
+正常Chrome owner＋独立IAB普通成员完整执行专用QA Project创建→Viewer只读→Editor保存指令→owner刷新同值→降权真实native PATCH403/project_edit_forbidden且内容不变→撤权后列表/旧地址内容退休。初负控误期望404保留，按现正式403纠正；探测Session均正式注销。QA grant已撤销，项目/指令暂留后继，原私人资料/其他数据未动；无新模型/资金命令。只收ACL此片，不冒共享Run/安全FINAL/Artifact、到期或完整Admin完成。
+
+下一检查点：这些缺失旅程→公开Portal29/API/Project文档→原PR正常main及自有分支清理。Root417真实blobs/290引用重算、拓扑/15边0违例/原checkpoint通过。Goal保持active；两位只读agent审查，主控唯一资源/Git/台账，不把历史TaskA或旧财务unknown重开。

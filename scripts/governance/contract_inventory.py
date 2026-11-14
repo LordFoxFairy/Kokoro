@@ -84,6 +84,18 @@ IAM_SDK_RELEASE_ARCHIVES = {
         "0.21.0",
     ): "458da2ba96daa7784f0cd296b92fc0e428232e49119c0ca25485788ffc1dcad9",
 }
+# One independently released consumer remains on its genuine archive. This is
+# an exact publication proof, not permission to accept other version pairs.
+IAM_SDK_EXECUTION_AUDIT_COMPATIBILITY = {
+    "profile": "iam-0.21-execution-to-0.22-audit-addition-v1",
+    "release_commit": "b6a9745b340149808afb1aae357574d0aa7bbad3",
+    "release_version": "0.21.0",
+    "release_contract_sha256": "d279907ae52e0f8594ee28a388f22c9d79e298e8e49caeb2efc3ca2291cdf0b9",
+    "owner_commit": "814ba4c423b631cab28929048c7203f2d14822fc",
+    "owner_version": "0.22.0",
+    "owner_contract_sha256": "fe0f70f60776e74dc6795f460c4c78010aba7549bf9f6b63e8daae99e035c482",
+    "consumed_operation_ids": ["verifyExecutionAuthorization"],
+}
 IAM_SDK_VERIFIER = "src/infrastructure/iam/execution-authorization-verifier.ts"
 SYSTEM_OPERATIONS = (
     "POST /v1/system/model-catalog/resolve",
@@ -565,41 +577,38 @@ def _verify_agent_connect_codegen(
         ) != (owner_name, owner_repo):
             raise ValueError("Agent Connect receipt owner pin differs")
         release = pin.get("owner_commit")
-        if platform:
-            if release != owner_commit:
-                raise ValueError("Agent Connect receipt owner pin differs")
-        else:
-            if not isinstance(release, str):
-                raise ValueError(
-                    "Agent Storage release requires a canonical commit OID"
-                )
-            release = _canonical_object_id(release)
-            owner_commit = _canonical_object_id(owner_commit)
-            ancestry = subprocess.run(
-                [
-                    "git",
-                    "--no-replace-objects",
-                    "merge-base",
-                    "--is-ancestor",
-                    release,
-                    owner_commit,
-                ],
-                cwd=root / owner_repo,
-                capture_output=True,
-                check=False,
+        owner_label = "Platform" if platform else "Storage"
+        if not isinstance(release, str):
+            raise ValueError(
+                f"Agent {owner_label} release requires a canonical commit OID"
             )
-            if ancestry.returncode:
-                raise ValueError("Agent Storage release must be a runtime ancestor")
-            for path in (
-                *(f"contract/proto/{source}" for source in inputs),
-                CONTRACT_PROVENANCE,
+        release = _canonical_object_id(release)
+        owner_commit = _canonical_object_id(owner_commit)
+        ancestry = subprocess.run(
+            [
+                "git",
+                "--no-replace-objects",
+                "merge-base",
+                "--is-ancestor",
+                release,
+                owner_commit,
+            ],
+            cwd=root / owner_repo,
+            capture_output=True,
+            check=False,
+        )
+        if ancestry.returncode:
+            raise ValueError(f"Agent {owner_label} release must be a runtime ancestor")
+        for path in (
+            *(f"contract/proto/{source}" for source in inputs),
+            CONTRACT_PROVENANCE,
+        ):
+            if git_blob(root, owner_repo, release, path) != git_blob(
+                root, owner_repo, owner_commit, path
             ):
-                if git_blob(root, owner_repo, release, path) != git_blob(
-                    root, owner_repo, owner_commit, path
-                ):
-                    raise ValueError(
-                        f"Agent Storage runtime differs from release: {path}"
-                    )
+                raise ValueError(
+                    f"Agent {owner_label} runtime differs from release: {path}"
+                )
         agent_commit = assertion["repository_commit"]
         sources = []
         combined = hashlib.sha256()
@@ -904,23 +913,29 @@ def _verify_pnpm_file_lock(
         raise ValueError(f"pnpm lock: {error}") from error
 
 
-def _verify_iam_sdk_release_inputs(root: Path, release: str, current: str) -> None:
+def _verify_iam_sdk_release_inputs(
+    root: Path, release: str, current: str, compatibility: dict | None = None
+) -> None:
     repository = root / IAM_REPOSITORY
-    ancestry = subprocess.run(
-        [
-            "git",
-            "--no-replace-objects",
-            "merge-base",
-            "--is-ancestor",
-            release,
-            current,
-        ],
-        cwd=repository,
-        capture_output=True,
-        check=False,
-    )
-    if ancestry.returncode:
-        raise ValueError("IAM SDK release source must be a runtime ancestor")
+
+    def require_ancestor(ancestor: str) -> None:
+        ancestry = subprocess.run(
+            [
+                "git",
+                "--no-replace-objects",
+                "merge-base",
+                "--is-ancestor",
+                ancestor,
+                current,
+            ],
+            cwd=repository,
+            capture_output=True,
+            check=False,
+        )
+        if ancestry.returncode:
+            raise ValueError("IAM SDK release source must be a runtime ancestor")
+
+    require_ancestor(release)
 
     def sdk_tree(commit: str) -> bytes:
         result = subprocess.run(
@@ -939,12 +954,52 @@ def _verify_iam_sdk_release_inputs(root: Path, release: str, current: str) -> No
             raise ValueError("IAM SDK source tree is unavailable")
         return fields[2]
 
-    if sdk_tree(release) != sdk_tree(current):
+    anchor = release if compatibility is None else compatibility["owner_commit"]
+    if compatibility is not None:
+        require_ancestor(anchor)
+    if sdk_tree(anchor) != sdk_tree(current):
         raise ValueError("runtime IAM SDK source tree differs from its release")
-    if git_blob(root, IAM_REPOSITORY, release, IAM_OPENAPI) != git_blob(
-        root, IAM_REPOSITORY, current, IAM_OPENAPI
+    parent = git_blob(root, IAM_REPOSITORY, release, IAM_OPENAPI)
+    runtime = git_blob(root, IAM_REPOSITORY, current, IAM_OPENAPI)
+    if compatibility is None:
+        if parent != runtime:
+            raise ValueError("runtime IAM contract differs from the SDK release")
+        return
+
+    child = git_blob(root, IAM_REPOSITORY, anchor, IAM_OPENAPI)
+    if (
+        release != compatibility["release_commit"]
+        or sha256_bytes(parent) != compatibility["release_contract_sha256"]
+        or sha256_bytes(child) != compatibility["owner_contract_sha256"]
+        or runtime != child
     ):
-        raise ValueError("runtime IAM contract differs from the SDK release")
+        raise ValueError("IAM audit addition differs from the exact release contract")
+    document = _strict_json_blob(child)
+    if document["info"]["version"] != compatibility["owner_version"]:
+        raise ValueError("IAM audit addition has a different owner version")
+    # The entire old contract (including execution security and every referenced
+    # schema) must survive, not just one operation name or a version declaration.
+    audit = document["paths"]["/internal/v1/audit-events"]["get"]
+    parameters = audit["parameters"]
+    audit["parameters"] = [
+        item for item in parameters if item.get("name") != "x-kokoro-actor-id"
+    ]
+    if len(parameters) != len(audit["parameters"]) + 1:
+        raise ValueError("IAM audit addition lacks its unique actor header")
+    audit["security"].remove({"bffUserContextServiceBearer": []})
+    del audit["x-kokoro-identity-modes"]
+    del audit["x-kokoro-bff-user-context"]
+    document["info"]["version"] = compatibility["release_version"]
+    restored = (json.dumps(document, ensure_ascii=False, indent=2) + "\n").encode()
+    if restored != parent:
+        raise ValueError(
+            "IAM audit addition does not restore the complete SDK contract"
+        )
+    execution = document["paths"]["/internal/v1/execution-authorizations/verify"][
+        "post"
+    ]
+    if execution["operationId"] != "verifyExecutionAuthorization":
+        raise ValueError("IAM SDK selected execution capability is missing")
 
 
 def _verify_capability_iam_archive(
@@ -959,7 +1014,18 @@ def _verify_capability_iam_archive(
             or EXACT_SEMVER_PATTERN.fullmatch(version) is None
         ):
             raise ValueError("archive version must be exact semantic version")
-        if version != owner["contract_version"]:
+        compatibility = edge.get("sdk_owner_compatibility")
+        if compatibility is not None:
+            if (
+                compatibility != IAM_SDK_EXECUTION_AUDIT_COMPATIBILITY
+                or version != compatibility["release_version"]
+                or owner["contract_version"] != compatibility["owner_version"]
+                or owner["contract_sha256"] != compatibility["owner_contract_sha256"]
+            ):
+                raise ValueError(
+                    "requires the exact IAM execution/audit compatibility declaration"
+                )
+        elif version != owner["contract_version"]:
             raise ValueError("archive version differs from the IAM owner contract")
         archive_path = f"vendor/iam/kokoro-iam-client-{version}.tgz"
         paths = (
@@ -1008,7 +1074,11 @@ def _verify_capability_iam_archive(
                     "Capability manifest also selects the archive outside runtime dependencies"
                 )
 
-        commit = owner["repository_commit"]
+        commit = (
+            owner["repository_commit"]
+            if compatibility is None
+            else compatibility["release_commit"]
+        )
 
         def owner_blob(path: str) -> bytes:
             return git_blob(root, IAM_REPOSITORY, commit, path)
@@ -1043,7 +1113,12 @@ def _verify_capability_iam_archive(
             "schema_version": 1,
             "package": {"name": IAM_SDK_PACKAGE, "version": version},
             "source": {"commit": release, "dirty": False},
-            "contract": {"path": IAM_OPENAPI, "sha256": owner["contract_sha256"]},
+            "contract": {
+                "path": IAM_OPENAPI,
+                "sha256": owner["contract_sha256"]
+                if compatibility is None
+                else compatibility["release_contract_sha256"],
+            },
             "generator": {
                 "package": IAM_SDK_GENERATOR,
                 "version": owner_generator,
@@ -1081,7 +1156,9 @@ def _verify_capability_iam_archive(
             raise ValueError(
                 "digest does not match the independently verified clean IAM archive"
             )
-        _verify_iam_sdk_release_inputs(root, release, commit)
+        _verify_iam_sdk_release_inputs(
+            root, release, owner["repository_commit"], compatibility
+        )
     except (
         AttributeError,
         EOFError,
