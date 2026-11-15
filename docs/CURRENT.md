@@ -1,3 +1,9 @@
+## 2026-11-15 原两笔无预占恢复残留已实际审计关闭
+
+仅U-01/U-02：原命令防迟到永久关闭＋Agent独立关闭事实各2，原键重放相同、正式repository对精确target不再给恢复工作。原Run/Attempt/Evidence和对应payer八类资金行JSON摘要/`xmin`全部保持，旧usage unresolved/unknown与结算ACK空值原样保留；不是0usage、退款或旧冻结结清。[报告§7](reports/2026-11-14-historical-financial-unknown-readonly.md)分列源码门、隔离真实HTTP链、正常两笔收据、失败与范围。
+
+Billing exp11、BFF内部1.4、Agent显式operator/一张必要close事实表及有数据additive已交付。隔离真实CLI→BFF→Billing→Agent及迟到admit409、无资金效果通过，fixture数据库/Redis已回收；正常只按原两命令执行，四本任务服务已恢复进程/health。未模型/支付/退款、未共享Docker/卷操作，未扫全仓或重跑旧成功旅程。Billing#6/main c55abf34、BFF#28/main2e0affb1、Agent#50/main f231b04a均实际MERGED，merge树等已验源、三个本轮topic远近已清；Root精确组合/Git出口由主控串行收尾；下一轮不自动开工，其他遗留按唯一TODO保持。
+
 ## 2026-11-14 两笔历史unknown只读调查完成，未做处置
 
 本轮仅原登记attempt6b56cb40…/a16926cd…，Agent严格证据均terminal、not_dispatched/requested_unknown、dispatch/admission/ACK空；Billing原attempt/run/request对应admission/receipt/key/hold为0行，未发现本轮对象的可退扣款。原SDK诊断仅connection_error→runtime_error，不能归为另一Run的overload；历史30积分资金事项与此两恢复候选不同，不清零、不扩查。
