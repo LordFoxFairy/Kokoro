@@ -2,6 +2,18 @@
 
 更新：2026-11-15。唯一执行清单；Task A及Task B本轮批准范围已交付，Root #67已合main `91b54d74`。两笔无预占恢复残留已沿 Root #93 合 main `3960b351`。历史片段中的“待合并／active／待确认”只代表当时状态。
 
+## A-15 本轮前端切片已收口（2026-11-15）
+
+只处理已批准的“Project冷首屏不静态加载未打开设置内容”。[报告§24](docs/reports/2026-11-11-typescript-auth-admin-audit.md#24-a-15-project-首屏非关键设置-js2026-11-15)记录实际范围、对照与失败；不是完整A-15或旧100ms目标达标。
+
+- [x] 按遗留清单筛选；已完成两笔无预占unknown/R-06核销，不重复扫描；其它条件项不自动开展。
+- [x] 源码与方案门：首次Project GET不等list/engine，保准入/取消/代际；用户确认只lazy现SettingsPanelContent，复用多语言loading，不新建缓存/层或搬owner。
+- [x] 当前production同HTTP只读fixture各3context：净减encoded39,126B/decoded197,571B；DCL→exact GET中位163.7→156ms，rAF就绪229.4→201.5ms。首次设置才下载另2脚本/内容可见，无JS异常/写入；不是liveIAM/BFF/p95。
+- [x] 原3文件504回归、单独布局例RED→1PASS并保持断言、英法×桌面移动4浏览器、lint/types/build/独审通过；无关全默认/全站E2E/已验链不重跑。
+- [x] App#65已main93a342d3且树等审定源，本轮topic远近已清；Root424真blob/97引用更新、拓扑/15边0违例/原checkpoint通过。自有preview已关闭。
+
+Root本轮PR承接最终main与本轮branch/fixture清理，实际出口见该PR/最终回执，不预写未来mergeSHA。远端CI无steps、现有账户条件未启动，保留原条件，不称通过；正常服务/数据/资金/部署不动。
+
 ## R-06 GitHub 单一发行：源码及本地验收已收口（2026-11-15）
 
 仅shared i18n发行/App消费，按[最小方案与收据范围](docs/superpowers/plans/2026-11-15-r06-i18n-publication.md)完成，不新开扫描或其它产品任务。
@@ -192,18 +204,17 @@ GitHub App本次CI annotation明确任务因账户账单／额度问题未启动
 
 App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分支／预览与临时目录，证据归档。门户产品/API分层、来源/生成/示例/导航与实际浏览器已验；A-15当前Project两对与阶段补口已验，冷rAF252～276ms未达100ms。它是后续体验余量，不挡本轮真实Agent主线，也不冒性能达标。详情见[报告§23](docs/reports/2026-11-11-typescript-auth-admin-audit.md#23-a-15当前观测与公开文档收拢)。
 
-## 下一轮遗留 TODO（本次只整理，不自动开工）
+## 其余遗留与本轮边界（不自动扩项）
 
 不是新增故障清单；不重开已交付Task A/B，不重复扫描或重跑旧成功链。
 
 | 项目／状态 | owner | 下一动作与完成边界 |
 | --- | --- | --- |
-| 两笔无预占unknown／已核销 | Billing＋Agent | 原命令永久防迟到凭据＋独立审计关闭已实际完成两笔，重放相同、精确target恢复候选退出；旧usage unknown/ACK空和原行/资金xmin保持。不冒0usage或旧冻结结清，见[报告§7](docs/reports/2026-11-14-historical-financial-unknown-readonly.md) |
 | 真实MCP／Provider授权末端／条件暂存 | Capability＋目标Provider | 有真实端点及账号授权后，只补真实授权→调用→撤权末端；占位QA已删，不拿example.com造故障。已验控制面/材料边界不重跑 |
 | A-13外部渠道／条件暂存 | 渠道owner | Telegram/LINE/Slack按实际使用的渠道，账号授权齐备后补收发/撤权；本地协议证据不冒供应商实测 |
 | A-14本人语音／用户择时 | App＋用户 | 用户主动口述→编辑→显式发送；不保留录音或口述原文，沿“稍后验收”安排 |
 | 完整E2B生命周期／可选运行环境 | Agent＋环境owner | 确认实际采用云或完整自托管后补创建/重连/独立回收；官方envd Docker已有证据保留，不当完整云验收也不重复跑 |
-| A-15冷启动体验余量／后续优化 | App＋BFF | 原Project冷rAF252～276ms、100ms旧目标未达是历史测量，不冒当前性能结论；只有确定体验目标后再定点量测hydration/首GET，不扩全站性能工程 |
+| A-15更广真实性能目标／目标与代表场景待定 | App＋BFF | 本轮设置JS切片已交付，受控fixture不冒真实链/p95或冷100ms达标；更广目标只有明确场景与目标后再立项，不自动扩成全站性能工程 |
 | IAM共享源IP额度／非合作取消语义／容量边界 | IAM及对应写入owner | 有代表负载再核容量；不随意抬限流，不将HTTP取消等同事务硬回滚，不为已验功能再造组合矩阵 |
 | 远端CI账单／额度／运维事项 | GitHub账户管理员 | 处理Actions账户条件后让正常CI运行；既存“未启动”不改写绿色、不绕分支保护、不重复push等CI |
 | Provider专用长期审计／可选增强 | Capability＋Admin | 只有明确产品需求后立项；当前状态/receipt不称长期审计，现IAM/CustomAPI审计不重做 |
@@ -211,6 +222,8 @@ App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分
 **保持关闭／不纳入本轮**：真实支付未接入、未部署；Mori无本轮任务。以上条件项和增强项不等于已批准产品功能有10个新故障。本轮“两笔无预占unknown恢复残留”已实际非资金关闭；历史30积分资金事项另案保留，不能同这两条无admission候选混算。本轮不自动扩查或清账；R-06已按本轮范围收口，不捆绑扩建。
 
 ### 已从遗留表核销
+
+两笔无预占恢复残留已按[报告§7](docs/reports/2026-11-14-historical-financial-unknown-readonly.md)实际审计关闭；R-06已沿shared#2/App#64/Root#94合main并清本轮topic。不重复计入剩余，不重跑。
 
 R-03 Admin真实接线／Hub边界、R-07 contract-check只读、R-14 OAuth操作级DNS pin，以及BFF认证metadata／门户文档均已由Task B原PR与具名收据承接。旧“11项收口／4项遗留”和Capability #12未合main的描述已失效，不继续计数或重做。
 

@@ -1,3 +1,11 @@
+## 2026-11-15 A-15：本轮非首屏设置 JS 切片已验
+
+按唯一TODO只选一项独立前端切片，用户已批准，不重扫已完成部分。App[PR65](https://github.com/LordFoxFairy/kokoro-app/pull/65)正常合main `93a342d39a35ff422be9a03ad2e4ff3b1cd629d0`，树等审定源；只对SettingsPanelContent用现Next dynamic及多语言loading，Dialog/tab/focus/准入/Project读取/取消/缓存不变。
+
+同只读HTTPfixture、production build、各3新context：首屏encoded JS 1,229,484→1,190,358B，decoded4,521,400→4,323,829B；script20→21，首次设置另取2脚本。rAF就绪中位229.4→201.5ms，DCL→exact GET163.7→156ms。不是liveIAM/BFF、生产p95、100ms或完整A15达标，首次设置有额外等待。原3文件504/单独布局1/英法桌面移动4浏览器、lint/types/build及独审通过；失败与未跑范围见[报告§24](reports/2026-11-11-typescript-auth-admin-audit.md#24-a-15-project-首屏非关键设置-js2026-11-15)。
+
+Root424真blob/97 App引用配main，仅E2E证据摘要变，拓扑/15边0违例/原checkpointPASS。App topic远近已清，自有production/E2E预览已核关闭；Root本轮PR承接最后main/清理。[唯一TODO](../todo.md)保其它外部条件及更广目标，不新增故障/平台/长期token，正常服务/.next/数据/资金/部署不动。远端AppCI因现有账户条件未启动、steps0，不称绿色、不重试等CI。
+
 ## 2026-11-15 R-06：GitHub 发行和 App 单一消费源已验
 
 shared[PR2](https://github.com/LordFoxFairy/kokoro-web-shared/pull/2)正常合main `e0ca7221b17a7d9ca3624aaa664e3f792433b7cb`，正式GitHub private发行`@lordfoxfairy/i18n@0.1.0`；fresh-cache拉取/SRI/dist逐字等源构建/独立Node与类型PASS。App包Actions Read已保存，自动GITHUB_TOKEN即可，无新长期secret/组织/发行平台。原registry活接线已去，不访问/擅删旧制品或用户其它scope配置。
