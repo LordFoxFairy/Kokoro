@@ -1,12 +1,25 @@
 # Kokoro · 当前执行 TODO
 
-更新：2026-11-14。唯一执行清单；Task A及Task B本轮批准范围已交付，Root #67已合main `91b54d74`。下面当前遗留表为下一轮入口；历史片段中的“待合并／active／待确认”只代表当时状态。
+更新：2026-11-15。唯一执行清单；Task A及Task B本轮批准范围已交付，Root #67已合main `91b54d74`。两笔无预占恢复残留已沿 Root #93 合 main `3960b351`。历史片段中的“待合并／active／待确认”只代表当时状态。
 
-## 当前轮：两笔无预占恢复残留最小闭环（2026-11-15）
+## R-06 GitHub 单一发行：源码及本地验收已收口（2026-11-15）
+
+仅shared i18n发行/App消费，按[最小方案与收据范围](docs/superpowers/plans/2026-11-15-r06-i18n-publication.md)完成，不新开扫描或其它产品任务。
+
+- [x] R06-1 核GitHub registry、owner scope与现有write:packages权限；用户确认@lordfoxfairy/i18n，不创建组织/alias/PAT。
+- [x] R06-2 去原registry接线/说明；复用现TS构建JS/声明和GitHub自动token，不新建发行平台/长期secret。
+- [x] R06-3 shared#2已main e0ca7221；正式GitHub private发行0.1.0，fresh-cache拉取/SRI/源构建dist/独立运行和类型PASS，App Actions Read已保存。
+- [x] R06-4 App#64已main75af734b，精确依赖/正规lock/唯一import、删七文件副本与旧Docker COPY；词典/Next/tsconfig不变，无双来源。保留lock节点逐项核等，仅清旧独有工具链与精确可信新版本min-age放行。
+- [x] R06-5 主控独立App-only/fresh store install/import、原三文件115tests/lint/types/production build、Docker build/standalone200/秘密边界、独审均PASS；正常main install/import已过。相关失败/未运行界限见方案，不冒全默认/E2E/CI绿色。
+- [x] R06-6 Root精确配对两main gitlink，424真实提交blob/97 App引用重核，拓扑/15边0违例/原checkpointPASS；shared/App自有topic远近已清。
+
+最终Git出口由承载本清单的Root PR审查合main及清本轮分支完成，实际状态见该PR与最终回执，不预写未来merge SHA。App远端CI因账户支付/额度未启动（steps为空），保留到既有CI账户条件项，不新增为i18n代码故障；无部署或新资金动作。
+
+## 已交付：两笔无预占恢复残留最小闭环（2026-11-15）
 
 - [x] 精确定位原登记两attempt，分别核Agent/Billing/BFF事实与规范摘要；查清恢复候选保留机制，纠正overload及held30混同。
 - [x] [原因、证据缺口与处置方案](docs/reports/2026-11-14-historical-financial-unknown-readonly.md)已整理；只读调查阶段未改资金、源码或运行状态，物理故障细因不猜测。
-- [x] 已完成实现与实际两笔关闭：按[报告§6](docs/reports/2026-11-14-historical-financial-unknown-readonly.md#6-2026-11-15-已批准实施门仅关闭这两笔无预占残留)推进Billing原命令无预占防迟到终局＋BFF原可信通道＋Agent独立审计关闭；不自动扩大其他记录，不改钱/0usage。主控唯一Git/资源/验收，具名agents按owner分区。定向门、隔离真实链及正常两笔关闭收据均PASS；Billing#6/BFF#28/Agent#50已main、三个本轮topic远近已清。Root固定已验组合，Root本身PR/main及清分支以后置实际Git核验为准。
+- [x] 已完成实现与实际两笔关闭：按[报告§6](docs/reports/2026-11-14-historical-financial-unknown-readonly.md#6-2026-11-15-已批准实施门仅关闭这两笔无预占残留)推进Billing原命令无预占防迟到终局＋BFF原可信通道＋Agent独立审计关闭；不自动扩大其他记录，不改钱/0usage。主控唯一Git/资源/验收，具名agents按owner分区。定向门、隔离真实链及正常两笔关闭收据均PASS；Billing#6/BFF#28/Agent#50已main、三个本轮topic远近已清。Root#93已合main3960b351并清本轮分支，前轮出口完成。
 
 ## 已交付：Task B（2026-11-14）
 
@@ -186,7 +199,6 @@ App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分
 | 项目／状态 | owner | 下一动作与完成边界 |
 | --- | --- | --- |
 | 两笔无预占unknown／已核销 | Billing＋Agent | 原命令永久防迟到凭据＋独立审计关闭已实际完成两笔，重放相同、精确target恢复候选退出；旧usage unknown/ACK空和原行/资金xmin保持。不冒0usage或旧冻结结清，见[报告§7](docs/reports/2026-11-14-historical-financial-unknown-readonly.md) |
-| R-06在用i18n正式发行／技术债暂存 | shared发行＋App消费 | 补齐既有registry、scope、不可变版本及读/发布权限，再原子切manifest/lock/Docker并删在用副本；无发行出口时不建新包平台、不称本地bridge为正式发行。已删除的无消费者web-core不重做 |
 | 真实MCP／Provider授权末端／条件暂存 | Capability＋目标Provider | 有真实端点及账号授权后，只补真实授权→调用→撤权末端；占位QA已删，不拿example.com造故障。已验控制面/材料边界不重跑 |
 | A-13外部渠道／条件暂存 | 渠道owner | Telegram/LINE/Slack按实际使用的渠道，账号授权齐备后补收发/撤权；本地协议证据不冒供应商实测 |
 | A-14本人语音／用户择时 | App＋用户 | 用户主动口述→编辑→显式发送；不保留录音或口述原文，沿“稍后验收”安排 |
@@ -196,7 +208,7 @@ App #58、Root #86已合main；Root main07241f03／App026a7d12，已清本轮分
 | 远端CI账单／额度／运维事项 | GitHub账户管理员 | 处理Actions账户条件后让正常CI运行；既存“未启动”不改写绿色、不绕分支保护、不重复push等CI |
 | Provider专用长期审计／可选增强 | Capability＋Admin | 只有明确产品需求后立项；当前状态/receipt不称长期审计，现IAM/CustomAPI审计不重做 |
 
-**保持关闭／不纳入本轮**：真实支付未接入、未部署；Mori无本轮任务。以上条件项和增强项不等于已批准产品功能有10个新故障。本轮“两笔无预占unknown恢复残留”已实际非资金关闭；历史30积分资金事项另案保留，不能同这两条无admission候选混算。本轮不自动扩查或清账；R-06仍单列，不捆绑扩建。
+**保持关闭／不纳入本轮**：真实支付未接入、未部署；Mori无本轮任务。以上条件项和增强项不等于已批准产品功能有10个新故障。本轮“两笔无预占unknown恢复残留”已实际非资金关闭；历史30积分资金事项另案保留，不能同这两条无admission候选混算。本轮不自动扩查或清账；R-06已按本轮范围收口，不捆绑扩建。
 
 ### 已从遗留表核销
 
