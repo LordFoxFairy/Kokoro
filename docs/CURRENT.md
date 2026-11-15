@@ -1,3 +1,11 @@
+## 2026-11-15 当前 TODO 收拢与上轮最终出口
+
+A-15 单一设置内容切片已沿 App #65／[Root #95](https://github.com/LordFoxFairy/Kokoro/pull/95) 合 main，Root `8f68f9a3`／App `93a342d3`，本轮分支、临时预览及源码依赖验证副本已清，原收据保留。下方上轮“Root本轮PR承接最后main/清理”是当时阶段描述，此处补齐最终事实，不重跑已验链。
+
+[唯一 TODO](../todo.md)现只保当前动作、8 个有条件遗留／可选增强和固定交付证据入口；当前没有无需新增条件或产品决定的已批准代码项。本轮只清理清单中旧 active／待合状态，不以历史文字判断机器 Goal、不创建新目标或虚构代码任务。精简前完整条目保存在固定 Git 基线链接中，未丢失过程证据。
+
+仅 Root 两份文档变更，检查 diff、相对路径和新增锚点；不改子仓／gitlink／协议／Schema，不启动服务、浏览器、测试资源或全量测试。其余真实授权、用户语音、环境采用和代表负载等条件照原边界保留，不标完成，也不展开全仓扫描。
+
 ## 2026-11-15 A-15：本轮非首屏设置 JS 切片已验
 
 按唯一TODO只选一项独立前端切片，用户已批准，不重扫已完成部分。App[PR65](https://github.com/LordFoxFairy/kokoro-app/pull/65)正常合main `93a342d39a35ff422be9a03ad2e4ff3b1cd629d0`，树等审定源；只对SettingsPanelContent用现Next dynamic及多语言loading，Dialog/tab/focus/准入/Project读取/取消/缓存不变。
