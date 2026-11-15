@@ -1,3 +1,13 @@
+## 2026-11-15 执行结果到持久事件：未确认落账错误传播已修
+
+双只读agent限定Agent事件持久化和BFF映射／replay，主控唯一writer／验收／Git；BFF未确认缺陷，保持不改，不扩扫描。Agent关键stage及前置fence查询普通异常曾被pump当作可丢单帧错误吞掉；暂停期没有已确认queued行，不能依赖queued重放补齐。现就地转既有ProgressPersistenceError，租约查询归一化集中原helper，原typed身份／cause保留，不加层或恢复框架。
+
+公开invoke暂停路径分别先RED，四个stage／fence×普通／typed用例验证异常传播且不进入waiting／terminal、不捏造Chat或终态。False／None围栏、已确认queued后的Redis降级／mark及取消语义保持。无SQL／Schema／wire／依赖变化。
+
+Agent[#52](https://github.com/LordFoxFairy/kokoro-agent/pull/52)已合main `3c49705d791055a85dd7d6d81a0012345110e6b0`，merge树等审定97c24f69，owner topic远近已清。停写后三相关文件125PASS，4项integration marker排除、409条既有锁定SDK Beta警告；完整Ruff／format404、固定Pyright显式venv0错误、offline lock、contract及wheel/sdist通过，包内源码核等、两独审CLEAR。未跑全默认、真实DB／Redis／模型／Provider或浏览器链，不以unit冒端到端验收。
+
+Root59 Agent字段配main，重读424真blob／518引用、摘要不变，拓扑／15边0违例／原checkpoint通过；[唯一TODO](../todo.md)同步。本轮专用打包输出已回收，冻结SHA／失败日志／收据保留，不清理既有build/dist/venv，不重启服务或写业务数据，基础设施／运维／部署不纳入。本Root PR承接最后main／topic清理，不宣称全仓零缺陷。
+
 ## 2026-11-15 Agent核心质量：输入查询与扫描尾响应已修
 
 两只读agent分别审输入／工具和交付／终态，主控唯一writer／验收／Git；只修具代码证据的两组问题，不回扫Project，不纳入基础设施／部署／运维，也不碰旧财务事项。
