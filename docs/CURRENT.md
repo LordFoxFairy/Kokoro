@@ -1,3 +1,11 @@
+## 2026-11-15 Project 代码质量：两个实质问题已修
+
+按用户要求排除基础设施／运维，双只读面审查、主控唯一writer：rename ACK回读只将exact detail404退休，collection404／503不误退休，保原命令／fresh顺序／身份／epoch／取消；Shell的Skills warm与Panel共用一个data reader，旧UI导出删除，key／store／false／lease及Panel行为不变。不加层／缓存／SDK／协议，不宣称提速。
+
+App[#66](https://github.com/LordFoxFairy/kokoro-app/pull/66)已main `f8215c105285ab6207bcff3b84aca56631642ee4`，树等审定18be8f4d，本轮App分支远近已清。RED1/PASS2、相关523及最终hook46／resource13、全lint／最终types／architecture50／隔离production build、两独审通过；初次测试夹具类型错误和未跑边界见[报告§27](reports/2026-11-11-typescript-auth-admin-audit.md#27-project-业务代码质量事实退休与数据ui职责2026-11-15)。
+
+Root424真blob／518引用重核、97 App字段精确配main、摘要不变，拓扑／15边0违例／原checkpointPASS。单一验证副本已回收，正常dev.next／业务数据／其它工作树不动，未运行模型／native／性能旧旅程或操作基础设施。Root本轮PR承接最终main／清分支；[唯一TODO](../todo.md)保留其他边界，不把本轮收口冒全仓零问题或继续机械扫描。
+
 ## 2026-11-15 A-15：production＋真实后端已验，低收益候选已撤销
 
 隔离App production build接现有真实BFF/IAM，原native开发Session仅内存复用；透明loopback代理保canonical origin，无fixture／route／fulfill，不冒production登录或部署。正常dev3310／.next及后端保持。

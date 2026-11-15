@@ -963,3 +963,48 @@ App-only独立副本按排除清单rsync预检／复制，1581个tracked输入�
 本轮production真实链定位与唯一单变量试验收口；**没有保留业务源码改动，没有声称生产提速／100ms达标或A-15全面完成**。
 后续若继续优化应只针对实际模块启动成本提出有净收益的具体切片；本轮不自动开展其它拆包、认证／缓存重构或新性能工程。
 正常Root文档PR承接main与本轮分支清理，子仓与gitlink保持原精确组合。
+
+
+## 27. Project 业务代码质量：事实退休与数据/UI职责（2026-11-15）
+
+### 本轮范围与审查方式
+
+用户要求持续打磨业务代码质量、架构与设计思想，明确排除基础设施／部署／运维。本轮沿当前Project主链作两个独立只读面，主控唯一writer／Git／验收；不为模式数量、文件长度或找问题新增层／循环全仓扫描。
+`startup_quality_review`核启动依赖，`project_state_review`核Project读取状态；仅保留具代码证据和触发条件的两个问题，不重跑已撤销的Skills route-only性能试验。
+
+### Q-01：rename ACK后的精确404没有退休旧目标
+
+旧`refreshRenamedProject`只处理401／403；当前list/detail ready、rename已ACK后，目标被另一成员／标签删除，fresh exact GET404仍保旧ready Project及侧栏行。
+普通详情读已有404退休规则，rename回读路径不一致，是业务负事实缺口，不是代码审美。
+
+最小修复只有现函数内读取阶段标志：exact GET成功且围栏核过才转到collection阶段；只有前者404能证明目标已不存在。
+精确404复用原retireProject／不可重试投影，collection404不伪造成目标删除，503不退休。
+原subject／route／epoch／取消围栏、错误原型、先detail再collection的发布屏障、GET-only恢复和rename命令意图保持；不重发PATCH、不把ACK当fresh状态。
+相邻注释改成真实的“退休旧请求／fresh事实替换”，不再暗示ACK会立即清空当前display。
+
+三个等价类在旧实现先RED1／PASS2（43项仅按名称未选），准确复现旧ready未退休；修后通过精确404退休、后继集合404不退休、精确503不退休，未用预先refresh掩盖旧ready事实。
+
+### Q-02：启动数据预热反向依赖完整Skills面板
+
+旧Shell仅为warmSkillsPool导入skills-panel.tsx，而该UI模块同步依赖多种Dialog／管理组件与CSS；warm与Panel还各写一份相同的pool＋quota读取。
+这是明确的数据／展示职责耦合，不把静态依赖问题冒称已确认性能故障。
+
+在同一feature内用具名`skills-pool-resource.ts`承接一个reader与warm订阅；Shell直导data模块，Panel用同reader，旧定义删掉、不保re-export。
+沿用原client-scoped key／store、warm的false参数、Panel默认重验证、准入lease、quota失败null与pool失败error；没有新缓存、SDK、协议、通用Base层或新的业务owner。
+这是“单一读取规则＋数据不依赖视图”的职责收敛，不为套设计模式增加对象或目录。旧实现先测warm去重／重订阅保留／quota降级与pool错误，再迁移同规则。
+
+### 实际验证与源码出口
+
+- 修复及搬迁后的四相关文件523 PASS；最后hook46与resource13分别复验，不把重复运行相加当测试总数。
+- 完整lint、最终typecheck、architecture50及隔离App-only production build PASS；1582个输入SHA核等，不覆盖正常dev.next。
+- 初次type门新增测试夹具误给无参createHubClient传参，两处已仅改测试调用并做scoped lint／完整types／resource回归；保留失败，不改生产API迎合夹具。
+- 两个具名只读复核CLEAR：阶段标志不会把collection404误当目标缺失；warm数据依赖已断开UI，原key／false／lease与Panel订阅不变。
+- 未改变布局／新UI入口／API／Schema，不重复native、模型、全默认、无关contract生成、浏览器旧旅程或性能对照；本轮证据只证明对应hook／resource／Settings／rail风险，不称全站E2E。
+
+App [#66](https://github.com/LordFoxFairy/kokoro-app/pull/66) 已正常合main `f8215c105285ab6207bcff3b84aca56631642ee4`，merge树等审定源 `18be8f4d`；本轮App topic远近已清。
+Root精确配该App main；重读424个真实Git blobs／518引用、更新97个App commit字段，内容摘要均未变化。拓扑、15边0违例及原checkpoint PASS，不机械替换摘要或升级不变契约。
+本轮单一源码／依赖／build验证副本已回收，RED/GREEN、类型失败与冻结manifest保留；正常服务、数据、依赖和其他工作树不动。
+本Root PR承接最后main／本轮分支清理，未等CI运维、未操作基础设施或部署。
+
+本轮聚焦范围的两个实质问题已修并复核，无新具证据待修项；这不是全仓无缺陷证明。
+后续仍以真实问题和净维护收益为触发，不重新扫描已完成清单，不把剩余外部条件／运维事项当本轮代码故障。
