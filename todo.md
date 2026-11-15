@@ -10,6 +10,15 @@
 - 不为保持“推进”而重复扫描已交付代码、补重复测试、扩建审计平台或擅定性能指标。条件具备后，只做对应缺口。
 - 上轮production诊断／试验已沿Root #98合main `8f266a15`并清本轮资源；当前执行下方代码质量批次，不重跑该实验。
 
+## 本轮已验：执行结果到持久事件／恢复展示
+
+主控唯一writer／Git／台账／验收；agent_event_persistence_review只读Agent持久化与发布错误边界，bff_replay_review只读BFF纯映射／恢复payload。仅沿执行结果→持久事件→恢复展示，不回扫已修输入匹配／scan轮询／Project，不纳入基础设施／运维。
+
+- [x] Agent确认critical stage及前置fence查询普通异常被pump误吞，暂停期无已确认queued行可补；BFF限定映射／replay无确认缺陷，不改不扩扫描。
+- [x] 公开invoke暂停路径分别复现stage RED1/PASS1、相邻fence RED1/PASS3（各15未选）；普通OSError归一化、既有typed保identity。stage就地包装，租约查询归一化下沉既有helper，不加层；False／None／已落账网络降级／mark／取消不变。
+- [x] 停写输入相关三文件125PASS，4项integration marker排除、409条既有SDK Beta警告；全Ruff／format404／Pyright0错误、offline lock、contract和wheel/sdist通过，包源码核等；两独审CLEAR。不称全默认或真实E2E。
+- [x] Agent[#52](https://github.com/LordFoxFairy/kokoro-agent/pull/52)已合main `3c49705d`，树等审定97c24f69，owner topic远近已清。Root59字段精确配对，424真blob／518引用重核、摘要不变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。本Root PR承接最终main与Root topic清理；仅本轮打包输出已清，保留收据和既有build/dist/venv。
+
 ## 本轮已验：Agent 核心业务链质量
 
 主控唯一writer／Git／台账／验收；input_tool_review只读输入／工具执行，artifact_terminal_review只读产物／终态。仅沿当前Run→工具／沙箱→FINAL链，不回扫已交付Project，不纳入基础设施／运维／部署。
