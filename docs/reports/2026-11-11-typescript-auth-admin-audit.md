@@ -849,3 +849,58 @@ App[PR65](https://github.com/LordFoxFairy/kokoro-app/pull/65)已正常合main
 
 本轮只关闭“非首屏设置JS”这一个已批准切片。更广的真实链冷100ms/容量目标未立项或未证实，
 仍按唯一TODO的条件项承接，不把Task A重新开成故障清单，也不为找问题再扫仓。
+
+
+## 25. A-15 真实环境 Project 冷首屏定位（2026-11-15）
+
+### 已批准范围与决定
+
+仅定位一个真实环境 Project 冷首屏瓶颈，有明确收益才保留最小源码修复；不扩全站、不改认证或缓存、不重复旧成功链。
+基线 Root `902ad84675c172d89ba8ef614b35b457470c1acc`、App `93a342d39a35ff422be9a03ad2e4ff3b1cd629d0`。
+本轮只交付诊断和 TODO/CURRENT：**没有生产源码改动，也没有声称提速**。
+
+### 真实环境与测量终点
+
+复用现运行 Web→BFF→IAM 与原开发账号，经正式 native 登录创建本轮会话，读取一个已有 Project，不创建业务数据、点击写操作、调用模型或改权限。
+Chrome headless、1280×800、en-US、reduced-motion，新 context 且禁用浏览器缓存；现有服务明确为 Next16.2.6 `next dev`。
+这是浏览器资源冷、既有服务进程温的本地开发环境，不是 production build、服务冷启动、生产 p95 或100ms验收。
+
+“草稿就绪”要求当前 Project 真实名称标题与对应 textarea 可见、输入非 disabled/readOnly。
+权限单独记录 exact 当前 Project `/access` HTTP200及owner事实；草稿能输入不等于发送／业务编辑已获准，不能用其替代权限验收。
+此处不报告“全部编辑 UI 可用”的时间，也不把抓取响应完成时刻冒充 React UI 已应用权限。
+
+### 一个已确认的主线程阻塞段
+
+有效非 profile 单样本与一次归因 profile 分开列出，不拼成统计分布或前后收益：
+
+| 从 navigationStart 起的毫秒／资源 | 非 profile 单样本 | 带 CPU profile 单样本（有采样开销） |
+| --- | ---: | ---: |
+| document TTFB / DCL | 33.4 / 45.8 | 30.9 / 45.0 |
+| 首 exact Project GET 开始 / EOF | 335.5 / 374.6 | 351.8 / 381.4 |
+| exact GET 耗时 | 39.1 | 29.6 |
+| 真实名称＋可编辑草稿 rAF | 443.9 | 451.0 |
+| exact `/access` 开始 / EOF（200 owner） | 435.0 / 460.6 | 442.5 / 484.7 |
+| 启动长任务开始 / 持续 | 200.4 / 135 | 210.3 / 141 |
+| 已完成 JS / decoded bytes | 64 / 22,143,937 | 64 / 22,143,937 |
+
+首 Project 请求发起前存在一个135ms主线程长任务；另一次profile也观察到同位置141ms任务，CPU采样主要落在React开发态jsx／元素构造和react-dom。
+确认的瓶颈段是**开发态客户端启动的主线程占用**，而不是本次约30～39ms的Project GET请求本身；没有反事实实验，因此不把整个DCL→GET间隔都归因于它。
+64个脚本／22MB是开发构建的解压资源观察，不是生产包体退化结论；旧§24的production fixture不同后端／模式，不能混成当前真实链前后对照。
+
+另一个已观察但未优化的串行边界：`app-frame.tsx` 仅在 canonical Project detail ready 后给 `useProjectAccess` 传入id。
+这解释当前 detail响应后仍有权限读取，但不是本轮已证的“无用校验”；未提前信任route id、删准入或伪造权限，也不把约60ms response→access-start差都称owner延迟。
+
+### 失败、清理与最低充分验证
+
+- 首轮探针误把存在h1的骨架屏视作就绪，3个样本全部作废；不纳入上表。
+- 修正探针后，连续打开／登录落地页额外启动请求触发429，且一次非关键connector读取502；该轮超时失败保留，不称性能样本通过，也不扩项修复供应商或提高限流。
+- 随后改用正式登录表单的HTTP提交，避免额外登录落地页执行整套JS；低频单次测量成功。再作一次带可见性检查的CPU归因采样后停止。
+- 两个有效样本均实际显示已有Project名称及可编辑草稿，exact Project与access均200，pageerror0；各保留3条初始化取消请求，不冒“网络全绿”。
+- 私有probe、完整失败与有效收据／profile留ignored目录；凭据仅进程内读取，会话逐轮finally正式退出，最后logout200，不保存Cookie／storageState，不写公开业务内容或原始profile。
+- 独立只读复核指出并已纠正 skeleton／权限终点混用；最终文档检查diff、链接和数值与收据一致即可。未改源码／gitlink／契约／Schema，不运行单元全量、build、Docker、旧认证／模型旅程。
+
+### 收口与后续边界
+
+**本轮“真实环境定位一个瓶颈”的任务完成；最小生产修复收益尚未证实，因此不实施源码修复。**
+后续若要优化实际用户体验，应在代表性的生产构建＋真实owner组合下做单变量对照，再选一个有净收益的改动；不自动立项、不为结案把开发态开销当生产缺陷。
+本次Root文档PR承接正常main／本轮分支清理，原服务与端口、用户数据、权限、依赖和其他工作树保持。
