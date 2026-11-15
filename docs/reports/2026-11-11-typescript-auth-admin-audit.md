@@ -904,3 +904,62 @@ Chrome headless、1280×800、en-US、reduced-motion，新 context 且禁用浏�
 **本轮“真实环境定位一个瓶颈”的任务完成；最小生产修复收益尚未证实，因此不实施源码修复。**
 后续若要优化实际用户体验，应在代表性的生产构建＋真实owner组合下做单变量对照，再选一个有净收益的改动；不自动立项、不为结案把开发态开销当生产缺陷。
 本次Root文档PR承接正常main／本轮分支清理，原服务与端口、用户数据、权限、依赖和其他工作树保持。
+
+
+## 26. A-15 生产构建连接真实后端：单边界试验已撤销（2026-11-15）
+
+### 本轮范围与真实接线
+
+用户批准：production构建接现有真实后端，继续定位Project冷首屏；只有明确收益才保留最小修复，不扩全站、不做重复门。
+基线Root `07a7675acb061e01b8f807ad9f15edbc7ce9b6a0`、App `93a342d39a35ff422be9a03ad2e4ff3b1cd629d0`。
+
+App-only独立副本按排除清单rsync预检／复制，1581个tracked输入逐字核等；不复制node_modules／.next／运行env，不保留指向主仓的.git指针，Git基线单独记录。
+最终用manifest固定的Corepack pnpm11.25.0、Node22.23.4、原lock和现store离线安装／Next16.2.6 production build，未升级依赖或改registry。
+初期误用系统pnpm10导致安装接线失败，随后一次私有helper路径错误又触发原源码重复构建；均保留为验证工具失败，不当业务故障或成功候选。
+
+预览用本仓manifest的`next start`正式入口、`NODE_ENV=production`、随机loopback端口；Next提示standalone入口建议，真实页面与API均成功，不把本轮当standalone镜像／部署验收。
+服务env只在进程内复用现配置；真实BFF/IAM进程不重启，正常dev3310及其.next不动。
+
+正式native登录／logout经正常开发Web3310；原Cookie不改名、仅内存复用，不持久化Cookie／storageState。
+测量浏览器保持原canonical origin，专用透明loopback HTTP代理只把该origin的GET/HEAD流式转给隔离production，保留原Cookie／Origin及canonical Host。
+无route／fulfill、响应替换、fixture、假身份或认证放行；业务写和其它origin不转发（本次blocked0）。
+这是**production构建＋真实owner＋既有开发Session的已登录读取**，不是production登录／Secure Cookie生命周期、直连网络基准或部署验收。
+
+### 冷首屏与唯一试验
+
+同一已有Project、Chrome headless1280×800、en-US、reduced-motion；每组2个新context，CDP关闭浏览器缓存，样本间65秒；无CPU/network throttle。
+既有后端进程温，production预览进程每组新启；第一样本TTFB与后续不同，不移除、不拼成p95，也不与§25 dev直连数据作源码收益对照。
+草稿终点为Project实名标题＋对应输入均可见且未禁用；exact `/access`200 owner单列，不冒权限UI已生效或可发送时间。
+
+定位到首关键请求前的production启动长任务64／66ms。只在验证副本试一个假设：将当前Project未访问的route-only `KokoroSkillsSurface`改为现Next dynamic边界，loading复用现skills.loading；没有改任何请求、路由、数据hook、权限或缓存。
+该页面与Project／overlay共享大量Skills依赖，不能把一个页面边界当整套Skills延后。
+
+| 指标 | 原production（2样本） | 单Skills边界候选（2样本） |
+| --- | --- | --- |
+| 首屏 encoded JS bytes | 1,190,358／1,190,358 | 1,185,904／1,185,904 |
+| 首屏 decoded JS bytes | 4,323,829／4,323,829 | 4,305,595／4,305,595 |
+| 初始script数 | 21／21 | 22／22 |
+| document TTFB ms | 97.2／24.1 | 98.8／31.3 |
+| DCL ms | 114.4／47.8 | 114.6／53.7 |
+| exact Project GET开始→EOF ms | 278.0→360.9／206.0→256.7 | 275.7→344.6／203.8→254.3 |
+| 实名＋可编辑草稿rAF ms | 373.6／271.6 | 360.1／278.8 |
+| exact access EOF ms（均200 owner） | 381.8／284.0 | 373.6／297.0 |
+| 启动长任务持续ms | 64／66 | 63／63 |
+
+结果只少4,454B encoded／18,234B decoded，却多一个初始script；草稿一对快13.5ms、另一对慢7.2ms，未证一致净收益。
+**候选撤销，不复制到正常App、不增加异步边界或测试维护负担，也不继续扩大到其它页面。**这不是统计显著的收益或退化判断，而是小收益且无一致体验改善时选择不改。
+
+### 一次原production CPU归因与验证出口
+
+验证副本恢复原AppSurface后重新production build，只补一次CPU采样，不纳入前后收益组。
+观察到55ms启动长任务；CPU自采样约42.2ms落在Turbopack运行时模块工厂实例化函数，另有React／业务chunk执行；直接核对当前构建函数确为加载／执行module factory，不修改框架产物。
+因此本轮确认的阻塞段仍是**首关键请求之前的客户端模块初始化／启动执行**；Skills单页面代码不是已证的主要来源。没有足够反事实证据将整个DCL→GET间隔归于某个模块，或认定后端／认证可删除。
+
+- 原production2样本＋候选2样本＋独立CPU1样本：已观察API均200、pageerror0、requestfailed0；原生会话可信subject及Project access owner均实读，不点击业务写操作或调用模型。
+- 两个基线／候选完整production build与恢复build通过；CPU采样有额外开销，单列归因，不称第五个无采样性能样本。
+- 独立只读复核确认discard与终点区分；数据／链接／diff定向核对即可，不跑业务全默认、其它页面E2E、模型链、Docker或原Task A/B门。
+- 三个自有预览端口均已核关闭，浏览器／代理由finally关闭，临时会话正式logout；回收本轮单一源码／依赖／build副本，原收据、私有试验patch与失败证据保留，不动正常服务、共享store或其他工作树。
+
+本轮production真实链定位与唯一单变量试验收口；**没有保留业务源码改动，没有声称生产提速／100ms达标或A-15全面完成**。
+后续若继续优化应只针对实际模块启动成本提出有净收益的具体切片；本轮不自动开展其它拆包、认证／缓存重构或新性能工程。
+正常Root文档PR承接main与本轮分支清理，子仓与gitlink保持原精确组合。

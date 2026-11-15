@@ -1,3 +1,11 @@
+## 2026-11-15 A-15：production＋真实后端已验，低收益候选已撤销
+
+隔离App production build接现有真实BFF/IAM，原native开发Session仅内存复用；透明loopback代理保canonical origin，无fixture／route／fulfill，不冒production登录或部署。正常dev3310／.next及后端保持。
+
+原组与Skills单页面dynamic候选各2个冷context、间隔65秒；草稿与exact access200分列，API均200、pageerror0／requestfailed0。候选压缩JS仅1190358→1185904B，scripts21→22，草稿373.6/271.6→360.1/278.8ms，无一致净收益，已撤销，正常App源码与gitlink不变。恢复原副本后只补1次CPU归因，模块工厂实例化是启动成本之一，不把整个DCL→GET都归于它。
+
+[报告§26](reports/2026-11-11-typescript-auth-admin-audit.md#26-a-15-生产构建连接真实后端单边界试验已撤销2026-11-15)与[唯一TODO](../todo.md)保留全部样本／失败和接线局限；没有声称生产提速、100ms／p95或完整A15完成。三自有预览端口已关闭、会话logout，回收本轮构建副本，证据保留；本Root文档PR承接main／分支清理，不扩其它页面或再跑旧全量门。
+
 ## 2026-11-15 A-15：真实环境定位已验，未强行修改源码
 
 复用现有Web→BFF→IAM、已有Project及正式native临时会话，测浏览器资源冷首屏；运行模式确认为Next16.2.6 dev，不是production／进程冷启动。真实名称＋可编辑草稿与exact access200分别记录，避免骨架屏和权限终点混淆。
