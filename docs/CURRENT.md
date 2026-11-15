@@ -1,3 +1,11 @@
+## 2026-11-15 R-06：GitHub 发行和 App 单一消费源已验
+
+shared[PR2](https://github.com/LordFoxFairy/kokoro-web-shared/pull/2)正常合main `e0ca7221b17a7d9ca3624aaa664e3f792433b7cb`，正式GitHub private发行`@lordfoxfairy/i18n@0.1.0`；fresh-cache拉取/SRI/dist逐字等源构建/独立Node与类型PASS。App包Actions Read已保存，自动GITHUB_TOKEN即可，无新长期secret/组织/发行平台。原registry活接线已去，不访问/擅删旧制品或用户其它scope配置。
+
+App[PR64](https://github.com/LordFoxFairy/kokoro-app/pull/64)已main `75af734b360d68ab235e16c49ac0ab8af31dc6bf`，merge树等审定候选；精确依赖/正规lock/唯一import、删七文件副本、原三workflow/BuildKit和必要文档，词典/Next/tsconfig不变。主控App-only/fresh store真实install/import、原115相关tests/lint/types/build、Docker build/standalone200/nosniff/秘密边界均PASS，独审CLEAR，正常main install/import通过。初次仅私有smoke helper日志参数125未启动应用，修正后通过；未重跑全默认/全产品E2E/模型/支付或部署。远端CI因账户支付/额度未启动、steps为空，不称绿色或测试运行失败。
+
+Root重读424真实提交blob，97 App引用精确配对main，只有package.json/lock摘要改变；两gitlink、拓扑/15边0违例/原checkpoint已验。shared/App本轮topic远近已清，Root最终Git出口由本PR承接；[方案](superpowers/plans/2026-11-15-r06-i18n-publication.md)与[唯一TODO](../todo.md)保准确边界，实际merge/清理见最终回执。没有改其它产品、正常服务、卷/数据/资金或用户原凭据。
+
 ## 2026-11-15 原两笔无预占恢复残留已实际审计关闭
 
 仅U-01/U-02：原命令防迟到永久关闭＋Agent独立关闭事实各2，原键重放相同、正式repository对精确target不再给恢复工作。原Run/Attempt/Evidence和对应payer八类资金行JSON摘要/`xmin`全部保持，旧usage unresolved/unknown与结算ACK空值原样保留；不是0usage、退款或旧冻结结清。[报告§7](reports/2026-11-14-historical-financial-unknown-readonly.md)分列源码门、隔离真实HTTP链、正常两笔收据、失败与范围。
