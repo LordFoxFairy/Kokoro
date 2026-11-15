@@ -796,3 +796,56 @@ BFF28.35普通operation仍保历史Bearer security，而现产品运行是native
 这是n=2本地Project观察，不是生产p95、普通Conversation复测或性能收益；rAF也不是逐像素绘制承诺。document返回很快，主要未决区间在DCL之后到首关键GET，原断言还含约43～63ms观测差。未证实授权缓存、删scope或合并owner能解决该区间，因此不修改生产认证／缓存来凑100ms目标。后续仅沿App layout／hydration／首关键数据读取作独立最小切片，不反复扫全仓。非关键依赖未配503仍保留，不把这次片段PASS冒完整产品外部依赖验收。
 
 App #58已实际MERGED；Root配对merge026a7d12并从真实Git blobs重核93项来源／85个唯一输入，内容摘要均未变化，拓扑／15边0违例／原checkpoint通过。Root [#86](https://github.com/LordFoxFairy/Kokoro/pull/86)承载本轮精确组合，合入状态以PR为准。App #58 topic已清；主控已停止自有4186预览并将两个本轮私有证据工作目录完整归档后回收，既有PG／Redis未停、未清共享数据。Root正常合入后只清本topic并回同步main，不为本PR自身状态另建文档PR。冷100ms未达；不为结案虚构收益，也不因原owner未决把已交付Task A重开或标blocked。
+
+
+## 24. A-15 Project 首屏非关键设置 JS（2026-11-15）
+
+仅从剩余TODO选择本轮可独立的前端切片。用户批准：只延后未打开的SettingsPanelContent，
+不改Project读取、认证/取消/代际或缓存，不拆全站。外部授权/渠道、本人语音、完整E2B、容量、CI账户和新审计需求保持原条件，已核销两笔unknown/R-06不重开。
+
+### 最小决定与源码出口
+
+当前首Project GET未等待list/engine，不能为提速删准入围栏。只lazy SettingsModal会被现
+app-frame-helpers的纯tab归一静态import拉回，因此选现SettingsPanel内的内容边界，不搬职责或建新层。
+App[PR65](https://github.com/LordFoxFairy/kokoro-app/pull/65)已正常合main
+`93a342d39a35ff422be9a03ad2e4ff3b1cd629d0`，merge树等审定`414a4247`。
+一处生产文件用Next16.2现dynamic API和已有settings.loading；Dialog/AccountReadSnapshotBoundary/
+导航/tab/focus仍同步，原多语言词典、依赖/契约/数据模型和服务边界不变。
+
+### 当前受控 production 对照
+
+前态App75af734b，后态上述候选；独立Git源码按冻结lock离线安装已有store，不复制node_modules/
+.next；同一本地read-only HTTP契约fixture，headless Chrome、1280×800、en-US、reduced-motion，
+每组3个新context、无CPU/network throttle。fixture只提供本轮已知auth/project/access读，未知依赖503，
+不接实际IAM/BFF/模型/资金；全部写请求为0，不将这个fixture称真实认证链。
+
+| 指标 | 前 | 后 |
+| --- | ---: | ---: |
+| 冷首屏 encoded JS bytes（三样本一致） | 1,229,484 | 1,190,358 |
+| 冷首屏 decoded JS bytes（三样本一致） | 4,521,400 | 4,323,829 |
+| 首屏 script 数 | 20 | 21 |
+| DCL→首exact Project GET，中位ms | 163.7 | 156.0 |
+| rAF观察Project可见＋可编辑，中位ms | 229.4 | 201.5 |
+
+后态首次打开设置才取另外2个真实production脚本（encoded共52,250B），Appearance实际可见/关闭通过。
+首屏净减39,126B encoded、197,571B decoded，但多1个初始script，首次打开设置多chunk等待；
+保留此单边界是基于确定性资源减少和同口径观察，不称统计显著、生产p95、真实IAM/BFF收益或旧100ms达标。
+冷rAF原三值346.1/229.4/218.9ms，后315.5/201.5/199.6ms；初次server/document启动波动保留。
+
+### 实际门与收尾边界
+
+- 原Settings/rail/Project三UI文件504 PASS；原布局例单独跑暴露隐含“内容已加载”顺序依赖，
+  只改async＋等待真实内容，原断言保持，单例1 PASS/168筛除后，三文件504再PASS，无Next mock。
+- 新浏览器例先对旧入口RED（设置已打开但无延迟loading）；最终英/法×桌面/移动4 PASS。
+  真实script load完成＋两rAF后确认迟到不重开，等URL关闭完成，通过真实菜单重开，草稿保留。
+  初次fixture fd/重开URL与泛Dialog定位错误保留，仅改runner/测试，不借此改业务语义。
+- 完整App lint/types/production build、受影响最终lint/types、源SHA冻结和独审CLEAR。
+  不重跑无关contract、全默认/全站E2E、旧成功认证/Agent链或Docker；无对应新增独有风险。
+- Root重读424真实提交blob、97 App引用配main，仅public-shell E2E证据摘要改变；拓扑/15边0违例/
+  原checkpoint PASS。App本轮topic远近已清；production/E2E自有preview均已核无listener。
+- 远端App CI实际无steps，现有账户条件未启动，不冒绿色、不绕保护或重复push等CI。
+  正常服务/.next、账户、PG/Redis/卷/资金和部署均不动。Root本轮PR承接最后main/清分支出口，
+  只回收自身源码/依赖/build fixture与草稿；原收据/失败证据/其它工作树和共享store保留。
+
+本轮只关闭“非首屏设置JS”这一个已批准切片。更广的真实链冷100ms/容量目标未立项或未证实，
+仍按唯一TODO的条件项承接，不把Task A重新开成故障清单，也不为找问题再扫仓。
