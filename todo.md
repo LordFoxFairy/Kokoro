@@ -10,6 +10,15 @@
 - 不为保持“推进”而重复扫描已交付代码、补重复测试、扩建审计平台或擅定性能指标。条件具备后，只做对应缺口。
 - 上轮production诊断／试验已沿Root #98合main `8f266a15`并清本轮资源；当前执行下方代码质量批次，不重跑该实验。
 
+## 本轮已验：Agent 核心业务链质量
+
+主控唯一writer／Git／台账／验收；input_tool_review只读输入／工具执行，artifact_terminal_review只读产物／终态。仅沿当前Run→工具／沙箱→FINAL链，不回扫已交付Project，不纳入基础设施／运维／部署。
+
+- [x] 两面各确认一组实质问题：输入glob／grep假空、产物scan尾响应漏判。主控范围内流投影未另确认新问题，不扩扫描。
+- [x] 最小用例先RED10／PASS1，60未选；仅修匹配与扫描循环。匹配复用锁定SDK同款wcmatch10.1（已有lock／runtime fingerprint、MIT、Python>=3.9），显式声明既有依赖不升级，不手写glob子集；scan保11读／10次0.5秒预算。
+- [x] 两文件71／最终四相关文件102PASS，完整Ruff lint／format404、固定Pyright显式现venv0错误、contract／lock检查、wheel/sdist及两源码／metadata打包核等通过；两独立复核CLEAR，不重复真实外部／全默认。
+- [x] Agent[#51](https://github.com/LordFoxFairy/kokoro-agent/pull/51)已main `2aeef82a`、树等审定aa8f0459，两自洽提交且topic远近已清。Root59字段／424真blob／518引用重核，三处实际摘要更新，拓扑／15边0违例／checkpoint通过。本Root PR承接最后main／本轮分支；专用验证产物已清，保留原收据，不清理既有build/dist/venv。
+
 ## 本轮已验：Project 业务代码质量（不含基础设施／运维）
 
 用户批准持续打磨业务代码、架构和可维护性；不按模式数量／文件长度制造重构，不重复已交付的性能实验。

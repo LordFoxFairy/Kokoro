@@ -1,3 +1,14 @@
+## 2026-11-15 Agent核心质量：输入查询与扫描尾响应已修
+
+两只读agent分别审输入／工具和交付／终态，主控唯一writer／验收／Git；只修具代码证据的两组问题，不回扫Project，不纳入基础设施／部署／运维，也不碰旧财务事项。
+
+选中输入glob沿锁定SDK采用相对索引／BRACE／GLOBSTAR，grep按basename、空filter不筛选；未匹配项不读取正文，原只读／manifest／lease／字节边界保持。wcmatch10.1已在原lock／runtime pin中，本轮显式声明直接依赖，132包集合／版本／来源／artifact不变，不手写兼容matcher。
+Storage扫描每份响应含最后一次都核asset／state；CLEAN才finalize，感染／UNKNOWN拒绝、错asset报mismatch、耗尽才pending，保原11查询／10次0.5秒等待及canonical／lease／取消，不加retry框架。
+
+Agent[#51](https://github.com/LordFoxFairy/kokoro-agent/pull/51)已main `2aeef82ab2c059724b6479a27fc2cd7400064c9e`，树等审定aa8f0459，两个自洽提交和本轮topic已收尾。最小RED10/PASS1（60未选）、两文件71／最终相关四文件102、完整Ruff／format404、固定Pyright显式venv0错误、contract／lock及wheel/sdist通过，包内两源码及直接依赖metadata核等、两独审CLEAR。offline lock缺cache与初次Pyright误读依赖的失败保留；未换索引／升级／缩平台或放宽类型规则。
+
+Root重读424真blob／518引用，59 Agent字段配main；仅Agent技术设计／storage_delivery.py／uv.lock三处摘要实际变化。拓扑／15边0违例／原checkpoint通过；[唯一TODO](../todo.md)同步。本轮专用打包产物已清，保留原收据／冻结SHA／包校验记录，不清理既有build/dist/venv、不重启服务或写业务数据；本Root PR承接最终main／分支清理。未重复模型／供应商／真实Storage／Docker／DB集成或全默认，不以unit冒整产品E2E或已部署，也不宣称全仓零缺陷。
+
 ## 2026-11-15 Project 代码质量：两个实质问题已修
 
 按用户要求排除基础设施／运维，双只读面审查、主控唯一writer：rename ACK回读只将exact detail404退休，collection404／503不误退休，保原命令／fresh顺序／身份／epoch／取消；Shell的Skills warm与Panel共用一个data reader，旧UI导出删除，key／store／false／lease及Panel行为不变。不加层／缓存／SDK／协议，不宣称提速。
