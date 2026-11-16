@@ -1,3 +1,11 @@
+## 2026-11-16 BFF IAM 账户资料／会话有界传输收口
+
+仅两个账户client的重复fetch／race预算／响应头＋字节上限／取消与reader回收归同目录一个窄函数；认证、schema、公开错误各留原client，helper不读凭据／身份／环境、不迁原NodeHTTP传输或其它消费者，不新增SDK／Base类／port。资料保服务＋actor无Cookie、10秒／strict raw JSON／response补回；会话保专用凭据＋Cookie-Origin、5秒／原generated解析／raw response分类及Retry-After，wire／Schema／generated／依赖／lock与Mori均不变。
+
+实现早期候选虽过63项，独审仍发现资料断言前移至race内的微任务窗口；已修为await race后、finally前同步完成回调执行原assert／backfill，会话原mapping留race内、不传此hook。修正后结构复核CLEAR，不以原63绿冒窗口证明、不造私有微任务测试。主控原61 PASS，测试agent仅两项原实现特征后63 PASS；主控最终停写5输入核等，client／HTTP四文件79 PASS、现architecture 111 PASS，lint／types／build／相关正式格式／diff与导航链接通过，均0失败／0跳过。初用默认格式flags的旧样式误报按仓no-semi／160核实通过；未格式写入。HTTP IAM为明确loopback fixture，不称正常IAM／浏览器／真实PG验收；未跑全默认／模型／PG／无关契约生成／部署或重启正常业务服务。
+
+BFF [#30](https://github.com/LordFoxFairy/kokoro-bff/pull/30)已合main `3002d271f0602dd525d861a522bbc296a3a9947f`，合并树与验收树相等，BFF本轮topic已清。Root只配对该gitlink，按233个真实已提交blobs重算291处inventory引用（内容摘要全部保持）；拓扑／兼容性15 edges、0 violations／原checkpoint均PASS。TODO／owner导航／CURRENT已同步，Root本片正常PR合并及topic清理由最终Git回执确认，不预写未来SHA。收据留ignored var/dev/iam-account-transport-cleanup；已完成业务Goal与条件暂存不变，未操作其它仓／数据／资金。
+
 ## 2026-11-16 Web Hub 分发与具名处理器已交付
 
 按用户批准仅收口App Hub：路由保原顺序／条件分发及Next导出；原MCP／Custom API／六Skills处理器进入既有server目录，实际共用projection与下载规则各保一处，原末端BFF多profile整体迁移。无registry／nullable链／Base类／SDK／第二准入层，原普通转发不扩为任意owner代理；其它具名Project／Library适配器复用。保URL／self特判、Cookie／Origin／owner、body／key／CAS／header、各自期限／取消／错误与EOF清理，不为统一外观顺手改原差异。API／Schema／generated／依赖／lock／测试／UI和Mori不变，只去掉误导的全局旧信封注释。

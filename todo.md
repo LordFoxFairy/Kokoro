@@ -2,6 +2,16 @@
 
 更新：2026-11-16（America/New_York）。仅维护下一动作、进入条件和完成边界；详细完成过程由固定 Git 历史保留。
 
+## 本轮已验：BFF IAM 账户资料／会话传输收口
+
+用户批准的窄保行为重构。只合并两账户客户端真实重复的fetch／绝对预算／取消／响应头与字节上限／reader回收机制，认证、schema与业务错误仍留各客户端。现iam-http-transport为NodeHTTP及不同使用边界，本轮不迁其它消费者；新窄共享函数不读凭据／身份／环境，不建SDK、Base类、port或通用框架。
+
+保资料10秒上限、服务＋actor无Cookie、严格raw JSON及generated response缺失补回；会话5秒上限、专用凭据＋原Cookie／Origin、原generated JSON解析、缺response分类及raw Retry-After不变；initial取消／过期零I/O、非合作fetch／reader迟到回收和原错误元组保持。实现agent独占两client＋一个窄transport文件，测试agent仅既有client测试必要补缺，审查agent只读差异，主控独占docs／TODO／Git及最终验收。契约／generated／Schema／依赖、其它客户端和Mori不动。
+
+- [x] 单一窄函数收口重复传输；认证／schema／业务错误各留原client。资料10秒／strict raw／response补回及会话5秒／Cookie-Origin／原decoder保持；候选profile取消检查位移已修回race结算后、finally前，会话不加额外完成校验。
+- [x] 原client基线主控61 PASS，测试agent只补两项原实现特征后63 PASS；主控停写5输入验收四client／HTTP文件79 PASS、architecture 111 PASS，lint／types／build／相关正式格式／diff通过，独立修正后审查CLEAR。无私有微任务矩阵，不把原63绿冒窗口证明；未跑模型／真实IAM／PG／全默认／契约生成／部署或重启业务服务。
+- [x] TODO／CURRENT／导航及独立审查已完成；BFF [#30](https://github.com/LordFoxFairy/kokoro-bff/pull/30)已合main `3002d271f0602dd525d861a522bbc296a3a9947f`，树与验收核等，BFF本轮topic已清。Root精确配对gitlink，按233真实blobs重算291处inventory引用，内容摘要全保持；拓扑／兼容性15 edges、0 violations／原checkpoint均PASS。随Root本片正常PR交付，Root合并与本轮topic清理以最终Git回执为准，不预写未来SHA。
+
 ## 本轮已验：Web Hub 处理器与分发收口
 
 用户批准按现有能力拆分，不改API／业务语义。现MCP、Custom API及六个Skills具名处理器进入既有lib/server目录，实际共用的projection错误／请求约束与下载头／流校验各保一处；路由只保原顺序／条件分发及Next runtime／dynamic／HTTP exports。原末端包含多种闭集响应的BFF转发整体进入hub-bff-proxy，不改其self剥离、managed URL特判或增通用registry／nullable-handler框架；不把它声称为新业务owner。
