@@ -10,6 +10,15 @@
 - 不为保持“推进”而重复扫描已交付代码、补重复测试、扩建审计平台或擅定性能指标。条件具备后，只做对应缺口。
 - 上轮production诊断／试验已沿Root #98合main `8f266a15`并清本轮资源；当前执行下方代码质量批次，不重跑该实验。
 
+## 本轮已验：Skills 精确文件搜索
+
+主控唯一writer／Git／资源／台账／验收；mcp_result_review和mcp_result_coverage_review两只读面均确认MCP结果处理无新缺陷，保持不改；仅续核尚未检查的Skills精确文件搜索候选。不回扫已交付Project／输入匹配／scan／事件落账，不纳入基础设施、供应商授权或运维。
+
+- [x] SDK原生Composite路由可达；Skills grep一律将path当目录，SKILL.md／嵌套文件有词却假空。公开路由三等价类先RED2／PASS1，19未选；目录相邻前缀不混入。
+- [x] 原筛选条件仅补exact-file分支，目录、glob、包重验、预算及只读保持；不改owner、协议、Schema、依赖，不新增helper或层。
+- [x] 停写后skill-client／factory相关选择50PASS，70按名称未选、372条既有SDK警告；完整Ruff／format404／固定Pyright0错误、offline lock、contract和wheel/sdist通过，包内源码核等；两独审CLEAR。未跑全默认或真实供应商／模型／DB／浏览器链。
+- [x] Agent[#53](https://github.com/LordFoxFairy/kokoro-agent/pull/53)已main `39fd15c5`、树等审定1da564fb，owner topic远近已清。Root59字段／424真blob／518引用重核，仅Skills backend摘要改变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。本Root PR承接最终main／Root topic；本轮打包输出已清，原证据及既有build/dist/venv保留。
+
 ## 本轮已验：执行结果到持久事件／恢复展示
 
 主控唯一writer／Git／台账／验收；agent_event_persistence_review只读Agent持久化与发布错误边界，bff_replay_review只读BFF纯映射／恢复payload。仅沿执行结果→持久事件→恢复展示，不回扫已修输入匹配／scan轮询／Project，不纳入基础设施／运维。
@@ -17,7 +26,7 @@
 - [x] Agent确认critical stage及前置fence查询普通异常被pump误吞，暂停期无已确认queued行可补；BFF限定映射／replay无确认缺陷，不改不扩扫描。
 - [x] 公开invoke暂停路径分别复现stage RED1/PASS1、相邻fence RED1/PASS3（各15未选）；普通OSError归一化、既有typed保identity。stage就地包装，租约查询归一化下沉既有helper，不加层；False／None／已落账网络降级／mark／取消不变。
 - [x] 停写输入相关三文件125PASS，4项integration marker排除、409条既有SDK Beta警告；全Ruff／format404／Pyright0错误、offline lock、contract和wheel/sdist通过，包源码核等；两独审CLEAR。不称全默认或真实E2E。
-- [x] Agent[#52](https://github.com/LordFoxFairy/kokoro-agent/pull/52)已合main `3c49705d`，树等审定97c24f69，owner topic远近已清。Root59字段精确配对，424真blob／518引用重核、摘要不变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。本Root PR承接最终main与Root topic清理；仅本轮打包输出已清，保留收据和既有build/dist/venv。
+- [x] Agent[#52](https://github.com/LordFoxFairy/kokoro-agent/pull/52)已合main `3c49705d`，树等审定97c24f69，owner topic远近已清。Root59字段精确配对，424真blob／518引用重核、摘要不变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。Root[#101](https://github.com/LordFoxFairy/Kokoro/pull/101)已main `14aee579`且本轮topic远近已清；仅本轮打包输出已清，保留收据和既有build/dist/venv。
 
 ## 本轮已验：Agent 核心业务链质量
 

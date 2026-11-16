@@ -1,3 +1,13 @@
+## 2026-11-15 Skills 精确文件搜索：假空结果已修
+
+两只读面限定MCP结果映射，确认isError／structuredContent／journal与取消的既有语义和覆盖充分，未改MCP、不补重复测试。续核此前未查的Skills精确文件路径：原生Composite实际路由到TypedSkillBackend后，原目录前缀判断漏掉文件自身；现只在原筛选条件补exact-file，不新增helper／依赖或改协议／Schema。
+
+公开路由三等价类先RED2／PASS1（19未选）；修后skill-client22／停写后相关skill-client及factory选择50PASS（70按名称未选、372条既有SDK警告），根SKILL.md／嵌套参考文件／目录范围的原路径、行号、相邻前缀隔离、未知路径空及撤权传播正确。目录边界／trailing-slash政策、glob、包重验、预算、原bytes及只读保持。完整Ruff／format404、固定Pyright显式venv0错误、offline lock、contract、wheel/sdist及包内源码核等通过，两独审CLEAR。
+
+Agent[#53](https://github.com/LordFoxFairy/kokoro-agent/pull/53)已main `39fd15c5db5a28821c990e84e827cd0575501922`、merge树等审定1da564fb，owner topic远近已清。Root59字段精确配对，424真blob／518引用重核、仅Skills backend摘要变化，拓扑／15边0违例／原checkpoint通过；[唯一TODO](../todo.md)同步。本Root PR承接最后main／topic，本轮打包输出已清，保留收据及既有build/dist/venv。不运行全默认、真实模型／供应商／DB／浏览器整链，不启动服务、操作业务数据或基础设施／运维／部署，不以组件验证冒整产品验收。
+
+上轮事件持久化已沿[Root #101](https://github.com/LordFoxFairy/Kokoro/pull/101)合main `14aee579`，Root／Agent同步main且topic远近已清；下方旧阶段描述仅代表当时，不重复开工。
+
 ## 2026-11-15 执行结果到持久事件：未确认落账错误传播已修
 
 双只读agent限定Agent事件持久化和BFF映射／replay，主控唯一writer／验收／Git；BFF未确认缺陷，保持不改，不扩扫描。Agent关键stage及前置fence查询普通异常曾被pump当作可丢单帧错误吞掉；暂停期没有已确认queued行，不能依赖queued重放补齐。现就地转既有ProgressPersistenceError，租约查询归一化集中原helper，原typed身份／cause保留，不加层或恢复框架。
