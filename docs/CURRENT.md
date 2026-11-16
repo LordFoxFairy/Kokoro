@@ -1,3 +1,11 @@
+## 2026-11-16 已批准范围正式收尾：条件项独立暂存
+
+按用户最终裁决，已批准Task A／Task B及后续明确批准切片按既有证据交付；不再扩任务、重扫代码或重复业务验收。单一真实只读MCP已沿Root [#107](https://github.com/LordFoxFairy/Kokoro/pull/107)合main `363daf1f6731e252f67a59244dc73d86e7c53fc8`；H-01、原核心链与其它具名出口继续由[唯一TODO](../todo.md)和固定历史承接。A-14本轮不启动，不准备页面或麦克风、不采集录音／口述原文；8项条件／可选后继单独暂存，不算本次Goal未完成任务，不冒称已验证或已取消需求。
+
+仅只读核Git／PR元数据：本次收尾PR创建前，Root与12子仓作者LordFoxFairy的OPEN PR均0，精确确认Root #104／#105／#106／#107及App #67均MERGED→main。13仓均干净、仅main实际branch refs且每仓1个checkout，所有子仓HEAD与Root gitlink核等；Mori／System仍按固定pin detached，不清理历史archive refs或私有配置／收据，不影响他人PR。原业务服务／数据／权限／资金与组合不变。
+
+机器原无Goal，本次按用户授权建立仅覆盖正式收尾的有限目标；本次Root文档PR合并并完成最终main／topic核对后，机器Goal标记complete，不为条件项保持active或blocked。只维护TODO／CURRENT和必要文档diff／链接校验，不重跑业务测试、模型、浏览器或基础设施操作；最终Git与Goal状态由交付回执确认，不预写未来merge SHA。
+
 ## 2026-11-16 真实只读 MCP：调用、UI、刷新与撤权拒绝已闭环
 
 本轮固定Root `0ae8b7a9ab12c8ccaf561d27a05b05706cc492fe`原精确组合，不改业务源码／gitlink。正常服务和Agent既有worker／Capability surfaces的启动证据核等，复用native账号，不新增认证、SDK、服务或权限层。当前Context7确为active/available，但private绑定不适合另挂QA后撤销；本机无现成可直接接入的HTTP MCP，已装Playwright仅stdio，而Agent strict egress拒loopback。本轮不切off或绕安全策略，改以独立QA连接接[官方DeepWiki公开只读服务](https://docs.devin.ai/work-with-devin/deepwiki-mcp)，HTTPS Streamable HTTP，无Provider账号授权；原Context7不动。
