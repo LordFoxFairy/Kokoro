@@ -1,119 +1,22 @@
 # Kokoro · 当前执行 TODO
 
-更新：2026-11-15。此文件只列当前动作、条件项和交付入口；完成过程不再混作待办。
+更新：2026-11-16（America/New_York）。仅维护下一动作、进入条件和完成边界；详细完成过程由固定 Git 历史保留。
 
-## 当前结论与执行边界
+## 当前结论
 
-- 已批准的 Task A、Task B、两笔无预占恢复残留、R-06，以及 A-15 非首屏设置 JS 切片已分别交付。
-- 上一轮 **A-15 开发态真实环境 Project 冷首屏定位已完成**；开发态启动主线程阻塞段已证，生产源码修复净收益未证，因此没有改业务代码。
-- 下方仍保留 **8 项条件性遗留／可选增强**，不是 8 个新故障。A-15 本轮诊断不冒生产提速；更广优化、运行环境和长期审计不自动扩项。
-- 不为保持“推进”而重复扫描已交付代码、补重复测试、扩建审计平台或擅定性能指标。条件具备后，只做对应缺口。
-- 上轮production诊断／试验已沿Root #98合main `8f266a15`并清本轮资源；当前执行下方代码质量批次，不重跑该实验。
+- 已批准的 Task A／Task B、两笔无预占恢复残留、R-06、核心链质量修复及 H-01 metadata 窄切片已交付。
+- 剩余 **8 项条件性遗留／可选增强** 见下表；当前没有已确认、已授权且可脱离这些条件独立实施的代码项。它们不是 8 个新故障，也不因暂存而视作已经完成。
+- A-15 已定位生产启动成本，唯一候选净收益不足已撤销；不重复该试验，不为保持推进而扫描已交付代码或新增设计、缓存、测试矩阵。
+- H-01 只交付本人草稿 metadata 编辑与 fresh 读回。**cover／discard／AI 仍排除**；不从旧代码或 API 的存在推导新增产品承诺。
 
-## 本轮已交付：H-01 本人草稿 metadata 原地修改
+## 本轮收口：执行清单与交付事实一致
 
-用户已批准仅metadata PATCH＋保存后fresh读回，复用当前Public29正式接口；不恢复旧workspace，不扩cover／discard／AI。主控唯一Git／资源／台账writer与最终验收；h01_contract_review独占client／schema／同源adapter及对应focused tests；h01_ui_review独占现役UI／词条；h01_host_tests独占本次宿主回归。
+本轮唯一写区为 Root `todo.md`、`docs/CURRENT.md`。主控负责编辑、验证与 Git；两只读 agent 分别核遗留进入条件及精确交付记录，不检查业务源码或重跑旧旅程。
 
-- [x] 设计范围：现役Settings→Skills Create菜单的草稿入口，按需列表／fresh本人draft→metadata编辑；CAS为字符串，ACK后GET-only恢复，unknown只原body/key显式重试。已有接口/pin足够，无新owner／数据库／依赖／SDK。
-- [x] client／typed adapter精确放行self PATCH /skills/{id}/draft，严格metadata-only body／完整ACK；先RED再定向回归，不开放其它写路径。
-- [x] 窄草稿Dialog复用现组件／多语言与准入边界，字段/数组保真，保存fresh读回才显示当前成功；取消／关闭／再准入／迟到／冲突沿既有边界，不建全局store。
-- [x] 主控停写后相关contract／client／host UI回归、格式／lint／types／build及本次真实浏览器主路径、窄屏与键盘；只补本次独有证据。
-- [x] App设计／API说明／产品指南及Root TODO／CURRENT已同步；App [#67](https://github.com/LordFoxFairy/kokoro-app/pull/67)已合main `a516cfcb991a080baaf51fef1c070ff57854db0c`，源码tree与本地已验 `bbb3600a`核等，App本轮远近topic已清。
-- [x] Root精确gitlink／inventory按97个引用、89个已提交blob重核；topology、compatibility（15 edges／0 violations）和原checkpoint通过。本Root PR承载组合与台账，合并及Root topic清理由主控在GitHub合并后实核，不在候选分支提前宣称。
-
-主控证据：5文件372 PASS、完整默认6903 PASS、contract479／architecture50 PASS、lint/types/build与Docs check通过。真实唯一PATCH200版本1→2、保存fresh与硬刷新读回；中法语390px／Escape／同窗重开续读通过，自有QA系列正式删除后404，各会话logout200。开发专用角色缺update_draft的403保留，临时验收权限已核原样还原；默认成员权限、资金与其他账号不动。helper的label／重开视图／Shell就绪失败分列，不以重试抹旧FAIL；未重跑无关模型或全产品E2E。App已交付；Root本PR收尾状态以GitHub及合并后Git核对为准，不扩其它条件项。
-
-## 本轮已收口：历史分支／旧 worktree 语义收拢
-
-[逐项裁定与恢复入口](docs/reports/2026-11-15-historical-work-reconciliation.md)。主控唯一Git／归档／删除writer，两只读面分审BFF和App大旧树；不以SHA未入main断言需求遗漏，不整批回灌旧码。
-
-- [x] BFF18逐提交意图已承接或正式替代；App共享80＋后继27按能力聚类，129工作区项逐路径核查；四小布局／loading及Storage旧试验由main或后继覆盖承接。未确认应补回的现行产品缺陷，不开重复代码／测试。
-- [x] 86 tracked修改／删除＋43 untracked源码完整存入独立Git working-tree归档，逐文件／mode核等、原index不变；所有旧HEAD／archive refs保留。Storage单文件及Next生成差异既有归档核等；4配置＋6旧日志私有保留、不进Git，不复制依赖／整仓。
-- [x] 7旧worktree与BFF过时分支名已移除，无占用、无force checkout删除。全部子仓只有main本地分支及主checkout，HEAD／Root gitlink／主仓依赖不变；Mori/System仍保持已锁detached pin。历史引用不算活跃开发分支，但候选不冒已交付。
-- [x] 报告／TODO／CURRENT同步；本Root文档PR承接最后main及本轮topic，未运行无关全量、业务浏览器／模型或基础设施／部署。
-
-## H-01 历史候选的本轮裁定
-
-| 项目 | owner／当前边界 | 下一决定 |
-| --- | --- | --- |
-| H-01 本人draft原地metadata已交付；封面／discard仍排除 | App＋Capability；当前作者编辑已有新版本ZIP发布，API存在不等于整个旧UI已承诺。旧实现及测试已完整归档，不复活内嵌Admin／旧client | metadata PATCH＋fresh读回交付见上方；cover/discard/AI不并入。旧报告§4保留本轮前裁定，不覆盖当前授权 |
-
-## 本轮已验：当前 main 精确组合真实浏览器核心链
-
-主控唯一writer／资源／Git／台账／验收；core_browser_route_review只读验收接线，core_run_log_review只读运行来源与本次Run日志。Root `afcf2cc4762ea413d9431c06740f15c9318f79c6`精确组合不变；仅补发起任务→Agent真实工具→Storage产物／下载→硬刷新恢复，不扩外部条件、基础设施或无关测试。
-
-- [x] 所有gitlink／子仓干净核等。静默后仅重载Agent HTTP／Worker（39fd15c5）及Web dev（f8215c10）；其余owner沿现进程，IAM仅文档后继／Capability树等，运行输入核等，不以磁盘HEAD冒进程已重载。
-- [x] 首Run正式准入拒绝保FAIL：可用8低于预占10，未派发／未扣费。用户明确批准赠22，正式owner幂等命令／审计／ledger核等，可用补30；不走现金支付、不动历史held30。
-- [x] 第二Run唯一消息POST202，真实gpt-6.1-sol三次派发／封口／financial ACK，write_file＋deliver journal均succeeded；同Run Artifact final、Asset clean。浏览器实际卡片／Canvas下载29B，SHA `073798d9b7324c6fc309058abd6b4cc6c0a1c4adb8deb1f42d6b0ab9ba6800b9`与Storage／事件相符。
-- [x] 仅续读同一成功Run补齐当前ordered FINAL、分页正文与实际UI硬刷新前后一致，恢复新POST0。旧helper的scope cursor／turn锚点及Prisma枚举误判保原件后只修私有接线，未重提模型任务、未改生产源码；pageerror0，导航取消诊断保留，不冒零网络异常。
-- [x] 日志独审区分首Run余额422、探针parts400、两条SDK Beta和已恢复NOGROUP；成功Run未见新增执行异常。Billing重复settle200由持久事实对账，不以次数算扣费；BFF日志稀疏由terminal dispatch／messages补证。实际扣9、可用21，held30不变；全部61 Run terminal、launch／dispatch待处理0，旧financial候选2不扩查。两只读审查与主控owner核验承接。
-- [x] TODO／CURRENT同步；Root[#103](https://github.com/LordFoxFairy/Kokoro/pull/103)已main `13820138`且本轮topic已清，无子仓源码／契约／gitlink变更。临时会话均logout、浏览器关闭／下载临时文件已删；验收任务／产物与私有失败／成功收据保留，不擅删业务数据，不运行无关全量或部署。
-
-## 本轮已验：Skills 精确文件搜索
-
-主控唯一writer／Git／资源／台账／验收；mcp_result_review和mcp_result_coverage_review两只读面均确认MCP结果处理无新缺陷，保持不改；仅续核尚未检查的Skills精确文件搜索候选。不回扫已交付Project／输入匹配／scan／事件落账，不纳入基础设施、供应商授权或运维。
-
-- [x] SDK原生Composite路由可达；Skills grep一律将path当目录，SKILL.md／嵌套文件有词却假空。公开路由三等价类先RED2／PASS1，19未选；目录相邻前缀不混入。
-- [x] 原筛选条件仅补exact-file分支，目录、glob、包重验、预算及只读保持；不改owner、协议、Schema、依赖，不新增helper或层。
-- [x] 停写后skill-client／factory相关选择50PASS，70按名称未选、372条既有SDK警告；完整Ruff／format404／固定Pyright0错误、offline lock、contract和wheel/sdist通过，包内源码核等；两独审CLEAR。未跑全默认或真实供应商／模型／DB／浏览器链。
-- [x] Agent[#53](https://github.com/LordFoxFairy/kokoro-agent/pull/53)已main `39fd15c5`、树等审定1da564fb，owner topic远近已清。Root59字段／424真blob／518引用重核，仅Skills backend摘要改变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。Root[#102](https://github.com/LordFoxFairy/Kokoro/pull/102)已main `afcf2cc4`且本轮topic远近已清；本轮打包输出已清，原证据及既有build/dist/venv保留。
-
-## 本轮已验：执行结果到持久事件／恢复展示
-
-主控唯一writer／Git／台账／验收；agent_event_persistence_review只读Agent持久化与发布错误边界，bff_replay_review只读BFF纯映射／恢复payload。仅沿执行结果→持久事件→恢复展示，不回扫已修输入匹配／scan轮询／Project，不纳入基础设施／运维。
-
-- [x] Agent确认critical stage及前置fence查询普通异常被pump误吞，暂停期无已确认queued行可补；BFF限定映射／replay无确认缺陷，不改不扩扫描。
-- [x] 公开invoke暂停路径分别复现stage RED1/PASS1、相邻fence RED1/PASS3（各15未选）；普通OSError归一化、既有typed保identity。stage就地包装，租约查询归一化下沉既有helper，不加层；False／None／已落账网络降级／mark／取消不变。
-- [x] 停写输入相关三文件125PASS，4项integration marker排除、409条既有SDK Beta警告；全Ruff／format404／Pyright0错误、offline lock、contract和wheel/sdist通过，包源码核等；两独审CLEAR。不称全默认或真实E2E。
-- [x] Agent[#52](https://github.com/LordFoxFairy/kokoro-agent/pull/52)已合main `3c49705d`，树等审定97c24f69，owner topic远近已清。Root59字段精确配对，424真blob／518引用重核、摘要不变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。Root[#101](https://github.com/LordFoxFairy/Kokoro/pull/101)已main `14aee579`且本轮topic远近已清；仅本轮打包输出已清，保留收据和既有build/dist/venv。
-
-## 本轮已验：Agent 核心业务链质量
-
-主控唯一writer／Git／台账／验收；input_tool_review只读输入／工具执行，artifact_terminal_review只读产物／终态。仅沿当前Run→工具／沙箱→FINAL链，不回扫已交付Project，不纳入基础设施／运维／部署。
-
-- [x] 两面各确认一组实质问题：输入glob／grep假空、产物scan尾响应漏判。主控范围内流投影未另确认新问题，不扩扫描。
-- [x] 最小用例先RED10／PASS1，60未选；仅修匹配与扫描循环。匹配复用锁定SDK同款wcmatch10.1（已有lock／runtime fingerprint、MIT、Python>=3.9），显式声明既有依赖不升级，不手写glob子集；scan保11读／10次0.5秒预算。
-- [x] 两文件71／最终四相关文件102PASS，完整Ruff lint／format404、固定Pyright显式现venv0错误、contract／lock检查、wheel/sdist及两源码／metadata打包核等通过；两独立复核CLEAR，不重复真实外部／全默认。
-- [x] Agent[#51](https://github.com/LordFoxFairy/kokoro-agent/pull/51)已main `2aeef82a`、树等审定aa8f0459，两自洽提交且topic远近已清。Root59字段／424真blob／518引用重核，三处实际摘要更新，拓扑／15边0违例／checkpoint通过。本Root PR承接最后main／本轮分支；专用验证产物已清，保留原收据，不清理既有build/dist/venv。
-
-## 本轮已验：Project 业务代码质量（不含基础设施／运维）
-
-用户批准持续打磨业务代码、架构和可维护性；不按模式数量／文件长度制造重构，不重复已交付的性能实验。
-本轮只审 Project 主链：主控唯一 writer／Git／验收，startup_quality_review 只读启动依赖，project_state_review 只读读取与状态职责。[报告§27](docs/reports/2026-11-11-typescript-auth-admin-audit.md#27-project-业务代码质量事实退休与数据ui职责2026-11-15)保留具体证据和边界；两项已修，无新的已确认待修项，不冒全仓零缺陷。
-
-- [x] 两个独立面审查完成：rename ACK后精确404漏退休；启动warm函数依赖完整Skills UI且pool读取重复。不扩全仓，不重试已弃拆包。
-- [x] rename三等价类先RED1／PASS2（43筛除）后最小分阶段404修复；warm两数据规则先基线通过，再移到同feature具名resource模块复用，不留旧reexport，不改cache/key/准入。
-- [x] 相关四文件523PASS，最终hook46／resource13复验、全lint／最终types／architecture50／隔离build通过，两独立复核CLEAR。初次测试夹具类型错误保留后仅修夹具；不跑无关native／模型／性能／默认全量。
-- [x] App#66已main f8215c10且树等审定源、App topic远近已清；1582输入冻结核等，单一验证副本已回收。Root精确gitlink／424真blob／97commit引用与拓扑／兼容／checkpoint已验，最终Root出口由本PR承接。
-
-## 本轮已验：A-15 生产构建＋真实后端
-
-[报告 §26](docs/reports/2026-11-11-typescript-auth-admin-audit.md#26-a-15-生产构建连接真实后端单边界试验已撤销2026-11-15)记录接线、两个基线／候选样本与独立CPU归因；没有保留业务源码改动。
-
-- [x] 独立App-only副本production build，复用真实BFF/IAM／已有native开发会话；自有透明代理保canonical origin，不改认证／Cookie，不覆盖正常dev的.next。
-- [x] 同Project各2个冷context、间隔65秒，草稿与access200分别记录；API均200、pageerror0、requestfailed0，不冒production登录／进程冷启动／p95。
-- [x] 定位启动长任务64～66ms；唯一Skills页面dynamic候选只少4454B压缩JS、script21→22，草稿一快一慢，无一致净收益，已撤销。正常App源码不改，不转试其它页面。
-- [x] 恢复副本原源码后一次CPU采样核module factory实例化成本；构建／收据／链接定向检查及只读复核，不跑无关业务全量门。
-- [x] TODO／CURRENT／报告同步，三个预览端口关闭、临时会话退出；本Root PR承接最终main／分支及本轮构建副本清理，证据保留。
-
-## 本轮已验：A-15 真实环境 Project 冷首屏
-
-[报告 §25](docs/reports/2026-11-11-typescript-auth-admin-audit.md#25-a-15-真实环境-project-冷首屏定位2026-11-15)记录当前环境、实际数值、失败与不改代码的理由。
-
-- [x] 复用现有真实Web/BFF/IAM，确认Next dev；原开发身份正式native临时会话，逐轮logout，不改账号／权限／业务数据。
-- [x] 正确区分真实标题＋可编辑草稿与access200；骨架误判、429及connector502失败样本保留并剔除，不抬限流。
-- [x] 一个有效非profile样本：Project GET335.5→374.6ms，草稿443.9ms，启动长任务135ms、解压JS22,143,937B；一次CPU采样核开发态初始化阻塞。不作p95／100ms或生产收益结论。
-- [x] 无明确生产修复净收益，保留源码；不删权限、不加缓存、不扩全站。只查相应边界／数值／文档链接，不跑无关全量门。
-- [x] TODO／CURRENT／报告同步，独立只读复核测量终点；正常Root PR承接最终main与本轮分支清理，不预写未来merge SHA。
-
-## 上轮已收口：执行清单交接
-
-- [x] 仅核现行遗留表与已记录交付事实，没有重扫业务源码或重跑旧成功链。
-- [x] 将已完成过程移出当前 TODO 视图；原记录由下方固定 Git 基线完整保留，不另复制一份历史任务中心。
-- [x] 按现有 8 项逐项保留 owner、进入条件和完成边界，不伪称已完成或取消需求。
-- [x] 补齐上轮 App #65／Root #95 已合 main 的最终事实；清理旧“本轮待合／机器 active”对当前状态的误导。
-
-本次文档变更经本 Root PR 交付；合入后只清本轮分支，不动业务服务、数据、既有工作树或其他人的工作。
+- [x] 仅核现有8项遗留和H-01排除边界，区分外部条件、产品决定与已完成事项。
+- [x] 登记 Root #104／#105 和 App #67 的实际合并出口，删除旧 worktree／分支仍待清理的陈旧提示；不把归档引用当活跃工作。
+- [x] 已完成长过程改为下方固定 Git 历史入口，保留原失败与证据，不制造第二套台账。
+- [x] 文档diff／8个本地链接与锚点／2个固定历史对象检查通过；直接相关Root治理测试8 PASS，独立复核CLEAR。本轮沿Root文档PR交付，不扩大验证范围。
 
 ## 条件性遗留（本轮不自动开工）
 
@@ -134,23 +37,24 @@
 两笔无预占恢复残留已审计关闭，旧 usage unknown／空 ACK 原事实保留，不伪造零用量。
 历史 30 积分资金事项另案保留，不与这两笔无 admission 候选混算，不自动扩查、追加或回收资金。
 
-## 已交付入口（不重复开工）
+## 最近交付与证据入口
 
-| 交付 | 最终出口与证据 |
+| 交付 | 已观察到的出口与范围 |
 | --- | --- |
-| Task A／Task B 已批准范围 | [Root #67](https://github.com/LordFoxFairy/Kokoro/pull/67) 已合 main `91b54d74`；[技术总览](docs/kokoro-handbook/technical/00-system-overview.md)、[原 Task B 功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)、下方历史基线保留具名旅程和接受的边界 |
-| 两笔无预占恢复残留 | [Root #93](https://github.com/LordFoxFairy/Kokoro/pull/93) 已合 main `3960b351`；[报告 §7](docs/reports/2026-11-14-historical-financial-unknown-readonly.md#7-2026-11-15-实际闭环与交付收据)；原命令防迟到和独立审计关闭，不改资金／不造零用量 |
-| R-06 GitHub 单一发行 | shared #2／App #64／[Root #94](https://github.com/LordFoxFairy/Kokoro/pull/94) 已合 main；`@lordfoxfairy/i18n@0.1.0`，无 CNB 活接线；[方案与验证](docs/superpowers/plans/2026-11-15-r06-i18n-publication.md) |
-| A-15 非首屏设置 JS 切片 | App #65／[Root #95](https://github.com/LordFoxFairy/Kokoro/pull/95) 已合 main `8f68f9a3`；[报告 §24](docs/reports/2026-11-11-typescript-auth-admin-audit.md#24-a-15-project-首屏非关键设置-js2026-11-15)。受控 production 首屏少 39,126B encoded JS；不是 live/p95/冷100ms 或完整 A-15 达标；Root/App 本轮分支与临时验证副本已清 |
-| 更早 R-01～R-16／UI／文档收口 | [既有报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)与固定历史基线承接，不把历史“未验／待合”当当前状态 |
+| H-01 本人草稿 metadata | [App #67](https://github.com/LordFoxFairy/kokoro-app/pull/67) → `a516cfcb991a080baaf51fef1c070ff57854db0c`；[Root #105](https://github.com/LordFoxFairy/Kokoro/pull/105) → `3c66f1739f8fff950acd630fd5b78d6238e97d10`。精确 gitlink、保存／读回／刷新及中法语窄屏已验；不扩封面／discard／AI。开发角色临时QA权限已还原，不修改默认成员权限。原失败与子步骤边界见 CURRENT |
+| 历史源码／旧 worktree 收拢 | [Root #104](https://github.com/LordFoxFairy/Kokoro/pull/104) → `5a6c895cec76f0278a7488605604c1229c024418`；[逐项报告](docs/reports/2026-11-15-historical-work-reconciliation.md)。旧 checkout 已退役，源码通过 Git 归档保留；不整批恢复旧代码 |
+| 真实浏览器核心链 | [Root #103](https://github.com/LordFoxFairy/Kokoro/pull/103) → `138201388931a8fa3198c9298eb7f9cf341e1c02`。当前组合任务→工具→产物下载→刷新恢复已验；资金授权、原失败和未验边界仍由原收据承接，不重复执行 |
+| Task A／Task B 已批准范围 | [Root #67](https://github.com/LordFoxFairy/Kokoro/pull/67)；[系统总览](docs/kokoro-handbook/technical/00-system-overview.md)、[Task B 原功能交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md)保留范围，不据旧 OPEN 文字重新开工 |
+| 两笔无预占恢复残留 | [Root #93](https://github.com/LordFoxFairy/Kokoro/pull/93)；[报告§7](docs/reports/2026-11-14-historical-financial-unknown-readonly.md#7-2026-11-15-实际闭环与交付收据)。防迟到与独立审计关闭，不改资金、不造零用量 |
+| R-06 GitHub 单一发行 | shared #2／App #64／[Root #94](https://github.com/LordFoxFairy/Kokoro/pull/94)；`@lordfoxfairy/i18n@0.1.0`，无 CNB 活接线；[方案](docs/superpowers/plans/2026-11-15-r06-i18n-publication.md) |
+| A-15／后续代码质量批次 | [已交付详细记录（固定基线）](https://github.com/LordFoxFairy/Kokoro/blob/3c66f1739f8fff950acd630fd5b78d6238e97d10/todo.md)、[报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)保留实际收益、撤销试验、失败、具名验证和各仓出口；诊断不冒提速 |
 
-[精简前完整 TODO（固定交付基线 8f68f9a3）](https://github.com/LordFoxFairy/Kokoro/blob/8f68f9a3eb6d67b9f35c5e49e1f40d1955f7a07a/todo.md)保留逐项过程、失败与收据边界；[CURRENT](docs/CURRENT.md)保留时间序列，历史状态只代表记录当时，不覆盖本清单。
+[CURRENT](docs/CURRENT.md)维护时间序列；旧段仅代表记录当时，当前交付和清理结论以上述后继事实为准。[更早完整清单](https://github.com/LordFoxFairy/Kokoro/blob/8f68f9a3eb6d67b9f35c5e49e1f40d1955f7a07a/todo.md)继续保留，不复制历史为新待办。
 
 ## 本地保留与清理边界
 
-当前交付 checkout 的干净／gitlink 配对结论以各轮最终回执为准，不声称整台机器所有旧工作区为空。
-
-- 不删除 ignored 运行配置、验证收据、数据库／数据卷、聊天记录或归属未明的旧 worktree。
-- App 旧 `feat/mcp-api-management`、BFF 旧 `codex/task-b-owner-current` 被既有 worktree 占用，保留待交接，不是未结束的远端 PR。
-- BFF 归档 `codex/archive-bff-mcp-closure-777325d` 有 main 未包含提交；其他旧 App／Storage 工作区有未交接 diff 或独有提交，均不动。
-- Mori／System／Billing 按固定 gitlink 的 detached 不等于脏仓，不为整理擅自切换。
+- 上轮最终回执已核 Root／App 同步 main、工作区干净、本轮远近 topic 清理及精确 gitlink；不从“PR已合并”单独推导整个机器无遗留。
+- 七个旧 worktree 与已核过时分支名已清理，不再列作占用待交接。源码 archive refs、私有配置、ignored 证据保留；它们不是活跃分支或待合 PR。
+- 历史源码恢复入口见专项报告，不删 archive refs、不做 GC／历史重写、不把旧树整批合回 main。
+- Mori／System 等固定 detached pin 不等于脏仓，不为整理擅自切换或更新 gitlink。
+- 不删除 ignored 运行配置、验证收据、数据库／数据卷、聊天记录或归属未明的工作；本轮不操作业务服务、模型、权限、资金或部署。
