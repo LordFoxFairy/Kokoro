@@ -5,16 +5,17 @@
 ## 正式交付结论
 
 - **已批准范围正式交付，不再自动选择下一项任务。** Task A／Task B、两笔无预占恢复残留、R-06、核心链质量修复、H-01 metadata及单一真实只读MCP四步均已交付。
+- **Task A 范围不包含 Mori。** 本处仓库口径为Root＋11个相关子仓：App、BFF、Agent、IAM、System、Billing、Capability、Storage、Scheduler、Admin、Web shared；这是业务／支撑范围，不是`.gitmodules`的全部登记。Mori属于其他App，不计入Task A任务、验收、PR或本地清理范围，也不改其代码或仓库结构。Web shared是包源码／发行仓，不是另一个业务App；当前明确由App正式消费的是i18n，不将其它未复用包算作已交付收益。
 - 剩余 **8 项条件性遗留／可选增强** 见下表；本轮已补齐一个真实只读MCP调用／展示／刷新／撤权拒绝；其他条件和Provider专有授权不自动扩项。它们不是 8 个新故障，也不因暂存而视作已经完成。
 - A-15 已定位生产启动成本，唯一候选净收益不足已撤销；不重复该试验，不为保持推进而扫描已交付代码或新增设计、缓存、测试矩阵。
 - H-01 只交付本人草稿 metadata 编辑与 fresh 读回。**cover／discard／AI 仍排除**；不从旧代码或 API 的存在推导新增产品承诺。
 
 ## 最终收尾与 Goal 边界
 
-机器Goal仅覆盖已批准范围的交付收尾：更新本清单／CURRENT、核自有PR/main及本地清理；在本次Root文档PR合并并完成最终Git核对后标记complete。**下方8项条件不属于本Goal未完成工作**；不将其伪标验收通过，也不保留一个自动持续扫描的active目标。
+机器Goal已在[Root #108](https://github.com/LordFoxFairy/Kokoro/pull/108)合main `eac123f6e79bb01d296591f1497b94a064fd67d7`并完成最终Git核对后标记complete；本次只纠正Task A范围口径，不开启新功能目标。**下方8项条件不属于本Goal未完成工作**；不将其伪标验收通过，也不保留一个自动持续扫描的active目标。
 
-- [x] 自有PR核对：本次收尾PR创建前，Root及12子仓作者LordFoxFairy的OPEN PR均0；最近Root #104／#105／#106／#107及App #67均MERGED→main。只核元数据，未操作他人PR。
-- [x] 本地基线核对：13仓工作区干净、每仓1个checkout、实际本地branch refs均仅main、12个gitlink与checkout核等。Mori／System继续固定detached pin，不为整理擅动组合；它们不是额外分支。
+- [x] 自有PR核对：正式收尾核对时，Task A范围内Root及11个相关子仓作者LordFoxFairy的OPEN PR均0；最近Root #104／#105／#106／#107及App #67均MERGED→main。只核元数据，未操作他人PR。
+- [x] 本地基线核对：Task A范围内12仓工作区干净、每仓1个checkout、实际本地branch refs均仅main、11个gitlink与checkout核等。System继续固定detached pin，不为整理擅动组合；Mori不计入本项，也不因其Root登记而进行任何清理。
 - [x] A-14及其它条件项单独暂存，本轮不准备语音页面、不申请麦克风、不采集录音／口述原文；只有用户重新明确启动才继续。
 - [x] 仅本次Root文档收尾沿正常PR交付；不重新跑业务／全量测试，不启动服务／浏览器，不动资金、权限、归档refs、私有配置或证据。主控合并后核main及只清本轮topic，Goal状态以机器最终结果为准。
 
@@ -52,7 +53,7 @@
 | 远端CI账单／额度／运维事项 | GitHub账户管理员 | 处理Actions账户条件后让正常CI运行；既存“未启动”不改写绿色、不绕分支保护、不重复push等CI |
 | Provider专用长期审计／可选增强 | Capability＋Admin | 只有明确产品需求后立项；当前状态/receipt不称长期审计，现IAM/CustomAPI审计不重做 |
 
-**保持关闭／不纳入本轮**：真实支付未接入，不部署；Mori无本轮任务。
+**保持关闭／不纳入本轮**：真实支付未接入，不部署；Mori属于其他App，完全不纳入Task A。
 
 非合作取消的已知边界保留：HTTP 取消不等于下游事务硬回滚；不为此扩建取消框架或声称任意下游均可回滚。
 两笔无预占恢复残留已审计关闭，旧 usage unknown／空 ACK 原事实保留，不伪造零用量。
@@ -78,5 +79,5 @@
 - 上轮最终回执已核 Root／App 同步 main、工作区干净、本轮远近 topic 清理及精确 gitlink；不从“PR已合并”单独推导整个机器无遗留。
 - 七个旧 worktree 与已核过时分支名已清理，不再列作占用待交接。源码 archive refs、私有配置、ignored 证据保留；它们不是活跃分支或待合 PR。
 - 历史源码恢复入口见专项报告，不删 archive refs、不做 GC／历史重写、不把旧树整批合回 main。
-- Mori／System 等固定 detached pin 不等于脏仓，不为整理擅自切换或更新 gitlink。
+- Task A中的System固定detached pin不等于脏仓，不为整理擅自切换或更新gitlink。Mori为范围外App，不操作其代码、分支、gitlink、配置或仓库结构。
 - 不删除 ignored 运行配置、验证收据、数据库／数据卷、聊天记录或归属未明的工作；本轮不操作业务服务、模型、权限、资金或部署。

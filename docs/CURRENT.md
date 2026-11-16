@@ -1,10 +1,18 @@
+## 2026-11-16 Task A 范围口径纠正：明确排除 Mori
+
+Mori属于其他App，既不是Task A业务仓，也不纳入本轮任务、验收、PR或本地清理范围。Root的`.gitmodules`仍登记Mori只是仓库拓扑事实，不等于业务授权；本轮不改Mori代码、分支、gitlink、配置或仓库结构。Task A相关仓口径为Root＋11个业务／支撑子仓：App、BFF、Agent、IAM、System、Billing、Capability、Storage、Scheduler、Admin、Web shared。前次“13仓”误混统计口径，下面最新收尾段和唯一TODO已据此纠正；历史原证据不改写为本轮新验证。
+
+Web shared只作包源码／发行owner而非独立App：本次限定静态引用核对确认App正式registry消费@lordfoxfairy/i18n@0.1.0；App的@kokoro/tsconfig实际指向本地packages/tsconfig，与shared同名配置已不同；App/Admin未见web-core消费，Admin也未消费shared i18n。此结论不外推其它App，不触Mori；不因README列包就宣称全部跨产品复用，不在本轮删包或统一配置。
+
+本次唯一写区为Root TODO／CURRENT，只修范围与已完成Goal状态的说明；不重跑业务、语音、模型或已完成验证，不借Web shared用途讨论开展删包／架构调整。沿本次Root文档PR合main并仅清本轮topic，原已批准范围交付与8项条件暂存不变。
+
 ## 2026-11-16 已批准范围正式收尾：条件项独立暂存
 
 按用户最终裁决，已批准Task A／Task B及后续明确批准切片按既有证据交付；不再扩任务、重扫代码或重复业务验收。单一真实只读MCP已沿Root [#107](https://github.com/LordFoxFairy/Kokoro/pull/107)合main `363daf1f6731e252f67a59244dc73d86e7c53fc8`；H-01、原核心链与其它具名出口继续由[唯一TODO](../todo.md)和固定历史承接。A-14本轮不启动，不准备页面或麦克风、不采集录音／口述原文；8项条件／可选后继单独暂存，不算本次Goal未完成任务，不冒称已验证或已取消需求。
 
-仅只读核Git／PR元数据：本次收尾PR创建前，Root与12子仓作者LordFoxFairy的OPEN PR均0，精确确认Root #104／#105／#106／#107及App #67均MERGED→main。13仓均干净、仅main实际branch refs且每仓1个checkout，所有子仓HEAD与Root gitlink核等；Mori／System仍按固定pin detached，不清理历史archive refs或私有配置／收据，不影响他人PR。原业务服务／数据／权限／资金与组合不变。
+仅只读核Git／PR元数据：正式收尾时，Task A范围内Root与11个相关子仓作者LordFoxFairy的OPEN PR均0，精确确认Root #104／#105／#106／#107及App #67均MERGED→main。范围内12仓均干净、仅main实际branch refs且每仓1个checkout，11个子仓HEAD与Root gitlink核等；System仍按固定pin detached。前次“13仓”是Root加全部Git拓扑登记的统计，误将Mori混入任务口径；Mori属于其他App，不纳入Task A交付、验收、PR或清理范围，不改其代码或仓库结构。不清理历史archive refs或私有配置／收据，不影响他人PR；原业务服务／数据／权限／资金与组合不变。
 
-机器原无Goal，本次按用户授权建立仅覆盖正式收尾的有限目标；本次Root文档PR合并并完成最终main／topic核对后，机器Goal标记complete，不为条件项保持active或blocked。只维护TODO／CURRENT和必要文档diff／链接校验，不重跑业务测试、模型、浏览器或基础设施操作；最终Git与Goal状态由交付回执确认，不预写未来merge SHA。
+机器Goal已在Root [#108](https://github.com/LordFoxFairy/Kokoro/pull/108)合main `eac123f6e79bb01d296591f1497b94a064fd67d7`、完成最终main／topic核对后标记complete，不为条件项保持active或blocked；本次仅纠正范围说明，不重开功能任务。只维护TODO／CURRENT和必要文档diff／链接校验，不重跑业务测试、模型、浏览器或基础设施操作；最终Git与Goal状态由交付回执确认，不预写未来merge SHA。
 
 ## 2026-11-16 真实只读 MCP：调用、UI、刷新与撤权拒绝已闭环
 
