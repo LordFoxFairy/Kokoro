@@ -5,9 +5,21 @@
 ## 当前结论
 
 - 已批准的 Task A／Task B、两笔无预占恢复残留、R-06、核心链质量修复及 H-01 metadata 窄切片已交付。
-- 剩余 **8 项条件性遗留／可选增强** 见下表；当前没有已确认、已授权且可脱离这些条件独立实施的代码项。它们不是 8 个新故障，也不因暂存而视作已经完成。
+- 剩余 **8 项条件性遗留／可选增强** 见下表；本轮已补齐一个真实只读MCP调用／展示／刷新／撤权拒绝；其他条件和Provider专有授权不自动扩项。它们不是 8 个新故障，也不因暂存而视作已经完成。
 - A-15 已定位生产启动成本，唯一候选净收益不足已撤销；不重复该试验，不为保持推进而扫描已交付代码或新增设计、缓存、测试矩阵。
 - H-01 只交付本人草稿 metadata 编辑与 fresh 读回。**cover／discard／AI 仍排除**；不从旧代码或 API 的存在推导新增产品承诺。
+
+## 本轮已验：一个真实只读 MCP 末端
+
+范围仅实际工具调用→结果展示→硬刷新恢复→正式撤权后新调用拒绝。优先本地现成服务，不拿mock／fixture当真实，不新增SDK／认证层，不扩其它Provider、Skills、渠道或运维。主控独占资源／Git／台账与验收；两只读agent分别核已有服务候选及执行／撤权接线。
+
+- [x] 正式目录确认原Context7可用并保持不动。本机无可直接接入的现成HTTP MCP；不关闭Agent strict egress来接loopback。独立QA连接使用真实公开DeepWiki／Streamable HTTP，无新SDK、账号授权或权限放宽。
+- [x] 正常浏览器“Try it”预选QA连接并显式发送唯一成功任务；真实gpt-6.1-sol调用，mcp_list_tools／describe之后恰1次mcp_call(read_wiki_structure)成功，3956B结果及UI三条文档主题核等，不以声明发现冒调用。
+- [x] 同一Run的durable FINAL／UI硬刷新前后正文及hash一致，刷新新POST0；后置owner读确认原tool journal未变化。
+- [x] 仅QA Connector正式DELETE撤权；全新key／新Run收到202后，由Agent owner检查拒绝并终结为assembly_failed／retryable=false，UI可见；模型attempt0、MCP journal0、Billing admission0，不把旧回执重放或余额拒绝当撤权证明。QA server随后正式删除／fresh404，原Context7完整投影核等，临时会话logout200。
+- [x] 本轮未确认生产缺陷，业务源码／子仓版本／gitlink保持，不制造补丁。仅Root验收记录与TODO沿PR交付，文档检查和独立验收后由主控核main与本轮topic清理。
+
+本轮正常执行实扣13积分（现有21→8），4个新hold均结清；未充值／赠送，历史held30不动。首负控helper误把key放入正文导致invalid_message400，未产生Run；仅修私有helper后以正确header提交一次有效负控。原FAIL与正常子步骤分开保留，不重复成功任务、不扩大验证矩阵。
 
 ## 本轮收口：执行清单与交付事实一致
 
@@ -22,7 +34,7 @@
 
 | 项目／状态 | owner | 下一动作与完成边界 |
 | --- | --- | --- |
-| 真实MCP／Provider授权末端／条件暂存 | Capability＋目标Provider | 有真实端点及账号授权后，只补真实授权→调用→撤权末端；占位QA已删，不拿example.com造故障。已验控制面/材料边界不重跑 |
+| Provider专有授权末端／条件暂存（本轮单一只读MCP已验） | Capability＋目标Provider | 本轮DeepWiki实际调用／展示／刷新／Kokoro连接撤权拒绝已验。未使用的OAuth、续期和其它Provider授权仍在相应真实账号条件下验；不将公开无鉴权服务冒其证明，不重跑已验控制面 |
 | A-13外部渠道／条件暂存 | 渠道owner | Telegram/LINE/Slack按实际使用的渠道，账号授权齐备后补收发/撤权；本地协议证据不冒供应商实测 |
 | A-14本人语音／用户择时 | App＋用户 | 用户主动口述→编辑→显式发送；不保留录音或口述原文，沿“稍后验收”安排 |
 | 完整E2B生命周期／可选运行环境 | Agent＋环境owner | 确认实际采用云或完整自托管后补创建/重连/独立回收；官方envd Docker已有证据保留，不当完整云验收也不重复跑 |

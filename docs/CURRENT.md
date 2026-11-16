@@ -1,3 +1,15 @@
+## 2026-11-16 真实只读 MCP：调用、UI、刷新与撤权拒绝已闭环
+
+本轮固定Root `0ae8b7a9ab12c8ccaf561d27a05b05706cc492fe`原精确组合，不改业务源码／gitlink。正常服务和Agent既有worker／Capability surfaces的启动证据核等，复用native账号，不新增认证、SDK、服务或权限层。当前Context7确为active/available，但private绑定不适合另挂QA后撤销；本机无现成可直接接入的HTTP MCP，已装Playwright仅stdio，而Agent strict egress拒loopback。本轮不切off或绕安全策略，改以独立QA连接接[官方DeepWiki公开只读服务](https://docs.devin.ai/work-with-devin/deepwiki-mcp)，HTTPS Streamable HTTP，无Provider账号授权；原Context7不动。
+
+正式register／prepare／enable后，真实浏览器从Settings“Try it”预选本轮连接，明确发送一次任务。成功Run `run_bff_1c337829acfec78d13e62f5d8a34a4a7e7e5490f572bca15ee79fce5fae0b006` 经真实gpt-6.1-sol，mcp_list_tools／mcp_describe_tool与唯一mcp_call均succeeded／非error；实际read_wiki_structure读取modelcontextprotocol/python-sdk的3956B公开目录，SHA256 `76962b240ea7a45fc6e9284781818d3238f11f8999a0f10e6148b32d5fc49ddd`。UI三条主题逐条出自真实结果；AG-UI安全activity、durable FINAL与AI SDK正文对应，同Run硬刷新前后消息／parts／显示文本hash一致，刷新新POST0、pageerror0，后置journal与原成功事实核等。无fixture、合成模型或直接ToolNode替代正常执行。
+
+只对QA Connector正式DELETE撤权，再用全新key／新Run `run_bff_482d4eabaa73099cefa5e9f61c17eafe4a7888be1583bf0eeb9a5e6464f1e751`提交原已撤引用；格式有效消息收到202，随后Agent fresh owner检查在构建期拒绝，公开终态assembly_failed／retryable=false、对应UI可见。不是BFF即时4xx，不重放旧tool ID；Agent model attempt／dispatch与MCP journal均0，Billing admission0，故不以余额不足或旧回执冒撤权证明。新Run失败是本负控预期，不冒两Run均成功。随后QA private server正式删除／fresh404，原Context7完整投影与原读核等（这两项由当次helper真实断言及PASS日志支持，未另存完整raw响应），所有本轮native会话logout200，未删除验收会话／审计事实。
+
+正向4次模型派发／封口／financial ACK齐备，4个新hold均终结，实际扣13积分、可用21→8；历史held30不变，无充值／赠送或资金管理操作。首负控helper错误把幂等key放入正文，收到invalid_message400且未产生Run；仅改私有接线，将原意图用正确header提交，未重复成功任务。后置只读SQL探针的引号语法错误修在私有helper，不算产品失败或验收通过。原FAIL／收据／截图留Root ignored `var/dev/real-readonly-mcp/`，不进Git或公开文档。
+
+本轮只完成指定的一个真实只读服务四步，未证明其它Provider OAuth／续期／所有工具或容量，不重跑旧控制面、全量测试、外部渠道、基础设施或部署。未发现生产缺陷，唯一源码变更为Root CURRENT／TODO验收记录；两只读agent独立证据复核CLEAR；文档diff／7个本地链接与锚点检查及直接相关Root治理8项通过。沿本Root PR交付，主控最终核合并与topic清理。
+
 ## 2026-11-16 TODO 交接纠偏：只收口陈旧状态
 
 本轮仅核现有[唯一TODO](../todo.md)、具名交付记录及其引用，未扫描业务源码。两只读agent分核8项条件遗留的进入边界与Git出口，主控唯一文档／Git writer。现8项均需要外部条件、采用决定或明确增强需求；无已确认且已授权的独立代码待修项，不从旧API或“持续打磨”自动立项。H-01 cover／discard／AI仍排除，A-15无净收益候选不再重试。
