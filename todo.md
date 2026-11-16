@@ -2,6 +2,16 @@
 
 更新：2026-11-16（America/New_York）。仅维护下一动作、进入条件和完成边界；详细完成过程由固定 Git 历史保留。
 
+## 本轮已验：BFF Projects／Skills 下载装配收口
+
+用户批准的单仓重构；不重开Task A／Task B已完成范围或8项条件项。复用现ExactSkillDownloadService与owner客户端，将Module内具体来源解析移到具名factory（platform下Project／Skill各一文件），两处owner下载响应采用现skill-product-response内同一纯mapper；Module仅保原token／inject并引用factory。没有新SDK／Base类／空port／通用代理层，不改契约、Schema、生成物、依赖或认证边界；Mori不动。
+
+保行为：缺配置仍null、对象origin优先级不变；Project同tenant／subject前后鲜验与owner projectRef校验保留；managed/share资格、exact revision、wire／timestamp校验、signal／绝对deadline与既有错误映射原样。两Module和factory／mapper由实现agent唯一写入；审查agent只读核行为，主控独占台账／Git／最终验收。
+
+- [x] 沿既有目录收口两个具名source factory，两处来源下载共用现response mapper；删除Module内重复业务闭包，不改原下载Service。
+- [x] 4项装配特征迁移前通过原Nest provider，最终5项已纳入默认入口；主控停写7源码输入核等，相关下载5文件45 PASS、既有architecture 111 PASS，lint／types／build／新文件format及diff通过。未跑无关全默认／契约生成／真实PG／浏览器／模型／部署，loopback夹具不冒跨owner实测。
+- [x] 独立行为审查CLEAR，TODO／CURRENT已同步；BFF [#29](https://github.com/LordFoxFairy/kokoro-bff/pull/29)已合main `d29dd8b5d2c42406abe4ac306d1f3dc1150c7699`且合并树与验收树相等、BFF本轮topic已清理。Root精确配对gitlink，按233个实际Git blobs重算291处inventory引用（18处摘要变化）；拓扑／兼容性15 edges、0 violations／原checkpoint均PASS。本清单随Root本片正常PR交付，Root合并与本轮topic清理以最终Git回执为准，不预写未来SHA。
+
 ## 本轮已验：共享依赖核实与 App 重复配置收口
 
 本轮由用户新批准，不重开已完成业务Goal。两只读agent按精确依赖核实：shared三包均有受保护消费者（包括范围外Mori及shared自身extends），不存在本轮可直接删除的闲置shared包；不把App/Admin未用冒全局无用。shared和Mori不改、不运行、不切分支；不借旧i18n名或其它App配置差异扩大修复。

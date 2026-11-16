@@ -1,3 +1,11 @@
+## 2026-11-16 BFF Projects／Skills 下载装配收口
+
+按用户批准仅完成单仓保行为重构：Projects／Skills两个Module保原token／inject，业务来源闭包移到现Platform client目录的两个具名factory；本次两处exact-source下载响应共用现response mapper。原ExactSkillDownloadService、配置null门、origin优先、Project按真实subject／tenant前后鲜验及owner projectRef检查、managed/share exact资格、递归wire／timestamp校验、取消／deadline／错误语义保持。无新SDK、Base类、空port／通用层；不改API、Schema、generated、依赖／lock或Mori。其它相似但有不同资格约束的现download facade不借本轮修改。
+
+4项特征先在原provider经真实Nest测试容器通过；最终新增5项已接入本仓默认显式测试入口（package.json仅此脚本接线）。主控停写7输入逐SHA核等，相关下载／HTTP／policy／Project及新装配5文件45 PASS，现architecture 111 PASS，正式lint／types／build、新文件格式、diff／新增本地链接通过；独立行为复核CLEAR。HTTP owner为明确loopback fixture，不冒真实IAM／Platform／PG或浏览器验收；未重跑无关全默认／契约生成／真实模型／PG／浏览器或部署。两次新测试fixture错误纠正，未放宽生产断言、不冒行为RED；主控初次cwd错误未运行基线，纠正后原四文件40 PASS。日志／收据留Root ignored var/dev/bff-exact-download-cleanup。
+
+BFF [#29](https://github.com/LordFoxFairy/kokoro-bff/pull/29)已合main `d29dd8b5d2c42406abe4ac306d1f3dc1150c7699`，合并树与停写验收树相等，BFF本轮topic已清理。Root仅配对该gitlink并按233个真实已提交blobs重算291处inventory引用（18处摘要变化）；拓扑、兼容性（15 edges／0 violations）与原checkpoint均PASS；Root本片正常PR交付与本轮topic清理以[唯一TODO](../todo.md)和最终Git回执为准，不预写未来merge SHA。既有业务Goal与8项条件暂存不变，不自动立项下一轮或扩扫。
+
 ## 2026-11-16 Web shared 引用核实与 App 重复配置收口
 
 用户新批准先核实际引用再清理。shared三包有真实消费者：App正式消费GitHub Packages的`@lordfoxfairy/i18n@0.1.0`；受保护的范围外Mori消费shared包，shared内部也存在tsconfig继承。因此本轮没有可直接删除的闲置shared包，shared与Mori均不修改、不切分支、不运行其门禁；不将App／Admin未消费外推成全局无用，不扩到其它App迁移。
