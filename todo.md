@@ -10,6 +10,19 @@
 - 不为保持“推进”而重复扫描已交付代码、补重复测试、扩建审计平台或擅定性能指标。条件具备后，只做对应缺口。
 - 上轮production诊断／试验已沿Root #98合main `8f266a15`并清本轮资源；当前执行下方代码质量批次，不重跑该实验。
 
+## 本轮已交付：H-01 本人草稿 metadata 原地修改
+
+用户已批准仅metadata PATCH＋保存后fresh读回，复用当前Public29正式接口；不恢复旧workspace，不扩cover／discard／AI。主控唯一Git／资源／台账writer与最终验收；h01_contract_review独占client／schema／同源adapter及对应focused tests；h01_ui_review独占现役UI／词条；h01_host_tests独占本次宿主回归。
+
+- [x] 设计范围：现役Settings→Skills Create菜单的草稿入口，按需列表／fresh本人draft→metadata编辑；CAS为字符串，ACK后GET-only恢复，unknown只原body/key显式重试。已有接口/pin足够，无新owner／数据库／依赖／SDK。
+- [x] client／typed adapter精确放行self PATCH /skills/{id}/draft，严格metadata-only body／完整ACK；先RED再定向回归，不开放其它写路径。
+- [x] 窄草稿Dialog复用现组件／多语言与准入边界，字段/数组保真，保存fresh读回才显示当前成功；取消／关闭／再准入／迟到／冲突沿既有边界，不建全局store。
+- [x] 主控停写后相关contract／client／host UI回归、格式／lint／types／build及本次真实浏览器主路径、窄屏与键盘；只补本次独有证据。
+- [x] App设计／API说明／产品指南及Root TODO／CURRENT已同步；App [#67](https://github.com/LordFoxFairy/kokoro-app/pull/67)已合main `a516cfcb991a080baaf51fef1c070ff57854db0c`，源码tree与本地已验 `bbb3600a`核等，App本轮远近topic已清。
+- [x] Root精确gitlink／inventory按97个引用、89个已提交blob重核；topology、compatibility（15 edges／0 violations）和原checkpoint通过。本Root PR承载组合与台账，合并及Root topic清理由主控在GitHub合并后实核，不在候选分支提前宣称。
+
+主控证据：5文件372 PASS、完整默认6903 PASS、contract479／architecture50 PASS、lint/types/build与Docs check通过。真实唯一PATCH200版本1→2、保存fresh与硬刷新读回；中法语390px／Escape／同窗重开续读通过，自有QA系列正式删除后404，各会话logout200。开发专用角色缺update_draft的403保留，临时验收权限已核原样还原；默认成员权限、资金与其他账号不动。helper的label／重开视图／Shell就绪失败分列，不以重试抹旧FAIL；未重跑无关模型或全产品E2E。App已交付；Root本PR收尾状态以GitHub及合并后Git核对为准，不扩其它条件项。
+
 ## 本轮已收口：历史分支／旧 worktree 语义收拢
 
 [逐项裁定与恢复入口](docs/reports/2026-11-15-historical-work-reconciliation.md)。主控唯一Git／归档／删除writer，两只读面分审BFF和App大旧树；不以SHA未入main断言需求遗漏，不整批回灌旧码。
@@ -19,11 +32,11 @@
 - [x] 7旧worktree与BFF过时分支名已移除，无占用、无force checkout删除。全部子仓只有main本地分支及主checkout，HEAD／Root gitlink／主仓依赖不变；Mori/System仍保持已锁detached pin。历史引用不算活跃开发分支，但候选不冒已交付。
 - [x] 报告／TODO／CURRENT同步；本Root文档PR承接最后main及本轮topic，未运行无关全量、业务浏览器／模型或基础设施／部署。
 
-## 历史能力候选（非确认缺陷，不自动开工）
+## H-01 历史候选的本轮裁定
 
 | 项目 | owner／当前边界 | 下一决定 |
 | --- | --- | --- |
-| H-01 本人draft原地metadata／封面／discard | App＋Capability；当前作者编辑已有新版本ZIP发布，API存在不等于整个旧UI已承诺。旧实现及测试已完整归档，不复活内嵌Admin／旧client | 如产品明确需要，先限定已有本人draft的metadata PATCH＋fresh读回；cover/discard/AI不自动并入。保留源码不是本轮实现该能力，详见报告§4 |
+| H-01 本人draft原地metadata已交付；封面／discard仍排除 | App＋Capability；当前作者编辑已有新版本ZIP发布，API存在不等于整个旧UI已承诺。旧实现及测试已完整归档，不复活内嵌Admin／旧client | metadata PATCH＋fresh读回交付见上方；cover/discard/AI不并入。旧报告§4保留本轮前裁定，不覆盖当前授权 |
 
 ## 本轮已验：当前 main 精确组合真实浏览器核心链
 
