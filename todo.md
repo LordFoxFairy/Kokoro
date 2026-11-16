@@ -10,6 +10,17 @@
 - 不为保持“推进”而重复扫描已交付代码、补重复测试、扩建审计平台或擅定性能指标。条件具备后，只做对应缺口。
 - 上轮production诊断／试验已沿Root #98合main `8f266a15`并清本轮资源；当前执行下方代码质量批次，不重跑该实验。
 
+## 本轮已验：当前 main 精确组合真实浏览器核心链
+
+主控唯一writer／资源／Git／台账／验收；core_browser_route_review只读验收接线，core_run_log_review只读运行来源与本次Run日志。Root `afcf2cc4762ea413d9431c06740f15c9318f79c6`精确组合不变；仅补发起任务→Agent真实工具→Storage产物／下载→硬刷新恢复，不扩外部条件、基础设施或无关测试。
+
+- [x] 所有gitlink／子仓干净核等。静默后仅重载Agent HTTP／Worker（39fd15c5）及Web dev（f8215c10）；其余owner沿现进程，IAM仅文档后继／Capability树等，运行输入核等，不以磁盘HEAD冒进程已重载。
+- [x] 首Run正式准入拒绝保FAIL：可用8低于预占10，未派发／未扣费。用户明确批准赠22，正式owner幂等命令／审计／ledger核等，可用补30；不走现金支付、不动历史held30。
+- [x] 第二Run唯一消息POST202，真实gpt-6.1-sol三次派发／封口／financial ACK，write_file＋deliver journal均succeeded；同Run Artifact final、Asset clean。浏览器实际卡片／Canvas下载29B，SHA `073798d9b7324c6fc309058abd6b4cc6c0a1c4adb8deb1f42d6b0ab9ba6800b9`与Storage／事件相符。
+- [x] 仅续读同一成功Run补齐当前ordered FINAL、分页正文与实际UI硬刷新前后一致，恢复新POST0。旧helper的scope cursor／turn锚点及Prisma枚举误判保原件后只修私有接线，未重提模型任务、未改生产源码；pageerror0，导航取消诊断保留，不冒零网络异常。
+- [x] 日志独审区分首Run余额422、探针parts400、两条SDK Beta和已恢复NOGROUP；成功Run未见新增执行异常。Billing重复settle200由持久事实对账，不以次数算扣费；BFF日志稀疏由terminal dispatch／messages补证。实际扣9、可用21，held30不变；全部61 Run terminal、launch／dispatch待处理0，旧financial候选2不扩查。两只读审查与主控owner核验承接。
+- [x] TODO／CURRENT同步；本Root文档PR承接最终main／本轮topic清理，无子仓源码／契约／gitlink变更。临时会话均logout、浏览器关闭／下载临时文件已删；验收任务／产物与私有失败／成功收据保留，不擅删业务数据，不运行无关全量或部署。
+
 ## 本轮已验：Skills 精确文件搜索
 
 主控唯一writer／Git／资源／台账／验收；mcp_result_review和mcp_result_coverage_review两只读面均确认MCP结果处理无新缺陷，保持不改；仅续核尚未检查的Skills精确文件搜索候选。不回扫已交付Project／输入匹配／scan／事件落账，不纳入基础设施、供应商授权或运维。
@@ -17,7 +28,7 @@
 - [x] SDK原生Composite路由可达；Skills grep一律将path当目录，SKILL.md／嵌套文件有词却假空。公开路由三等价类先RED2／PASS1，19未选；目录相邻前缀不混入。
 - [x] 原筛选条件仅补exact-file分支，目录、glob、包重验、预算及只读保持；不改owner、协议、Schema、依赖，不新增helper或层。
 - [x] 停写后skill-client／factory相关选择50PASS，70按名称未选、372条既有SDK警告；完整Ruff／format404／固定Pyright0错误、offline lock、contract和wheel/sdist通过，包内源码核等；两独审CLEAR。未跑全默认或真实供应商／模型／DB／浏览器链。
-- [x] Agent[#53](https://github.com/LordFoxFairy/kokoro-agent/pull/53)已main `39fd15c5`、树等审定1da564fb，owner topic远近已清。Root59字段／424真blob／518引用重核，仅Skills backend摘要改变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。本Root PR承接最终main／Root topic；本轮打包输出已清，原证据及既有build/dist/venv保留。
+- [x] Agent[#53](https://github.com/LordFoxFairy/kokoro-agent/pull/53)已main `39fd15c5`、树等审定1da564fb，owner topic远近已清。Root59字段／424真blob／518引用重核，仅Skills backend摘要改变，拓扑／15边0违例／checkpoint通过；TODO／CURRENT同步。Root[#102](https://github.com/LordFoxFairy/Kokoro/pull/102)已main `afcf2cc4`且本轮topic远近已清；本轮打包输出已清，原证据及既有build/dist/venv保留。
 
 ## 本轮已验：执行结果到持久事件／恢复展示
 
