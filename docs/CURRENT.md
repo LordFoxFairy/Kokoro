@@ -1,3 +1,11 @@
+## 2026-11-15 H-01：metadata 已验，App main 与 Root 组合交付
+
+本轮只改App现役Settings Skills菜单／按需本人草稿Dialog、现有metadata PATCH消费者与同源typed边界；不恢复旧workspace、不扩封面／discard／AI，不改owner源码、固定契约、依赖或Schema。具体行为及范围见[唯一TODO](../todo.md)与App CURRENT。主控停写后5文件372／完整默认6903／contract479／architecture50 PASS，lint/types/build与对外Docs导航链接检查通过，UI/actor独审CLEAR。
+
+真实native链已有唯一成功PATCH200（QA draft版本1→2），有序数组／多行重复示例保持，正式fresh GET／UI／硬刷新核等；后继只读补验中法语390px、Escape回焦／同窗重开，无新PATCH或模型调用。自有QA系列已走正式DELETE清理并fresh404，各临时会话logout200；正常Web dev恢复。开发专用角色原仅create_draft/install导致403，核实仅当前账号后临时授验收与自有夹具清理权限，验后原权限／membership／platform_admin核等恢复；不更改默认成员或其他账号／资金。原helper定位／重开／Shell hydration失败和有效子步骤分开保留私有收据，不冒单次零失败整链。
+
+本地验证绑定停写源码manifest；App [#67](https://github.com/LordFoxFairy/kokoro-app/pull/67)已合main `a516cfcb991a080baaf51fef1c070ff57854db0c`，tree与已验 `bbb3600a`相等，App远近本轮topic已清且main干净。Root只更新该gitlink、按已提交blob重核App inventory的97引用／89唯一blob及本台账；topology／compatibility（15 edges、0 violations）／原checkpoint通过，其它gitlink不动。本Root PR承载组合交付；主控合并后再核main／Root topic清理，不在候选阶段提前记已合并。无部署，不将未等远端CI说成全绿，不影响其它暂存条件项。
+
 ## 2026-11-15 历史工作语义收拢：旧 checkout 清理、候选保源
 
 按[专项报告](reports/2026-11-15-historical-work-reconciliation.md)核上一轮保留的BFF18提交和7旧worktree，不重复业务扫描／实测。BFF18意图均已由现实现或native认证／正式契约后继承接；App两个大树为共享80＋后继27，129工作区项逐路径区分已承接／旧方案／可选候选，未把父hash不同或旧文件消失当作缺陷。四个小App布局／Project loading已承接或后继替代；Storage旧legacy试验已有正式maintenance与canonical覆盖。本轮没有确认应回灌的现行产品缺陷，不新增业务代码或重复测试。
