@@ -1,3 +1,13 @@
+## 2026-11-16 Web shared 引用核实与 App 重复配置收口
+
+用户新批准先核实际引用再清理。shared三包有真实消费者：App正式消费GitHub Packages的`@lordfoxfairy/i18n@0.1.0`；受保护的范围外Mori消费shared包，shared内部也存在tsconfig继承。因此本轮没有可直接删除的闲置shared包，shared与Mori均不修改、不切分支、不运行其门禁；不将App／Admin未消费外推成全局无用，不扩到其它App迁移。
+
+唯一实现为App本地TypeScript配置去重：将本地`packages/tsconfig/base.json`有效内容合入App根`tsconfig.json`，删除本地package及devDependency／lock link／空importer／workspace通配／Docker manifest COPY。原严格选项、Next插件、include/exclude、pnpm安装安全策略均保留，无新层、依赖、包发行或业务／API／Schema／generated变更；i18n版本／integrity／registry／resolver保持不变。
+
+App配置writer停写后，主控核完整官方`tsc --showConfig` JSON前后全等（35有效选项／1234编译文件），锁语义仅删本地link与空importer，其余1127 packages／1128 snapshots的版本／integrity／设置相同。沿现有registry正规冻结安装、lint、Next typegen及非增量types、既有architecture四文件50项、production build通过；独立配置与安装边界复核CLEAR。原离线metadata缓存缺口／不支持CLI参数诊断保留，最后正规lock-only与frozen通过，不手改生成锁、不升级依赖；凭据仅子进程环境、临时npmrc已清。未重跑无关默认／浏览器／业务E2E或shared／Mori门禁；Docker只删失效COPY，未做镜像构建／部署，不冒smoke已验。
+
+仅暂停并恢复自己的Next dev，恢复后公开根HTTP200；其它应用、基础设施、数据、模型和资金不动。收据／日志留Root ignored `var/dev/web-shared-cleanup/`。App [#68](https://github.com/LordFoxFairy/kokoro-app/pull/68)已合main `c3e2a82918879310007cc71139add8c8cdf5e8cd`，合并树与停写验收树相同，App本轮topic已删除。Root仅更新此App gitlink，97处inventory引用按89个真实已提交blobs重算（6处摘要变化，非机械替换）；拓扑／兼容性（15 edges、0 violations）／原checkpoint通过。本记录随Root本片正常PR交付，Root合并与topic清理由主控最终回执核实，不预写未来merge SHA。[唯一TODO](../todo.md)同步本片，不重开已完成业务Goal及8项条件暂存。
+
 ## 2026-11-16 Task A 范围口径纠正：明确排除 Mori
 
 Mori属于其他App，既不是Task A业务仓，也不纳入本轮任务、验收、PR或本地清理范围。Root的`.gitmodules`仍登记Mori只是仓库拓扑事实，不等于业务授权；本轮不改Mori代码、分支、gitlink、配置或仓库结构。Task A相关仓口径为Root＋11个业务／支撑子仓：App、BFF、Agent、IAM、System、Billing、Capability、Storage、Scheduler、Admin、Web shared。前次“13仓”误混统计口径，下面最新收尾段和唯一TODO已据此纠正；历史原证据不改写为本轮新验证。

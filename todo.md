@@ -2,6 +2,17 @@
 
 更新：2026-11-16（America/New_York）。仅维护下一动作、进入条件和完成边界；详细完成过程由固定 Git 历史保留。
 
+## 本轮已验：共享依赖核实与 App 重复配置收口
+
+本轮由用户新批准，不重开已完成业务Goal。两只读agent按精确依赖核实：shared三包均有受保护消费者（包括范围外Mori及shared自身extends），不存在本轮可直接删除的闲置shared包；不把App/Admin未用冒全局无用。shared和Mori不改、不运行、不切分支；不借旧i18n名或其它App配置差异扩大修复。
+
+最小设计：只将App本地packages/tsconfig编译基线合入App根tsconfig，退休本地同名包及manifest／lock／workspace／Docker接线；保留所有有效严格选项、文件集合、pnpm安全设置和正式i18n版本／SRI／registry。无新依赖、发行、业务层或契约。主控唯一Root文档／Git／资源writer；App配置writer独占这组紧密相关文件，审查agent只读。
+
+- [x] 确认实际消费者与冻结修改前tsc --showConfig；不删除shared的真实依赖。
+- [x] App有效配置合回单一根入口，删除本地重复package，正规更新lock与Docker输入。
+- [x] 配置／文件集严格核等：官方完整showConfig前后相等（35选项／1234文件），1127包／1128 snapshots除本地link与空importer外不变，i18n和安全设置不变；冻结安装、lint、Next typegen／非增量types、architecture 50项、production build通过。离线metadata缺口及不支持CLI参数保留，最终沿原registry正规生成／冻结安装通过；不重跑无关业务／浏览器E2E、不冒Docker镜像已验。
+- [x] 独立复核CLEAR，更新TODO／CURRENT；App [#68](https://github.com/LordFoxFairy/kokoro-app/pull/68)已合main `c3e2a82918879310007cc71139add8c8cdf5e8cd`，合并树与停写验收树相等，本轮App topic已清理。Root仅配对App gitlink及按89个真实Git blobs重算97处inventory引用（6处摘要变化）；拓扑／兼容性（15 edges、0 violations）／既定checkpoint通过。Root随本PR交付，合并及本轮topic清理以最终Git回执为准，不预写未来merge SHA。
+
 ## 正式交付结论
 
 - **已批准范围正式交付，不再自动选择下一项任务。** Task A／Task B、两笔无预占恢复残留、R-06、核心链质量修复、H-01 metadata及单一真实只读MCP四步均已交付。
@@ -12,7 +23,7 @@
 
 ## 最终收尾与 Goal 边界
 
-机器Goal已在[Root #108](https://github.com/LordFoxFairy/Kokoro/pull/108)合main `eac123f6e79bb01d296591f1497b94a064fd67d7`并完成最终Git核对后标记complete；本次只纠正Task A范围口径，不开启新功能目标。**下方8项条件不属于本Goal未完成工作**；不将其伪标验收通过，也不保留一个自动持续扫描的active目标。
+机器Goal已在[Root #108](https://github.com/LordFoxFairy/Kokoro/pull/108)合main `eac123f6e79bb01d296591f1497b94a064fd67d7`并完成最终Git核对后标记complete；本次窄配置清理不重开已完成业务Goal，不开启新功能目标。**下方8项条件不属于本Goal未完成工作**；不将其伪标验收通过，也不保留一个自动持续扫描的active目标。
 
 - [x] 自有PR核对：正式收尾核对时，Task A范围内Root及11个相关子仓作者LordFoxFairy的OPEN PR均0；最近Root #104／#105／#106／#107及App #67均MERGED→main。只核元数据，未操作他人PR。
 - [x] 本地基线核对：Task A范围内12仓工作区干净、每仓1个checkout、实际本地branch refs均仅main、11个gitlink与checkout核等。System继续固定detached pin，不为整理擅动组合；Mori不计入本项，也不因其Root登记而进行任何清理。
