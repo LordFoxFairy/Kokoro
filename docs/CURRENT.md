@@ -1,3 +1,11 @@
+## 2026-11-16 TODO 交接纠偏：只收口陈旧状态
+
+本轮仅核现有[唯一TODO](../todo.md)、具名交付记录及其引用，未扫描业务源码。两只读agent分核8项条件遗留的进入边界与Git出口，主控唯一文档／Git writer。现8项均需要外部条件、采用决定或明确增强需求；无已确认且已授权的独立代码待修项，不从旧API或“持续打磨”自动立项。H-01 cover／discard／AI仍排除，A-15无净收益候选不再重试。
+
+后继事实已确认：Root #104已合 `5a6c895cec76f0278a7488605604c1229c024418`，App #67已合 `a516cfcb991a080baaf51fef1c070ff57854db0c`，Root #105已合 `3c66f1739f8fff950acd630fd5b78d6238e97d10`且App gitlink精确配对。上轮最终回执已核Root／App main干净与topic清理；旧worktree／过时分支名已退役，archive refs和私有证据保留。下方历史“候选／待合／旧工作区仍保留”不再代表当前待办，不重写原证据。
+
+TODO改为当前结论、8项条件表及简短交付入口；原长过程固定链接到3c66f173版本，未删除原失败／收据或取消条件需求。本轮文档diff／8个本地链接与锚点／2个固定历史对象检查通过，直接相关Root治理测试8 PASS、独立复核CLEAR。无业务源码、gitlink、权限、资金、资源、模型或部署变化；本轮沿Root文档PR交付，不把文档检查冒成新业务验收，合并与topic清理由主控最终Git回执核实。
+
 ## 2026-11-15 H-01：metadata 已验，App main 与 Root 组合交付
 
 本轮只改App现役Settings Skills菜单／按需本人草稿Dialog、现有metadata PATCH消费者与同源typed边界；不恢复旧workspace、不扩封面／discard／AI，不改owner源码、固定契约、依赖或Schema。具体行为及范围见[唯一TODO](../todo.md)与App CURRENT。主控停写后5文件372／完整默认6903／contract479／architecture50 PASS，lint/types/build与对外Docs导航链接检查通过，UI/actor独审CLEAR。
