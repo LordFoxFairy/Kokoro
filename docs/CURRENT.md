@@ -1,3 +1,11 @@
+## 2026-11-16 Web Hub 分发与具名处理器已交付
+
+按用户批准仅收口App Hub：路由保原顺序／条件分发及Next导出；原MCP／Custom API／六Skills处理器进入既有server目录，实际共用projection与下载规则各保一处，原末端BFF多profile整体迁移。无registry／nullable链／Base类／SDK／第二准入层，原普通转发不扩为任意owner代理；其它具名Project／Library适配器复用。保URL／self特判、Cookie／Origin／owner、body／key／CAS／header、各自期限／取消／错误与EOF清理，不为统一外观顺手改原差异。API／Schema／generated／依赖／lock／测试／UI和Mori不变，只去掉误导的全局旧信封注释。
+
+两独立写区交接后主控停写12源码输入，18原函数体／15声明、分发prefix／优先级、末端body与Next导出核等；第三agent复核imports／无循环／模块副作用与语义CLEAR。主控原基线5文件333 PASS，最终同组333 PASS、现architecture 50 PASS，lint／Next typegen＋非增量types／production build及diff／导航链接通过，12输入SHA保持。未改测试／断言、不重跑全默认／浏览器／真实模型／PG／无关契约生成／部署；HTTP上游是明确loopback BFF fixture，不冒真实IAM或全产品E2E。Custom API原body先于deadline的差异原保，不称所有路径有新统一硬期限；Skills writer未集成阶段的缺共享模块TS诊断不当产品缺陷或最终门禁。
+
+App [#70](https://github.com/LordFoxFairy/kokoro-app/pull/70)已合main `db21d3a42160d25c671a7f5d64cfc6641ac3eef6`，合并树与验收树相同，App本轮topic已清。只暂停恢复自己Next dev（公开根HTTP200），其它服务／数据／资金不动。Root仅更新App gitlink，按89个真实已提交blobs重算97处inventory引用（1处摘要变化）；拓扑／兼容性15 edges、0 violations／原checkpoint均PASS，Root本片正常PR收尾见[唯一TODO](../todo.md)，最终merge／topic清理由Git回执确认，不预写未来SHA。日志／manifest留Root ignored var/dev/web-hub-handler-cleanup；已完成业务Goal与条件暂存不变。
+
 ## 2026-11-16 App 未消费 @ai-sdk/react 已退役
 
 仅本次批准依赖清理：tracked源码／脚本／测试无@ai-sdk/react消费者，实际消息流由ai承担。App只删该直接依赖，pnpm正规裁剪目标及其独占5包（@ai-sdk/mcp／pkce-challenge／swr／throttleit／use-sync-external-store），退役react／mcp两条失效release-age例外。ai@7.0.92与其图、其余1121 packages／1122 snapshots所有版本／integrity／内容及其它安全策略均核等；i18n和App源码／测试／API／generated不变，Mori不动。无新层、registry、依赖升级或性能提速承诺。
