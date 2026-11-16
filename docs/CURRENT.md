@@ -1,3 +1,13 @@
+## 2026-11-16 App 未消费 @ai-sdk/react 已退役
+
+仅本次批准依赖清理：tracked源码／脚本／测试无@ai-sdk/react消费者，实际消息流由ai承担。App只删该直接依赖，pnpm正规裁剪目标及其独占5包（@ai-sdk/mcp／pkce-challenge／swr／throttleit／use-sync-external-store），退役react／mcp两条失效release-age例外。ai@7.0.92与其图、其余1121 packages／1122 snapshots所有版本／integrity／内容及其它安全策略均核等；i18n和App源码／测试／API／generated不变，Mori不动。无新层、registry、依赖升级或性能提速承诺。
+
+主控最终冻结安装、lint、Next typegen＋非增量tsc、现消息流4文件93 PASS／0 FAIL、production build及diff通过，1344源码／测试输入逐SHA未变；独立配置／锁复核CLEAR。只暂停恢复自己Next dev（公开根HTTP200），不操作其它服务／数据／资金；凭据仅子进程环境、临时0600npmrc已清。未跑全默认／浏览器／真实模型／无关contract生成或部署，日志与收据留Root ignored var/dev/app-unused-ai-react。
+
+发现Root check_web旧规则仍强制React hooks包，故只移除此过时依赖要求，保留实际ai／@ag-ui/core及所有AgUiChatTransport／legacy／owner边界等检查。新增最小3个fixture正反例：无React且实际两依赖齐全可过，缺ai或core仍拒；原规则3 FAIL→修后3 PASS（373未选），独立规则复核CLEAR，不运行全仓扫描或放宽传输规则。
+
+App [#69](https://github.com/LordFoxFairy/kokoro-app/pull/69)已合main `45091453c0413961c2e77b462dfb44bed102ebca`，合并树与验收树相等，App本轮topic已清。Root只配对App gitlink，按89个真实blobs重算97处inventory引用（6处摘要变化）；拓扑／兼容性15 edges、0 violations／原checkpoint均PASS，Root本片正常PR收尾见[唯一TODO](../todo.md)，最终merge／topic清理由Git回执确认，不预写未来SHA。已完成业务Goal与8项条件暂存不变。
+
 ## 2026-11-16 BFF Projects／Skills 下载装配收口
 
 按用户批准仅完成单仓保行为重构：Projects／Skills两个Module保原token／inject，业务来源闭包移到现Platform client目录的两个具名factory；本次两处exact-source下载响应共用现response mapper。原ExactSkillDownloadService、配置null门、origin优先、Project按真实subject／tenant前后鲜验及owner projectRef检查、managed/share exact资格、递归wire／timestamp校验、取消／deadline／错误语义保持。无新SDK、Base类、空port／通用层；不改API、Schema、generated、依赖／lock或Mori。其它相似但有不同资格约束的现download facade不借本轮修改。

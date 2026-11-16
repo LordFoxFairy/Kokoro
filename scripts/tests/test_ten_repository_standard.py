@@ -2417,3 +2417,31 @@ def test_r09_mori_adapter_versioning_is_separate_from_published_bff_metadata(
     contract_checks.check_openapi_contract("kokoro-mori", spec, failures)
     assert any(item.rule == "http-versioning" for item in failures) is not valid
     assert any(item.rule == "openapi-governance" for item in failures)
+
+
+@pytest.mark.parametrize("missing", [None, "ai", "@ag-ui/core"])
+def test_web_adapter_requires_consumed_packages_not_unused_react_hooks(
+    missing, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-app"
+    (repository / "src").mkdir(parents=True)
+    dependencies = {"@ag-ui/core": "0.0.59", "ai": "7.0.92"}
+    if missing is not None:
+        dependencies.pop(missing)
+    (repository / "package.json").write_text(
+        json.dumps({"dependencies": dependencies})
+    )
+    (repository / "src/transport.ts").write_text(
+        "export class AgUiChatTransport {}\n"
+    )
+    monkeypatch.setattr(surface_checks, "ROOT", tmp_path)
+
+    failures = []
+    surface_checks.check_web(failures)
+
+    if missing is None:
+        assert failures == []
+    else:
+        assert len(failures) == 1
+        assert failures[0].rule == "agui-ui-adapter"
+        assert repr(missing) in failures[0].detail

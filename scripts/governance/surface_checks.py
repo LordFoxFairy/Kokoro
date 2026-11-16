@@ -36,7 +36,8 @@ def check_web(failures: list[Failure]) -> None:
             else {}
         ),
     }
-    for dependency in ("@ag-ui/core", "ai", "@ai-sdk/react"):
+    # The adapter uses ai directly, not the optional React hooks package.
+    for dependency in ("@ag-ui/core", "ai"):
         if dependency not in dependencies:
             add(
                 failures,

@@ -2,6 +2,14 @@
 
 更新：2026-11-16（America/New_York）。仅维护下一动作、进入条件和完成边界；详细完成过程由固定 Git 历史保留。
 
+## 本轮已验：App 未消费 @ai-sdk/react 退役
+
+用户批准的窄依赖清理。tracked源码／脚本／测试无@ai-sdk/react引用，仅manifest／release-age例外及历史ADR提及；实际消息流由ai的readUIMessageStream与ChatTransport／UIMessage类型承担，保留ai及其现有版本／消息流／AG-UI／恢复行为。只删除该直接依赖与对应release-age例外，用pnpm正规重算锁与回收独占依赖；不手改lock、不升级其它依赖、不改App源码／测试、契约或Mori。Root仅联动check_web：删除强制安装未消费React hooks包的旧要求，保留ai／@ag-ui/core与原传输／边界规则，补3个最小正反例。
+
+- [x] 核实际引用并删除未消费直接依赖；pnpm正规裁剪目标和独占5包，并移除react／mcp两条过期release-age例外。冻结安装通过，其余1121 packages／1122 snapshots内容、版本／integrity及ai依赖图不变，i18n和安全策略保留。
+- [x] 现消息流4文件93 PASS、lint／Next typegen＋非增量types／production build通过；1344源码／测试输入逐SHA核等，独立配置复核CLEAR。不重跑全默认／浏览器／模型或无关契约生成，不冒性能提速。自己的Web已恢复HTTP200，其它服务、数据和资金不动。
+- [x] TODO／CURRENT已同步、独立两面复核CLEAR；App [#69](https://github.com/LordFoxFairy/kokoro-app/pull/69)已合main `45091453c0413961c2e77b462dfb44bed102ebca`且树与验收核等、App本轮topic已清。Root旧依赖要求最小3例RED→GREEN，实际ai／core及所有原传输检查保留；精确gitlink与89个Git blobs／97处引用核等，拓扑／兼容性15 edges、0 violations／原checkpoint均PASS。随Root本片PR交付，Root合并／本轮topic清理以最终Git回执为准，不预写未来SHA。
+
 ## 本轮已验：BFF Projects／Skills 下载装配收口
 
 用户批准的单仓重构；不重开Task A／Task B已完成范围或8项条件项。复用现ExactSkillDownloadService与owner客户端，将Module内具体来源解析移到具名factory（platform下Project／Skill各一文件），两处owner下载响应采用现skill-product-response内同一纯mapper；Module仅保原token／inject并引用factory。没有新SDK／Base类／空port／通用代理层，不改契约、Schema、生成物、依赖或认证边界；Mori不动。
