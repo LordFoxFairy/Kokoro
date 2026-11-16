@@ -1,13 +1,22 @@
-# Kokoro · 当前执行 TODO
+# Kokoro · 已批准范围交付与条件暂存
 
 更新：2026-11-16（America/New_York）。仅维护下一动作、进入条件和完成边界；详细完成过程由固定 Git 历史保留。
 
-## 当前结论
+## 正式交付结论
 
-- 已批准的 Task A／Task B、两笔无预占恢复残留、R-06、核心链质量修复及 H-01 metadata 窄切片已交付。
+- **已批准范围正式交付，不再自动选择下一项任务。** Task A／Task B、两笔无预占恢复残留、R-06、核心链质量修复、H-01 metadata及单一真实只读MCP四步均已交付。
 - 剩余 **8 项条件性遗留／可选增强** 见下表；本轮已补齐一个真实只读MCP调用／展示／刷新／撤权拒绝；其他条件和Provider专有授权不自动扩项。它们不是 8 个新故障，也不因暂存而视作已经完成。
 - A-15 已定位生产启动成本，唯一候选净收益不足已撤销；不重复该试验，不为保持推进而扫描已交付代码或新增设计、缓存、测试矩阵。
 - H-01 只交付本人草稿 metadata 编辑与 fresh 读回。**cover／discard／AI 仍排除**；不从旧代码或 API 的存在推导新增产品承诺。
+
+## 最终收尾与 Goal 边界
+
+机器Goal仅覆盖已批准范围的交付收尾：更新本清单／CURRENT、核自有PR/main及本地清理；在本次Root文档PR合并并完成最终Git核对后标记complete。**下方8项条件不属于本Goal未完成工作**；不将其伪标验收通过，也不保留一个自动持续扫描的active目标。
+
+- [x] 自有PR核对：本次收尾PR创建前，Root及12子仓作者LordFoxFairy的OPEN PR均0；最近Root #104／#105／#106／#107及App #67均MERGED→main。只核元数据，未操作他人PR。
+- [x] 本地基线核对：13仓工作区干净、每仓1个checkout、实际本地branch refs均仅main、12个gitlink与checkout核等。Mori／System继续固定detached pin，不为整理擅动组合；它们不是额外分支。
+- [x] A-14及其它条件项单独暂存，本轮不准备语音页面、不申请麦克风、不采集录音／口述原文；只有用户重新明确启动才继续。
+- [x] 仅本次Root文档收尾沿正常PR交付；不重新跑业务／全量测试，不启动服务／浏览器，不动资金、权限、归档refs、私有配置或证据。主控合并后核main及只清本轮topic，Goal状态以机器最终结果为准。
 
 ## 本轮已验：一个真实只读 MCP 末端
 
@@ -36,7 +45,7 @@
 | --- | --- | --- |
 | Provider专有授权末端／条件暂存（本轮单一只读MCP已验） | Capability＋目标Provider | 本轮DeepWiki实际调用／展示／刷新／Kokoro连接撤权拒绝已验。未使用的OAuth、续期和其它Provider授权仍在相应真实账号条件下验；不将公开无鉴权服务冒其证明，不重跑已验控制面 |
 | A-13外部渠道／条件暂存 | 渠道owner | Telegram/LINE/Slack按实际使用的渠道，账号授权齐备后补收发/撤权；本地协议证据不冒供应商实测 |
-| A-14本人语音／用户择时 | App＋用户 | 用户主动口述→编辑→显式发送；不保留录音或口述原文，沿“稍后验收”安排 |
+| A-14本人语音／条件暂存，本轮不启动 | App＋用户 | 用户后续重新确认时间，再验主动口述→手动编辑→显式发送；当前不准备页面／麦克风，不保留录音或口述原文 |
 | 完整E2B生命周期／可选运行环境 | Agent＋环境owner | 确认实际采用云或完整自托管后补创建/重连/独立回收；官方envd Docker已有证据保留，不当完整云验收也不重复跑 |
 | A-15后续性能优化／production单边界试验已验 | App＋BFF | 真实owner production启动成本已定位，唯一Skills候选净收益不足已撤销；不把诊断当提速，不自动扩试其它页面／认证／缓存 |
 | IAM共享源IP额度／非合作取消语义／容量边界 | IAM及对应写入owner | 有代表负载再核容量；不随意抬限流，不将HTTP取消等同事务硬回滚，不为已验功能再造组合矩阵 |
@@ -53,6 +62,7 @@
 
 | 交付 | 已观察到的出口与范围 |
 | --- | --- |
+| 单一真实只读MCP四步 | [Root #107](https://github.com/LordFoxFairy/Kokoro/pull/107) → `363daf1f6731e252f67a59244dc73d86e7c53fc8`。真实调用、UI、硬刷新与撤权后新Run拒绝已验；QA配置已删、原Context7未改。其它Provider授权不扩称完成 |
 | H-01 本人草稿 metadata | [App #67](https://github.com/LordFoxFairy/kokoro-app/pull/67) → `a516cfcb991a080baaf51fef1c070ff57854db0c`；[Root #105](https://github.com/LordFoxFairy/Kokoro/pull/105) → `3c66f1739f8fff950acd630fd5b78d6238e97d10`。精确 gitlink、保存／读回／刷新及中法语窄屏已验；不扩封面／discard／AI。开发角色临时QA权限已还原，不修改默认成员权限。原失败与子步骤边界见 CURRENT |
 | 历史源码／旧 worktree 收拢 | [Root #104](https://github.com/LordFoxFairy/Kokoro/pull/104) → `5a6c895cec76f0278a7488605604c1229c024418`；[逐项报告](docs/reports/2026-11-15-historical-work-reconciliation.md)。旧 checkout 已退役，源码通过 Git 归档保留；不整批恢复旧代码 |
 | 真实浏览器核心链 | [Root #103](https://github.com/LordFoxFairy/Kokoro/pull/103) → `138201388931a8fa3198c9298eb7f9cf341e1c02`。当前组合任务→工具→产物下载→刷新恢复已验；资金授权、原失败和未验边界仍由原收据承接，不重复执行 |
