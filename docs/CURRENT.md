@@ -1,3 +1,15 @@
+## 2026-11-15 当前 main 核心链：真实浏览器同 Run 已闭环
+
+本次补验固定Root `afcf2cc4762ea413d9431c06740f15c9318f79c6`及其全部精确gitlink，无fixture／合成模型或生产源码变更。静默后仅重载Agent HTTP＋Worker到39fd15c5、Web dev到f8215c10；BFF2e0affb1／Storage7155093c／Billingc55abf34／System49a5f8e5沿现运行，IAM后继仅文档／Capability树等，运行输入核等。不操作PG／Redis／Docker基础设施，不把磁盘HEAD替代进程来源证明。
+
+首Run正式准入拒绝：开发账号可用8小于固定预占10，模型未派发、未扣费，保留FAIL。用户明确批准22非现金测试积分后，正式Billing owner命令经幂等receipt／audit／ledger核等，可用30、历史held30不变；不是支付或管理HTTP验收。第二Run `run_bff_03d6e16018dad9fae6a8b7d9347f26556aed4a76454ffe466732837e85198860` 经native登录／浏览器唯一消息POST202、真实gpt-6.1-sol三次调用、write_file＋deliver成功journal、唯一live delivery及正常RUN_FINISHED。Artifact `artifact:2c11e50b01c1bba9f070b4d135e3b445dda9374eb0b03fb3ae809a3ae5c890fa` 的source Run／会话／Asset／final／clean持久核等；卡片／Canvas真实下载core-check.txt共29B，SHA `073798d9b7324c6fc309058abd6b4cc6c0a1c4adb8deb1f42d6b0ab9ba6800b9`与事件／Storage一致。
+
+后置探针曾因snapshot默认all而parts显式direct返回invalid_cursor，以及沿旧message锚点误判；原失败保留后仅修私有helper，继续读取同一已完成Run，未重新提交／调用模型。当前ordered descriptor／分页scalar重组／final_segment_id、同Run终稿实际渲染与硬刷新后完全一致，消息／delivery不变，恢复新POST0、pageerror0。保留导航ERR_ABORTED诊断，不冒零网络异常；首次owner读探针列名／Prisma枚举错误也未作为产品失败或抹除。
+
+后台日志独审：成功窗口三次admission201、settlement200，Storage上传／扫描／封存／下载读取200；仅时间／request关联的日志由同Run owner持久事实补证。两SDK Beta及已恢复NOGROUP警告、首Run422和helper400分列；未见成功Run新增执行异常，BFF无有效新增日志不作“无问题”证明。三attempt均真实dispatched／sealed／normalized且financial ACK完整，新hold均终结，实际扣9、可用21、历史held30不变；61 Run全terminal，launch／dispatch等待处理0，旧financial候选2保留，不扩历史财务。
+
+[唯一TODO](../todo.md)已同步，原始失败／成功收据和截图保留本地私有证据；所有本轮native临时会话已logout、浏览器关闭、临时下载已删，正常应用保持运行，验收会话／产物保留供查看。本Root仅两份文档，沿正常PR承接最终main／本轮topic；未重跑无关全量、不改契约／Schema／gitlink，不部署或宣称外部条件项、压力容量、全产品零缺陷已验。上轮[Root #102](https://github.com/LordFoxFairy/Kokoro/pull/102)已合main且本轮分支已清，不重复开工。
+
 ## 2026-11-15 Skills 精确文件搜索：假空结果已修
 
 两只读面限定MCP结果映射，确认isError／structuredContent／journal与取消的既有语义和覆盖充分，未改MCP、不补重复测试。续核此前未查的Skills精确文件路径：原生Composite实际路由到TypedSkillBackend后，原目录前缀判断漏掉文件自身；现只在原筛选条件补exact-file，不新增helper／依赖或改协议／Schema。
