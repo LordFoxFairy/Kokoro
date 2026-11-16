@@ -10,6 +10,21 @@
 - 不为保持“推进”而重复扫描已交付代码、补重复测试、扩建审计平台或擅定性能指标。条件具备后，只做对应缺口。
 - 上轮production诊断／试验已沿Root #98合main `8f266a15`并清本轮资源；当前执行下方代码质量批次，不重跑该实验。
 
+## 本轮已收口：历史分支／旧 worktree 语义收拢
+
+[逐项裁定与恢复入口](docs/reports/2026-11-15-historical-work-reconciliation.md)。主控唯一Git／归档／删除writer，两只读面分审BFF和App大旧树；不以SHA未入main断言需求遗漏，不整批回灌旧码。
+
+- [x] BFF18逐提交意图已承接或正式替代；App共享80＋后继27按能力聚类，129工作区项逐路径核查；四小布局／loading及Storage旧试验由main或后继覆盖承接。未确认应补回的现行产品缺陷，不开重复代码／测试。
+- [x] 86 tracked修改／删除＋43 untracked源码完整存入独立Git working-tree归档，逐文件／mode核等、原index不变；所有旧HEAD／archive refs保留。Storage单文件及Next生成差异既有归档核等；4配置＋6旧日志私有保留、不进Git，不复制依赖／整仓。
+- [x] 7旧worktree与BFF过时分支名已移除，无占用、无force checkout删除。全部子仓只有main本地分支及主checkout，HEAD／Root gitlink／主仓依赖不变；Mori/System仍保持已锁detached pin。历史引用不算活跃开发分支，但候选不冒已交付。
+- [x] 报告／TODO／CURRENT同步；本Root文档PR承接最后main及本轮topic，未运行无关全量、业务浏览器／模型或基础设施／部署。
+
+## 历史能力候选（非确认缺陷，不自动开工）
+
+| 项目 | owner／当前边界 | 下一决定 |
+| --- | --- | --- |
+| H-01 本人draft原地metadata／封面／discard | App＋Capability；当前作者编辑已有新版本ZIP发布，API存在不等于整个旧UI已承诺。旧实现及测试已完整归档，不复活内嵌Admin／旧client | 如产品明确需要，先限定已有本人draft的metadata PATCH＋fresh读回；cover/discard/AI不自动并入。保留源码不是本轮实现该能力，详见报告§4 |
+
 ## 本轮已验：当前 main 精确组合真实浏览器核心链
 
 主控唯一writer／资源／Git／台账／验收；core_browser_route_review只读验收接线，core_run_log_review只读运行来源与本次Run日志。Root `afcf2cc4762ea413d9431c06740f15c9318f79c6`精确组合不变；仅补发起任务→Agent真实工具→Storage产物／下载→硬刷新恢复，不扩外部条件、基础设施或无关测试。
@@ -19,7 +34,7 @@
 - [x] 第二Run唯一消息POST202，真实gpt-6.1-sol三次派发／封口／financial ACK，write_file＋deliver journal均succeeded；同Run Artifact final、Asset clean。浏览器实际卡片／Canvas下载29B，SHA `073798d9b7324c6fc309058abd6b4cc6c0a1c4adb8deb1f42d6b0ab9ba6800b9`与Storage／事件相符。
 - [x] 仅续读同一成功Run补齐当前ordered FINAL、分页正文与实际UI硬刷新前后一致，恢复新POST0。旧helper的scope cursor／turn锚点及Prisma枚举误判保原件后只修私有接线，未重提模型任务、未改生产源码；pageerror0，导航取消诊断保留，不冒零网络异常。
 - [x] 日志独审区分首Run余额422、探针parts400、两条SDK Beta和已恢复NOGROUP；成功Run未见新增执行异常。Billing重复settle200由持久事实对账，不以次数算扣费；BFF日志稀疏由terminal dispatch／messages补证。实际扣9、可用21，held30不变；全部61 Run terminal、launch／dispatch待处理0，旧financial候选2不扩查。两只读审查与主控owner核验承接。
-- [x] TODO／CURRENT同步；本Root文档PR承接最终main／本轮topic清理，无子仓源码／契约／gitlink变更。临时会话均logout、浏览器关闭／下载临时文件已删；验收任务／产物与私有失败／成功收据保留，不擅删业务数据，不运行无关全量或部署。
+- [x] TODO／CURRENT同步；Root[#103](https://github.com/LordFoxFairy/Kokoro/pull/103)已main `13820138`且本轮topic已清，无子仓源码／契约／gitlink变更。临时会话均logout、浏览器关闭／下载临时文件已删；验收任务／产物与私有失败／成功收据保留，不擅删业务数据，不运行无关全量或部署。
 
 ## 本轮已验：Skills 精确文件搜索
 

@@ -1,3 +1,13 @@
+## 2026-11-15 历史工作语义收拢：旧 checkout 清理、候选保源
+
+按[专项报告](reports/2026-11-15-historical-work-reconciliation.md)核上一轮保留的BFF18提交和7旧worktree，不重复业务扫描／实测。BFF18意图均已由现实现或native认证／正式契约后继承接；App两个大树为共享80＋后继27，129工作区项逐路径区分已承接／旧方案／可选候选，未把父hash不同或旧文件消失当作缺陷。四个小App布局／Project loading已承接或后继替代；Storage旧legacy试验已有正式maintenance与canonical覆盖。本轮没有确认应回灌的现行产品缺陷，不新增业务代码或重复测试。
+
+旧本人draft原地metadata/category/examples/cover/discard有真实源码与权限语义，但当前作者编辑通过新版本ZIP发布承接，现产品文档未承诺整套原地编辑器。作为H-01可选历史能力进入[唯一TODO](../todo.md)产品决策区，源码保留、不判已实现／已废止、不自动复活旧workspace或Admin。旧Library Artifact→AI selector由当前明确prompt-starter方案替代，不列新缺陷。
+
+129项（86 tracked修改／删除＋43 untracked）通过隔离Git index完整归档并逐文件／mode核等，原index未动；Storage单文件／Next生成差异与既有work refs逐字核等。所有旧HEAD与archive refs保留，4私有配置＋6技术日志仅私有迁移不入Git。删除前再次核等并验证FD无人占用，探测失败即停；已保护源才清旧checkout，普通worktree remove，无force checkout删除。BFF只按原SHA CAS删除过时分支名，不删历史引用；7个旧checkout全部移除，主仓依赖／所有子仓HEAD／Root gitlink不变。
+
+子仓本地分支已仅main、各有唯一主checkout；Mori/System仍保Root detached pin，不擅改组合。本Root仅报告／TODO／CURRENT，正常PR承接最终main／topic清理；无测试／模型／浏览器／资源／部署重跑。上轮真实浏览器核心链已沿[Root #103](https://github.com/LordFoxFairy/Kokoro/pull/103)合main `13820138`并清本轮分支，不重开。
+
 ## 2026-11-15 当前 main 核心链：真实浏览器同 Run 已闭环
 
 本次补验固定Root `afcf2cc4762ea413d9431c06740f15c9318f79c6`及其全部精确gitlink，无fixture／合成模型或生产源码变更。静默后仅重载Agent HTTP＋Worker到39fd15c5、Web dev到f8215c10；BFF2e0affb1／Storage7155093c／Billingc55abf34／System49a5f8e5沿现运行，IAM后继仅文档／Capability树等，运行输入核等。不操作PG／Redis／Docker基础设施，不把磁盘HEAD替代进程来源证明。
