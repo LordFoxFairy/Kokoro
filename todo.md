@@ -2,6 +2,16 @@
 
 更新：2026-11-16（America/New_York）。仅维护下一动作、进入条件和完成边界；详细完成过程由固定 Git 历史保留。
 
+## 本轮已验：Web Hub 处理器与分发收口
+
+用户批准按现有能力拆分，不改API／业务语义。现MCP、Custom API及六个Skills具名处理器进入既有lib/server目录，实际共用的projection错误／请求约束与下载头／流校验各保一处；路由只保原顺序／条件分发及Next runtime／dynamic／HTTP exports。原末端包含多种闭集响应的BFF转发整体进入hub-bff-proxy，不改其self剥离、managed URL特判或增通用registry／nullable-handler框架；不把它声称为新业务owner。
+
+保权限／Cookie／Origin／owner选择、原path／body／key／CAS／header、取消／各自期限、错误shape／状态／request-id／Retry-After／EOF清理及分发优先级；不为统一外观修改原差异。主控唯一route／共享helper／fallback／台账／Git writer；两个agent分别独占MCP＋Custom API及六Skills处理器；第三agent只读核保行为。依赖、契约、数据、UI和Mori不动。
+
+- [x] 八个具名处理器迁移并集成，路由仅原顺序分发；原末端BFF多profile整体迁移，projection／下载共用规则各保一处。18函数体／15声明、dispatch prefix／precedence／末端body／Next导出核等；清除误导的旧信封总注释，无新业务层。
+- [x] 主控停写12源码输入验收：现相关5文件333 PASS、architecture 50 PASS，lint／Next typegen＋非增量types／production build及diff通过；输入SHA保持，独立行为审查CLEAR。原测试／断言未改，不跑模型／全默认／无关契约生成／浏览器／真实PG／部署，loopback fixture不冒真实owner E2E；自己Web已恢复HTTP200，其它服务不动。
+- [x] TODO／CURRENT／导航已同步；App [#70](https://github.com/LordFoxFairy/kokoro-app/pull/70)已合main `db21d3a42160d25c671a7f5d64cfc6641ac3eef6`，树与停写验收核等，App本轮topic已清。Root精确配对gitlink与89个真实blobs／97处引用（1处摘要变化），拓扑／兼容性15 edges、0 violations／原checkpoint均PASS；随Root本片正常PR交付，Root合并与本轮topic清理以最终回执为准，不预写未来SHA。
+
 ## 本轮已验：App 未消费 @ai-sdk/react 退役
 
 用户批准的窄依赖清理。tracked源码／脚本／测试无@ai-sdk/react引用，仅manifest／release-age例外及历史ADR提及；实际消息流由ai的readUIMessageStream与ChatTransport／UIMessage类型承担，保留ai及其现有版本／消息流／AG-UI／恢复行为。只删除该直接依赖与对应release-age例外，用pnpm正规重算锁与回收独占依赖；不手改lock、不升级其它依赖、不改App源码／测试、契约或Mori。Root仅联动check_web：删除强制安装未消费React hooks包的旧要求，保留ai／@ag-ui/core与原传输／边界规则，补3个最小正反例。
